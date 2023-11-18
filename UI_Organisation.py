@@ -48,7 +48,7 @@ class UIElement:
                 if align_name in self.alignment:
                     self.alignment[align_name] = align_args[align_name]
             else:
-                raise(f"Alignment argument is of type '{type(align_args[align_name])}'. However, this needs to be of type 'bool'.")
+                raise AttributeError(f"Alignment argument is of type '{type(align_args[align_name])}'. However, this needs to be of type 'bool'.")
         
         
     def draw(self, surf: pygame.Surface):
@@ -210,16 +210,13 @@ class UI:
             self.__ui_elems[elem_name].set_pos(self.win_dim)
         
         
-        
-        
-
 
 
 pygame.init()
 
 window = UI()
 
-window.add_elem("test 1", (100, 100))
+window.add_elem("Test Element 1", (100, 100))
 
 run = True
 
@@ -229,6 +226,5 @@ while run:
         run = False
 
     window.draw()
-
 
 pygame.quit()
