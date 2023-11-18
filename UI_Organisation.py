@@ -8,7 +8,7 @@ class UIElement:
         "align_down": False,
         "align_left": False}
 
-    def __init__(self, dim: tuple[int, int], pos: tuple[int, int], **align_args: dict[str, bool]):
+    def __init__(self, surf_dim: tuple[int, int], dim: tuple[int, int], offset: tuple[int, int] = (0, 0), centered = True, **align_args: dict[str, bool]):
         """Constuctor for UIElement class.
         
         Sets the dimensions & position of the UIElement.
@@ -18,11 +18,14 @@ class UIElement:
             pos (tuple[int, int]): Position as (<x>, <y>).
         """        
         self.dim: tuple[int, int] = dim
-        self.pos: tuple[int, int] = pos
+        self.offset: tuple[int, int] = offset
         
         self.alignment = self.DEFAULT_ALIGN_DICT
         self.__set_align(**align_args)
-        pass
+        self.__centered = centered
+        
+        self.set_pos(surf_dim)
+
         
     def __set_align(self, **align_args: dict[str, bool]):
         
@@ -39,8 +42,41 @@ class UIElement:
 
         Args:
             surf (Surface): Surface to draw on.
-        """        
-        pygame.draw.rect(surf, (255, 0, 0), (self.dim, self.pos))
+        """   
+            
+        pygame.draw.rect(surf, (255, 0, 0), (self.__pos, self.dim))
+        
+        
+    def set_pos(self, surf_dim: tuple[int, int]):
+        
+        self.__pos = [0, 0]
+        for i in range(2):
+            
+            half_surf_len = round(surf_dim[i] / 2)
+            
+            offset = self.offset[i]
+            
+            if i == 0 and not (self.alignment["align_right"] and self.alignment["align_left"]):
+                
+                if self.alignment["align_right"]:
+                    offset += half_surf_len
+                
+                elif self.alignment["align_left"]:
+                    offset -= half_surf_len
+                    
+            if i == 1 and not (self.alignment["align_up"] and self.alignment["align_down"]):
+                
+                if self.alignment["align_down"]:
+                    offset += half_surf_len
+                
+                elif self.alignment["align_up"]:
+                    offset -= half_surf_len
+        
+            if self.__centered:
+                offset -= round(self.dim[i] / 2)
+            
+            self.__pos[i] = half_surf_len + offset
+                    
 
 
 
@@ -64,6 +100,7 @@ class UI:
         self.__clock = pygame.time.Clock()
         
         self.__set_win(win_dim)
+        self.resized: bool = False
         
         self.__ui_elems: dict[str, UIElement] = {}
 
@@ -84,12 +121,20 @@ class UI:
 
         Returns:
             bool: Whether the window is open.
-        """        
+        """
+        
+        self.resized = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
             
+            if event.type == pygame.VIDEORESIZE:
+                self.resized = True
+            
+        if self.resized:
+            self.resize()
+                
         return True
     
     
@@ -99,19 +144,30 @@ class UI:
         
         window.win.fill((255, 255, 255))
         
-        self.__draw_ui_elems()
+        self.__draw_elems()
 
         pygame.display.flip()
 
         self.__clock.tick(60)
         
-    
-    def add_ui_elem(self, elem_name: str, dim: tuple[int, int], offset: tuple[int, int], **align_args):
-        self.__ui_elems[elem_name] = UIElement(dim, offset, **align_args)
         
-    def __draw_ui_elems(self):
+    def resize(self):
+        self.win_dim = (self.win.get_width(), self.win.get_height())
+        self.__resize_elems()
+        
+    
+    def add_elem(self, elem_name: str, dim: tuple[int, int], offset: tuple[int, int] = (0, 0), **align_args):
+        self.__ui_elems[elem_name] = UIElement(self.win_dim, dim, offset, **align_args)
+    
+        
+    def __draw_elems(self):
         for elem_name in self.__ui_elems:
             self.__ui_elems[elem_name].draw(self.win)
+            
+    def __resize_elems(self):
+        for elem_name in self.__ui_elems:
+            self.__ui_elems[elem_name].set_pos(self.win_dim)
+        
         
         
         
@@ -122,7 +178,7 @@ pygame.init()
 
 window = UI()
 
-window.add_ui_elem("test 1", (100, 100), (100, 100), align_up = True)
+window.add_elem("test 1", (100, 100))
 
 run = True
 
