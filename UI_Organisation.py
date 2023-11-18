@@ -9,14 +9,21 @@ class UIElement:
         "align_left": False}
 
     def __init__(self, surf_dim: tuple[int, int], dim: tuple[int, int], offset: tuple[int, int] = (0, 0), centered = True, **align_args: dict[str, bool]):
-        """Constuctor for UIElement class.
-        
-        Sets the dimensions & position of the UIElement.
+        """_summary_
 
         Args:
+            surf_dim (tuple[int, int]): (<width>, <height>) of surf to be drawn 
+            on.
             dim (tuple[int, int]): Dimensions as (<width>, <height>).
-            pos (tuple[int, int]): Position as (<x>, <y>).
-        """        
+            offset (tuple[int, int], optional): Offset in pixels from it's 
+            original alignment. Defaults to (0, 0).
+            centered (bool, optional): Whether the element should be drawn from 
+            the center of its width/height. Defaults to True.
+            align_args (dict[str, bool], optional): Specifies which side of the
+            surface the UI Element should align to. Options are align_up=<bool>, 
+            align_right=<bool>, align_down=<bool>, align_left=<bool>.
+        """      
+          
         self.dim: tuple[int, int] = dim
         self.offset: tuple[int, int] = offset
         
@@ -28,26 +35,39 @@ class UIElement:
 
         
     def __set_align(self, **align_args: dict[str, bool]):
+        """Sets the alignment for the UI Element.
+
+        Args:
+            align_args (dict[str, bool], optional): Specifies which side of the
+            surface the UI Element should align to. Options are align_up=<bool>, 
+            align_right=<bool>, align_down=<bool>, align_left=<bool>.
+        """        
         
         for align_name in align_args:
             if type(align_args[align_name]) == bool: 
                 if align_name in self.alignment:
                     self.alignment[align_name] = align_args[align_name]
             else:
-                raise(f"Alignment argument is type '{type(align_args[align_name])}'. Needs to be type bool.")
+                raise(f"Alignment argument is of type '{type(align_args[align_name])}'. However, this needs to be of type 'bool'.")
         
         
     def draw(self, surf: pygame.Surface):
         """Draws the UIElement on a surface.
 
         Args:
-            surf (Surface): Surface to draw on.
+            surf (Surface): Surface to be drawn on.
         """   
             
         pygame.draw.rect(surf, (255, 0, 0), (self.__pos, self.dim))
         
         
     def set_pos(self, surf_dim: tuple[int, int]):
+        """Sets the position for the UI Element to be displayed on a surface.
+
+        Args:
+            surf_dim (tuple[int, int]): (<width>, <height>) of the surface to be 
+            drawn on.
+        """        
         
         self.__pos = [0, 0]
         for i in range(2):
@@ -91,7 +111,7 @@ class UI:
         """Constructor for UI class
 
         Args:
-            win_dim (tuple[int, int], optional): Window h/w. Defaults to (700, 500).
+            win_dim (tuple[int, int], optional): Window (<width>, <height>). Defaults to (700, 500).
         """        
         
         self.win_dim: tuple[int, int] = None
@@ -106,10 +126,10 @@ class UI:
 
 
     def __set_win(self, win_dim: tuple[int, int]):
-        """Sets the window to a specified h/w.
+        """Creates a new window.
 
         Args:
-            win_dim (tuple[int, int]): Window h/w.
+            win_dim (tuple[int, int]): Window (<width>, <height>).
         """        
 
         self.win_dim = win_dim
@@ -117,7 +137,7 @@ class UI:
 
 
     def events(self) -> bool:
-        """Handles the windows events.
+        """Handles the windows events; including handeling resizing & quitting.
 
         Returns:
             bool: Whether the window is open.
@@ -133,13 +153,13 @@ class UI:
                 self.resized = True
             
         if self.resized:
-            self.resize()
+            self.__resize()
                 
         return True
     
     
     def draw(self):
-        """Draws the UI to the window.
+        """Draws a new frame of the window; including all its elements.
         """
         
         window.win.fill((255, 255, 255))
@@ -151,20 +171,41 @@ class UI:
         self.__clock.tick(60)
         
         
-    def resize(self):
+    def __resize(self):
+        """Resizes the window, updating all its elements.
+        """        
+        
         self.win_dim = (self.win.get_width(), self.win.get_height())
         self.__resize_elems()
         
     
-    def add_elem(self, elem_name: str, dim: tuple[int, int], offset: tuple[int, int] = (0, 0), **align_args):
+    def add_elem(self, elem_name: str, dim: tuple[int, int], offset: tuple[int, int] = (0, 0), **align_args: dict[str, bool]):
+        """Adds a UI Element to be displayed on the window.
+
+        Args:
+            elem_name (str): Arbitrary name.
+            dim (tuple[int, int]): Dimensions of the UI Element.
+            offset (tuple[int, int], optional): Offset in pixels from it's 
+            original alignment. Defaults to (0, 0).
+            align_args (dict[str, bool], optional): Specify which side of the
+            window the UI Element should align to. Options are align_up=<bool>, 
+            align_right=<bool>, align_down=<bool>, align_left=<bool>.
+        """        
+        
         self.__ui_elems[elem_name] = UIElement(self.win_dim, dim, offset, **align_args)
     
         
     def __draw_elems(self):
+        """Draws UI elements on the window.
+        """        
         for elem_name in self.__ui_elems:
             self.__ui_elems[elem_name].draw(self.win)
             
+            
     def __resize_elems(self):
+        """Resizes UI Elements based on the window dimensions.
+        """ 
+              
         for elem_name in self.__ui_elems:
             self.__ui_elems[elem_name].set_pos(self.win_dim)
         
