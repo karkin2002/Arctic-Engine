@@ -8,7 +8,13 @@ class UIElement:
         "align_down": False,
         "align_left": False}
 
-    def __init__(self, surf_dim: tuple[int, int], dim: tuple[int, int], offset: tuple[int, int] = (0, 0), centered = True, **align_args: dict[str, bool]):
+    def __init__(self, 
+                 surf_dim: tuple[int, int], 
+                 dim: tuple[int, int], 
+                 offset: tuple[int, int] = (0, 0), 
+                 centered = True, 
+                 **align_args: dict[str, bool]):
+        
         """_summary_
 
         Args:
@@ -26,8 +32,7 @@ class UIElement:
           
         self.dim: tuple[int, int] = dim
         self.offset: tuple[int, int] = offset
-        
-        self.alignment = self.DEFAULT_ALIGN_DICT
+        self.alignment = self.DEFAULT_ALIGN_DICT.copy()
         self.__set_align(**align_args)
         self.__centered = centered
         
@@ -48,7 +53,8 @@ class UIElement:
                 if align_name in self.alignment:
                     self.alignment[align_name] = align_args[align_name]
             else:
-                raise AttributeError(f"Alignment argument is of type '{type(align_args[align_name])}'. However, this needs to be of type 'bool'.")
+                raise AttributeError(
+                    f"Alignment argument is of type '{type(align_args[align_name])}'. However, this needs to be of type 'bool'.")
         
         
     def draw(self, surf: pygame.Surface):
@@ -179,7 +185,12 @@ class UI:
         self.__resize_elems()
         
     
-    def add_elem(self, elem_name: str, dim: tuple[int, int], offset: tuple[int, int] = (0, 0), **align_args: dict[str, bool]):
+    def add_elem(self, 
+                 elem_name: str, 
+                 dim: tuple[int, int], 
+                 offset: tuple[int, int] = (0, 0), 
+                 centered: bool = True, 
+                 **align_args: dict[str, bool]):
         """Adds a UI Element to be displayed on the window.
 
         Args:
@@ -192,8 +203,8 @@ class UI:
             align_right=<bool>, align_down=<bool>, align_left=<bool>.
         """        
         
-        self.__ui_elems[elem_name] = UIElement(self.win_dim, dim, offset, **align_args)
-    
+        self.__ui_elems[elem_name] = UIElement(self.win_dim, dim, offset, centered, **align_args)
+
         
     def __draw_elems(self):
         """Draws UI elements on the window.
@@ -214,9 +225,12 @@ class UI:
 
 pygame.init()
 
-window = UI()
+window = UI((1280, 720))
 
-window.add_elem("Test Element 1", (100, 100))
+window.add_elem("hotbar", (850, 60), (0, -80), align_down = True)
+window.add_elem("crosshair", (5, 5))
+window.add_elem("Profile", (70, 70), (45, 45), align_up = True, align_left = True)
+window.add_elem("Some text", (200, 20), (100, 10), centered=False, align_up = True, align_left = True)
 
 run = True
 
