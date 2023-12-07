@@ -1,18 +1,52 @@
 import pygame
 
+def check_is_pair(value: tuple | list) -> tuple | list:
+    """Returns the value inputted, if it's a tuple or list with a len of 2.
+    Otherwise raises an error.
+
+    Args:
+        value (tuple | list | any): Value to check.
+
+    Raises:
+        AttributeError: Value isn't a tuple or list of len 2.
+
+    Returns:
+        tuple: The input value.
+    """    
+    
+    if type(value) == tuple or type(value) == list and len(value) == 2:
+        return value
+    
+    else:
+        raise AttributeError(
+            f"Value '{value}' is of type '{type(value)}'. Needs to be either a tuple or list, with a len of 2.")
+        
+
+
 class UIElement:
     
+    ## Raise Error Static Variables
+    
+    
+    ## Alignment Static Variables.
+    ALIGN_UP_KW = "align_up"
+    ALIGN_RIGHT_KW = "align_right"
+    ALIGN_DOWN_KW = "align_down"
+    ALIGN_LEFT_KW = "align_left"
+    
     DEFAULT_ALIGN_DICT = {
-        "align_up": False,
-        "align_right": False,
-        "align_down": False,
-        "align_left": False}
+        ALIGN_UP_KW: False,
+        ALIGN_RIGHT_KW: False,
+        ALIGN_DOWN_KW: False,
+        ALIGN_LEFT_KW: False}
 
     def __init__(self, 
                  surf_dim: tuple[int, int], 
                  dim: tuple[int, int], 
                  offset: tuple[int, int] = (0, 0), 
-                 centered = True, 
+                 alpha: int = 255,
+                 centered: bool = True, 
+                 display: bool = True,
                  **align_args: dict[str, bool]):
         
         """_summary_
@@ -33,11 +67,14 @@ class UIElement:
         self.dim: tuple[int, int] = dim
         self.offset: tuple[int, int] = offset
         self.alignment = self.DEFAULT_ALIGN_DICT.copy()
+            
         self.__set_align(**align_args)
         self.__centered = centered
         
         self.set_pos(surf_dim)
-
+        
+        self.__alpha = alpha
+        self.__display = display
         
     def __set_align(self, **align_args: dict[str, bool]):
         """Sets the alignment for the UI Element.
@@ -64,7 +101,11 @@ class UIElement:
             surf (Surface): Surface to be drawn on.
         """   
             
-        pygame.draw.rect(surf, (255, 0, 0), (self.__pos, self.dim))
+        if self.__is_displayed():
+            pygame.draw.rect(surf, (255, 0, 0), (self.__pos, self.dim))
+            
+    def __is_displayed(self):
+        return self.__display and self.__alpha > 0
         
         
     def set_pos(self, surf_dim: tuple[int, int]):
@@ -82,20 +123,20 @@ class UIElement:
             
             offset = self.offset[i]
             
-            if i == 0 and not (self.alignment["align_right"] and self.alignment["align_left"]):
+            if i == 0 and not (self.alignment[self.ALIGN_RIGHT_KW] and self.alignment[self.ALIGN_LEFT_KW]):
                 
-                if self.alignment["align_right"]:
+                if self.alignment[self.ALIGN_RIGHT_KW]:
                     offset += half_surf_len
                 
-                elif self.alignment["align_left"]:
+                elif self.alignment[self.ALIGN_LEFT_KW]:
                     offset -= half_surf_len
                     
-            if i == 1 and not (self.alignment["align_up"] and self.alignment["align_down"]):
+            if i == 1 and not (self.alignment[self.ALIGN_UP_KW] and self.alignment[self.ALIGN_DOWN_KW]):
                 
-                if self.alignment["align_down"]:
+                if self.alignment[self.ALIGN_DOWN_KW]:
                     offset += half_surf_len
                 
-                elif self.alignment["align_up"]:
+                elif self.alignment[self.ALIGN_UP_KW]:
                     offset -= half_surf_len
         
             if self.__centered:
@@ -189,7 +230,9 @@ class UI:
                  elem_name: str, 
                  dim: tuple[int, int], 
                  offset: tuple[int, int] = (0, 0), 
+                 alpha: int = 255,
                  centered: bool = True, 
+                 display: bool = True,
                  **align_args: dict[str, bool]):
         """Adds a UI Element to be displayed on the window.
 
@@ -203,7 +246,13 @@ class UI:
             align_right=<bool>, align_down=<bool>, align_left=<bool>.
         """        
         
-        self.__ui_elems[elem_name] = UIElement(self.win_dim, dim, offset, centered, **align_args)
+        self.__ui_elems[elem_name] = UIElement(self.win_dim, 
+                                               dim, 
+                                               offset, 
+                                               alpha,
+                                               centered, 
+                                               display,
+                                               **align_args)
 
         
     def __draw_elems(self):
@@ -230,7 +279,7 @@ window = UI((1280, 720))
 window.add_elem("hotbar", (850, 60), (0, -80), align_down = True)
 window.add_elem("crosshair", (5, 5))
 window.add_elem("Profile", (70, 70), (45, 45), align_up = True, align_left = True)
-window.add_elem("Some text", (200, 20), (100, 10), centered=False, align_up = True, align_left = True)
+window.add_elem("Some text", (200, 20), (100, 10), centered = False, align_up = True, align_left = True)
 
 run = True
 
