@@ -1,0 +1,2 @@
+12/11/2023 19:35:21 - INFO - Log started as 'logs/UI_Organisation_121123_193521.log'.
+12/11/2023 19:35:22 - CRITICAL - 'helo' is of type <class 'str'>. Expected <class 'bool'>.

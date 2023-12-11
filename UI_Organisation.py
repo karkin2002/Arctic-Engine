@@ -1,4 +1,6 @@
 import pygame
+from Logger import Logger
+import logging
 
 def check_is_pair(value: tuple | list) -> tuple | list:
     """Returns the value inputted, if it's a tuple or list with a len of 2.
@@ -18,8 +20,7 @@ def check_is_pair(value: tuple | list) -> tuple | list:
         return value
     
     else:
-        raise AttributeError(
-            f"Value '{value}' is of type '{type(value)}'. Needs to be either a tuple or list, with a len of 2.")
+        Logger.raise_attribute_error(value, tuple | list)
         
 
 
@@ -90,8 +91,8 @@ class UIElement:
                 if align_name in self.alignment:
                     self.alignment[align_name] = align_args[align_name]
             else:
-                raise AttributeError(
-                    f"Alignment argument is of type '{type(align_args[align_name])}'. However, this needs to be of type 'bool'.")
+                
+                Logger.raise_attribute_error(align_args[align_name], bool)
         
         
     def draw(self, surf: pygame.Surface):
@@ -271,6 +272,7 @@ class UI:
         
         
 
+Logger("logs/UI_Organisation")  
 
 pygame.init()
 
