@@ -1,6 +1,8 @@
 import pygame
-from Logger import Logger
-import logging
+from pygame import font as pyfont
+from logger import Logger
+import globvar
+globvar.init()
 
 def check_is_pair(value: tuple | list) -> tuple | list:
     """Returns the value inputted, if it's a tuple or list with a len of 2.
@@ -20,14 +22,33 @@ def check_is_pair(value: tuple | list) -> tuple | list:
         return value
     
     else:
-        Logger.raise_attribute_error(value, tuple | list)
+        Logger.raise_incorrect_type(value, tuple | list)
+        
         
 
+## Returns a surface to display text
+def createText(text: str, font: str, colour: tuple, size: int) -> pygame.Surface:
+
+    """Creates a surface with text on it 
+
+    Returns:
+        Surface: surface with text
+    """
+
+    if font in pyfont.get_fonts():
+        fontFormat = pyfont.SysFont(font, size)
+    else:
+        fontFormat = pyfont.Font(str(font), size)
+
+    message = fontFormat.render(text, True, colour)
+
+    return message
+
+
+
+## UI Element Class
 
 class UIElement:
-    
-    ## Raise Error Static Variables
-    
     
     ## Alignment Static Variables.
     ALIGN_UP_KW = "align_up"
@@ -50,7 +71,7 @@ class UIElement:
                  display: bool = True,
                  **align_args: dict[str, bool]):
         
-        """_summary_
+        """Constuctor for UIElement class.
 
         Args:
             surf_dim (tuple[int, int]): (<width>, <height>) of surf to be drawn 
@@ -77,6 +98,8 @@ class UIElement:
         self.__alpha = alpha
         self.__display = display
         
+        self.__surf = None
+        
     def __set_align(self, **align_args: dict[str, bool]):
         """Sets the alignment for the UI Element.
 
@@ -92,7 +115,23 @@ class UIElement:
                     self.alignment[align_name] = align_args[align_name]
             else:
                 
-                Logger.raise_attribute_error(align_args[align_name], bool)
+                Logger.raise_incorrect_type(align_args[align_name], bool)
+                
+                
+                
+    def set_surf(self, surf_dim: tuple[int, int], surf: pygame.Surface):
+        """Sets the UI Elements surface. 
+
+        Args:
+            surf_dim (tuple[int, int]): (<width>, <height>) of the surface to be 
+            drawn on.
+            surf (Surface): The surface to be set.
+        """        
+        
+        self.__surf = surf
+        self.dim = (surf.get_width(), surf.get_height())
+        self.set_pos(surf_dim)
+        
         
         
     def draw(self, surf: pygame.Surface):
@@ -103,10 +142,17 @@ class UIElement:
         """   
             
         if self.__is_displayed():
-            pygame.draw.rect(surf, (255, 0, 0), (self.__pos, self.dim))
+            surf.blit(self.__surf, self.__pos)
             
-    def __is_displayed(self):
-        return self.__display and self.__alpha > 0
+            
+    def __is_displayed(self) -> bool:
+        """Returns whether the UIElement is being displayed.
+
+        Returns:
+            bool: Whether it's being displayed.
+        """        
+        return self.__display and self.__alpha > 0 and self.__surf != None
+        
         
         
     def set_pos(self, surf_dim: tuple[int, int]):
@@ -147,149 +193,60 @@ class UIElement:
                     
 
 
-
-
-
-class UI:
-    """Class for handeling the window and its UI
-    """    
+class Text(UIElement):
     
-    
-    def __init__(self, win_dim: tuple[int, int] = (700, 500)):
-        """Constructor for UI class
-
-        Args:
-            win_dim (tuple[int, int], optional): Window (<width>, <height>). Defaults to (700, 500).
-        """        
-        
-        self.win_dim: tuple[int, int] = None
-        self.win: pygame.Surface = None
-
-        self.__clock = pygame.time.Clock()
-        
-        self.__set_win(win_dim)
-        self.resized: bool = False
-        
-        self.__ui_elems: dict[str, UIElement] = {}
-
-
-    def __set_win(self, win_dim: tuple[int, int]):
-        """Creates a new window.
-
-        Args:
-            win_dim (tuple[int, int]): Window (<width>, <height>).
-        """        
-
-        self.win_dim = win_dim
-        self.win = pygame.display.set_mode(self.win_dim, pygame.RESIZABLE)
-
-
-    def events(self) -> bool:
-        """Handles the windows events; including handeling resizing & quitting.
-
-        Returns:
-            bool: Whether the window is open.
-        """
-        
-        self.resized = False
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return False
-            
-            if event.type == pygame.VIDEORESIZE:
-                self.resized = True
-            
-        if self.resized:
-            self.__resize()
-                
-        return True
-    
-    
-    def draw(self):
-        """Draws a new frame of the window; including all its elements.
-        """
-        
-        window.win.fill((255, 255, 255))
-        
-        self.__draw_elems()
-
-        pygame.display.flip()
-
-        self.__clock.tick(60)
-        
-        
-    def __resize(self):
-        """Resizes the window, updating all its elements.
-        """        
-        
-        self.win_dim = (self.win.get_width(), self.win.get_height())
-        self.__resize_elems()
-        
-    
-    def add_elem(self, 
-                 elem_name: str, 
-                 dim: tuple[int, int], 
-                 offset: tuple[int, int] = (0, 0), 
+    def __init__(self, 
+                 surf_dim: tuple[int, int], 
+                 text: str,
+                 size: str,
+                 font: str,
+                 colour: str,
+                 offset: tuple[int, int] = (0, 0),
                  alpha: int = 255,
-                 centered: bool = True, 
+                 centered: bool = True,
                  display: bool = True,
                  **align_args: dict[str, bool]):
-        """Adds a UI Element to be displayed on the window.
-
-        Args:
-            elem_name (str): Arbitrary name.
-            dim (tuple[int, int]): Dimensions of the UI Element.
-            offset (tuple[int, int], optional): Offset in pixels from it's 
-            original alignment. Defaults to (0, 0).
-            align_args (dict[str, bool], optional): Specify which side of the
-            window the UI Element should align to. Options are align_up=<bool>, 
-            align_right=<bool>, align_down=<bool>, align_left=<bool>.
-        """        
         
-        self.__ui_elems[elem_name] = UIElement(self.win_dim, 
-                                               dim, 
-                                               offset, 
-                                               alpha,
-                                               centered, 
-                                               display,
-                                               **align_args)
-
+        super().__init__(
+            surf_dim,
+            (100, 100),
+            offset,
+            alpha,
+            centered,
+            display,
+            **align_args
+        )
         
-    def __draw_elems(self):
-        """Draws UI elements on the window.
-        """        
-        for elem_name in self.__ui_elems:
-            self.__ui_elems[elem_name].draw(self.win)
+        self.text = text
+        self.size = size
+        self.font = font
+        self.colour = colour
+        
+        self.__create_text_surf(surf_dim)
+        
+        
+    def update_text(self, 
+                    surf_dim: tuple[int, int],
+                    text: str = None, 
+                    font: str = None, 
+                    colour: str = None, 
+                    size: int = None):
+        
+        self.__create_text_surf(surf_dim)
+        
+        
+    def __create_text_surf(self, surf_dim):
             
-            
-    def __resize_elems(self):
-        """Resizes UI Elements based on the window dimensions.
-        """ 
-              
-        for elem_name in self.__ui_elems:
-            self.__ui_elems[elem_name].set_pos(self.win_dim)
-        
-        
+        self.set_surf(
+            surf_dim, 
+            createText(
+                self.text,
+                self.font, 
+                globvar.get_colour(self.colour), 
+                self.size))
 
-Logger("logs/UI_Organisation")  
 
-pygame.init()
 
-window = UI((1280, 720))
 
-window.add_elem("hotbar", (850, 60), (0, -80), align_down = True)
-window.add_elem("crosshair", (5, 5))
-window.add_elem("Profile", (70, 70), (45, 45), align_up = True, align_left = True)
-window.add_elem("Some text", (200, 20), (100, 10), centered = False, align_up = True, align_left = True)
 
-run = True
 
-while run:
-
-    if not window.events():
-        run = False
-
-    window.draw()
-
-pygame.quit()
