@@ -11,8 +11,13 @@ class Logger:
     
     ## Log file output variables.
     __LOG_OUT_FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
+    __LOG_PRINT_FORMAT = "{log_time} - {level} - {msg}"
     __DATE_TIME_OUT_FORMAT = '%m/%d/%Y %H:%M:%S'
     __START_TEXT = "Log started as '{filename}'."
+    
+    ## Level Names
+    __INFO = "INFO"
+    __WARNING = "WARNING"
     
     ## Error types
     TYPE_ERROR = 0
@@ -22,6 +27,7 @@ class Logger:
     __INCORRECT_TYPE = "'{value}' is of type {value_type}, expected {expected_type}."
     __INCORRECT_LEN = "'{data}' is of length {data_length}, expected {expected_length}."
     __INCORRECT_KEY = "'{key}' wasn't found in dictonary."
+    
     
     
     def __init__(self, 
@@ -37,7 +43,7 @@ class Logger:
         
         log_start_time = datetime.now().strftime('%m%d%y_%H%M%S')
 
-        log_filename = f"{filename}_{log_start_time}.log"
+        log_filename = f"{filename}_{log_start_time}.log"    
         
         logging.basicConfig(
             filename = log_filename, 
@@ -45,7 +51,49 @@ class Logger:
             datefmt = self.__DATE_TIME_OUT_FORMAT,
             level = level)
         
-        logging.info(self.__START_TEXT.format(filename = log_filename))
+        log_start_text = self.__START_TEXT.format(filename = log_filename)
+        
+        logging.info(log_start_text)
+        
+        Logger.log_info(log_start_text)
+        
+        
+    def __print_log(level: str, msg:str):
+        """Prints a log to the terminal.
+
+        Args:
+            level (str): Level of the log.
+            msg (str): Log message.
+        """        
+        
+        log_time = datetime.now().strftime(Logger.__DATE_TIME_OUT_FORMAT)
+        
+        print(Logger.__LOG_PRINT_FORMAT.format(log_time = log_time, 
+                                               level = level,
+                                               msg = msg))
+        
+    def log_info(msg: str):
+        """Creates a log with the level INFO.
+
+        Args:
+            msg (str): Log message.
+        """        
+   
+        Logger.__print_log(Logger.__INFO, msg)
+        
+        logging.info(msg)
+        
+    
+    def log_warning(msg: str):
+        """Creates a log with the level WARNING.
+
+        Args:
+            msg (str): Log message.
+        """        
+        
+        Logger.__print_log(Logger.__WARNING, msg)
+        
+        logging.warning(msg)
     
     
     def raise_exception(error_msg: str, 
@@ -57,7 +105,8 @@ class Logger:
             error_msg (str): Message describing the exception.
             error_type (int, optional): Error message type. Logger contains
             variables defining the error numbers. Defaults to 0.
-            additional_text (str, optional): _description_. Defaults to None.
+            additional_text (str, optional): Additional text to be added to the 
+            error msg. Defaults to None.
 
         Raises:
             TypeError: _description_

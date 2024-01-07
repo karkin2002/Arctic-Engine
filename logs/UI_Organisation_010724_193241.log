@@ -1,0 +1,6 @@
+01/07/2024 19:32:41 - INFO - Log started as 'logs/UI_Organisation_010724_193241.log'.
+01/07/2024 19:32:42 - INFO - Log started as 'logs/UI_Organisation_010724_193241.log'.
+01/07/2024 19:32:43 - INFO - Colour 'BLACK' added as '(0, 0, 0)'.
+01/07/2024 19:32:43 - WARNING - Colour 'BLACK' overwritten from '(0, 0, 0)' to '(255, 0, 0)'.
+01/07/2024 19:32:43 - INFO - Colour 'BLACK' added as '(255, 0, 0)'.
+01/07/2024 19:32:43 - INFO - Image 'test_surf' added as '<Surface(200x200x32 SW)>'.

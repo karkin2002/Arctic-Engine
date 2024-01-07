@@ -55,16 +55,18 @@ def createText(text: str, font: str, colour: tuple, size: int) -> pygame.Surface
 class UIElement:
     
     ## Alignment Static Variables.
-    ALIGN_UP_KW = "align_up"
+    ALIGN_TOP_KW = "align_top"
     ALIGN_RIGHT_KW = "align_right"
-    ALIGN_DOWN_KW = "align_down"
+    ALIGN_BOTTOM_KW = "align_bottom"
     ALIGN_LEFT_KW = "align_left"
     
     DEFAULT_ALIGN_DICT = {
-        ALIGN_UP_KW: False,
+        ALIGN_TOP_KW: False,
         ALIGN_RIGHT_KW: False,
-        ALIGN_DOWN_KW: False,
+        ALIGN_BOTTOM_KW: False,
         ALIGN_LEFT_KW: False}
+    
+    DEFAULT_DIM = (100, 100)
 
     def __init__(self, 
                  surf_dim: tuple[int, int], 
@@ -86,8 +88,8 @@ class UIElement:
             centered (bool, optional): Whether the element should be drawn from 
             the center of its width/height. Defaults to True.
             align_args (dict[str, bool], optional): Specifies which side of the
-            surface the UI Element should align to. Options are align_up=<bool>, 
-            align_right=<bool>, align_down=<bool>, align_left=<bool>.
+            surface the UI Element should align to. Options are align_top=<bool>, 
+            align_right=<bool>, align_bottom=<bool>, align_left=<bool>.
         """      
           
         self.dim: tuple[int, int] = dim
@@ -109,8 +111,8 @@ class UIElement:
 
         Args:
             align_args (dict[str, bool], optional): Specifies which side of the
-            surface the UI Element should align to. Options are align_up=<bool>, 
-            align_right=<bool>, align_down=<bool>, align_left=<bool>.
+            surface the UI Element should align to. Options are align_top=<bool>, 
+            align_right=<bool>, align_bottom=<bool>, align_left=<bool>.
         """        
         
         for align_name in align_args:
@@ -178,12 +180,12 @@ class UIElement:
                 elif self.alignment[self.ALIGN_LEFT_KW]:
                     offset -= half_surf_len
                     
-            if i == 1 and not (self.alignment[self.ALIGN_UP_KW] and self.alignment[self.ALIGN_DOWN_KW]):
+            if i == 1 and not (self.alignment[self.ALIGN_TOP_KW] and self.alignment[self.ALIGN_BOTTOM_KW]):
                 
-                if self.alignment[self.ALIGN_DOWN_KW]:
+                if self.alignment[self.ALIGN_BOTTOM_KW]:
                     offset += half_surf_len
                 
-                elif self.alignment[self.ALIGN_UP_KW]:
+                elif self.alignment[self.ALIGN_TOP_KW]:
                     offset -= half_surf_len
         
             if self.__centered:
@@ -209,7 +211,7 @@ class Text(UIElement):
         
         super().__init__(
             surf_dim,
-            (100, 100),
+            self.DEFAULT_DIM,
             offset,
             alpha,
             centered,
@@ -223,6 +225,17 @@ class Text(UIElement):
         self.colour = colour
         
         self.__create_text_surf(surf_dim)
+        
+        
+    def __create_text_surf(self, surf_dim: tuple[int, int]):
+            
+        self.set_surf(
+            surf_dim, 
+            createText(
+                self.text,
+                self.font, 
+                globvar.get_colour(self.colour), 
+                self.size))
         
         
     def update_text(self, 
@@ -239,19 +252,40 @@ class Text(UIElement):
         
         self.__create_text_surf(surf_dim)
         
+
+
+class Image(UIElement):
+    
+    def __init__(self, 
+                 surf_dim: tuple[int, int], 
+                 img_name: str,
+                 scale: float = 1.0,
+                 offset: tuple[int, int] = (0, 0),
+                 alpha: int = 255,
+                 centered: bool = True,
+                 display: bool = True,
+                 **align_args: dict[str, bool]):
         
-    def __create_text_surf(self, surf_dim):
-            
-        self.set_surf(
-            surf_dim, 
-            createText(
-                self.text,
-                self.font, 
-                globvar.get_colour(self.colour), 
-                self.size))
+        super().__init__(
+            surf_dim,
+            self.DEFAULT_DIM,
+            offset,
+            alpha,
+            centered,
+            display,
+            **align_args
+        )
+        
+        self.img_name = img_name
+        self.scale = scale
 
-
-
-
-
-
+        self.__create_img_surf(surf_dim)
+        
+        
+    def __create_img_surf(self, surf_dim: tuple[int, int]):
+        
+        img_surf = globvar.get_img_surf(self.img_name)
+        
+        new_surf = pygame.transform.scale_by(img_surf, self.scale)
+        
+        self.set_surf(surf_dim, new_surf)

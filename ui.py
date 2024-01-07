@@ -1,6 +1,6 @@
 
 import ctypes
-from ui_element import UIElement, Text
+from ui_element import UIElement, Text, Image
 from logger import Logger
 import pygame
 import globvar
@@ -139,6 +139,26 @@ class WindowUI:
             centered,
             display,
             **align_args)
+        
+    def add_img_surf(self,
+                     elem_name: str,
+                     img_name: str,
+                     scale: float = 1.0,
+                     offset: tuple[int, int] = (0, 0),
+                     alpha: int = 255,
+                     centered: bool = True,
+                     display: bool = True,
+                     **align_args: dict[str, bool]):
+    
+        self.__ui_elems[elem_name] = Image(
+            self.win_dim, 
+            img_name,
+            scale,
+            offset,
+            alpha,
+            centered,
+            display,
+            **align_args)
 
         
     def __draw_elems(self):
@@ -194,10 +214,19 @@ Logger("logs/UI_Organisation")
 
 pygame.init()
 
+
 globvar.add_colour("BLACK", (0, 0, 0))
+
+test_surf = pygame.Surface((200, 200))
+test_surf.fill((100, 100, 200))
+pygame.draw.rect(test_surf, (255, 0, 0), (0, 0, 100, 100))
+
+globvar.add_img_surf("test_surf", test_surf)
 
 
 window = WindowUI((1920, 1080))
+
+window.add_img_surf("hello", "test_surf", align_top = True)
 
 window.add_text(
     "text_test", 
@@ -206,7 +235,7 @@ window.add_text(
     "verdana", 
     "BLACK", 
     offset = (0, 80),
-    align_up = True)
+    align_top = True)
 
 window.add_text(
     "player_name", 
@@ -215,7 +244,7 @@ window.add_text(
     "verdana", 
     "BLACK", 
     centered=False,
-    align_up = True,
+    align_top = True,
     align_left = True)
 
 
