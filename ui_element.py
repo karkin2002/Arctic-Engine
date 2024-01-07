@@ -28,11 +28,16 @@ def check_is_pair(value: tuple | list) -> tuple | list:
 
 ## Returns a surface to display text
 def createText(text: str, font: str, colour: tuple, size: int) -> pygame.Surface:
+    """Creates a surface with text on it.
 
-    """Creates a surface with text on it 
+    Args:
+        text (str): Text to be drawn on the surface.
+        font (str): Font of the text.
+        colour (tuple): Colour of the text.
+        size (int): Size of the text.
 
     Returns:
-        Surface: surface with text
+        pygame.Surface: Surface with text.
     """
 
     if font in pyfont.get_fonts():
@@ -47,7 +52,6 @@ def createText(text: str, font: str, colour: tuple, size: int) -> pygame.Surface
 
 
 ## UI Element Class
-
 class UIElement:
     
     ## Alignment Static Variables.
@@ -110,13 +114,9 @@ class UIElement:
         """        
         
         for align_name in align_args:
-            if type(align_args[align_name]) == bool: 
+            if not Logger.raise_incorrect_type(align_args[align_name], bool):
                 if align_name in self.alignment:
-                    self.alignment[align_name] = align_args[align_name]
-            else:
-                
-                Logger.raise_incorrect_type(align_args[align_name], bool)
-                
+                    self.alignment[align_name] = align_args[align_name]          
                 
                 
     def set_surf(self, surf_dim: tuple[int, int], surf: pygame.Surface):
@@ -231,6 +231,11 @@ class Text(UIElement):
                     font: str = None, 
                     colour: str = None, 
                     size: int = None):
+        
+        self.text = text
+        self.size = size
+        self.font = font
+        self.colour = colour
         
         self.__create_text_surf(surf_dim)
         

@@ -194,7 +194,9 @@ Logger("logs/UI_Organisation")
 
 pygame.init()
 
-globvar.add_colour("RED", (255, 0, 0))
+globvar.add_colour("BLACK", (0, 0, 0))
+
+
 window = WindowUI((1920, 1080))
 
 window.add_text(
@@ -202,7 +204,7 @@ window.add_text(
     "GUI Organisation Test", 
     100, 
     "verdana", 
-    "RED", 
+    "BLACK", 
     offset = (0, 80),
     align_up = True)
 
@@ -211,7 +213,7 @@ window.add_text(
     "Arctic Survival Build 1.0", 
     15, 
     "verdana", 
-    "RED", 
+    "BLACK", 
     centered=False,
     align_up = True,
     align_left = True)
