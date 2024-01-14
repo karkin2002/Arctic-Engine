@@ -1,0 +1,4 @@
+01/13/2024 23:11:24 - INFO - Log started as 'logs/UI_Organisation_011324_231124.log'.
+01/13/2024 23:11:24 - INFO - Colour 'BLACK' added as '(0, 0, 0)'.
+01/13/2024 23:11:24 - INFO - Image 'test_surf' added as '<Surface(200x200x32 SW)>'.
+01/13/2024 23:11:24 - CRITICAL - '<ui_element.Image object at 0x0000019C32621350>' is of type <class 'ui_element.Image'>, expected <class 'ui_element.UIElement'>.

@@ -4,52 +4,6 @@ from logger import Logger
 import globvar
 globvar.init()
 
-def check_is_pair(value: tuple | list) -> tuple | list:
-    """Returns the value inputted, if it's a tuple or list with a len of 2.
-    Otherwise raises an error.
-
-    Args:
-        value (tuple | list | any): Value to check.
-
-    Raises:
-        AttributeError: Value isn't a tuple or list of len 2.
-
-    Returns:
-        tuple: The input value.
-    """    
-    
-    if type(value) == tuple or type(value) == list and len(value) == 2:
-        return value
-    
-    else:
-        Logger.raise_incorrect_type(value, tuple | list)
-        
-        
-
-## Returns a surface to display text
-def createText(text: str, font: str, colour: tuple, size: int) -> pygame.Surface:
-    """Creates a surface with text on it.
-
-    Args:
-        text (str): Text to be drawn on the surface.
-        font (str): Font of the text.
-        colour (tuple): Colour of the text.
-        size (int): Size of the text.
-
-    Returns:
-        pygame.Surface: Surface with text.
-    """
-
-    if font in pyfont.get_fonts():
-        fontFormat = pyfont.SysFont(font, size)
-    else:
-        fontFormat = pyfont.Font(str(font), size)
-
-    message = fontFormat.render(text, True, colour)
-
-    return message
-
-
 
 ## UI Element Class
 class UIElement:
@@ -121,7 +75,7 @@ class UIElement:
                     self.alignment[align_name] = align_args[align_name]          
                 
                 
-    def set_surf(self, surf_dim: tuple[int, int], surf: pygame.Surface):
+    def _set_surf(self, surf_dim: tuple[int, int], surf: pygame.Surface):
         """Sets the UI Elements surface. 
 
         Args:
@@ -224,14 +178,39 @@ class Text(UIElement):
         self.font = font
         self.colour = colour
         
-        self.__create_text_surf(surf_dim)
+        self.__create_surf(surf_dim)
         
+    def createText(text: str, 
+                   font: str, 
+                   colour: tuple, 
+                   size: int) -> pygame.Surface:
         
-    def __create_text_surf(self, surf_dim: tuple[int, int]):
+        """Creates a surface with text on it.
+
+        Args:
+            text (str): Text to be drawn on the surface.
+            font (str): Font of the text.
+            colour (tuple): Colour of the text.
+            size (int): Size of the text.
+
+        Returns:
+            pygame.Surface: Surface with text.
+        """
+
+        if font in pyfont.get_fonts():
+            fontFormat = pyfont.SysFont(font, size)
+        else:
+            fontFormat = pyfont.Font(str(font), size)
+
+        message = fontFormat.render(text, True, colour)
+
+        return message
+        
+    def __create_surf(self, surf_dim: tuple[int, int]):
             
-        self.set_surf(
+        self._set_surf(
             surf_dim, 
-            createText(
+            Text.createText(
                 self.text,
                 self.font, 
                 globvar.get_colour(self.colour), 
@@ -250,7 +229,7 @@ class Text(UIElement):
         self.font = font
         self.colour = colour
         
-        self.__create_text_surf(surf_dim)
+        self.__create_surf(surf_dim)
         
 
 
@@ -279,13 +258,67 @@ class Image(UIElement):
         self.img_name = img_name
         self.scale = scale
 
-        self.__create_img_surf(surf_dim)
+        self.__create_surf(surf_dim)
         
         
-    def __create_img_surf(self, surf_dim: tuple[int, int]):
+    def __create_surf(self, surf_dim: tuple[int, int]):
         
         img_surf = globvar.get_img_surf(self.img_name)
         
         new_surf = pygame.transform.scale_by(img_surf, self.scale)
         
-        self.set_surf(surf_dim, new_surf)
+        self._set_surf(surf_dim, new_surf)
+        
+        
+        
+        
+class Button:
+    
+    UNPRESS = "unpress"
+    HOVER = "hover"
+    PRESS = "press"
+    __INVALID_STATE = f"State name doesn't match predefined states: '{UNPRESS}', '{HOVER}', '{PRESS}'."
+    __INVALID_TYPE = "Invalid state added to button."
+    
+    
+    def __init__(self, 
+                 unpress_elem: UIElement = None,
+                 hover_elem: UIElement = None,
+                 press_elem: UIElement = None,
+                 display: bool = True):
+        
+        self.__button_states = {
+            self.UNPRESS: unpress_elem,
+            self.HOVER: hover_elem,
+            self.PRESS: press_elem
+        }
+        
+        self.state = self.UNPRESS
+        
+        self.display = display
+        
+    
+    def add_state(self, **ui_elements: dict[str, UIElement]):
+        
+        for state_name in ui_elements:
+            
+            if not Logger.raise_key_error(
+                self.__button_states, state_name, self.__INVALID_STATE):
+                
+                if not Logger.raise_incorrect_type(
+                    ui_elements[state_name], UIElement, self.__INVALID_TYPE):
+                
+                    self.__button_states[state_name] = ui_elements[state_name]
+        
+        
+    def draw(self, surf):
+        if self.__button_states[self.state] != None:
+            self.__button_states[self.state].draw(surf)
+        
+    
+    def set_pos(self):
+        for state_name in self.__button_states:
+            if self.__button_states[state_name] != None:
+                self.__button_states[state_name].set_pos()
+                
+        

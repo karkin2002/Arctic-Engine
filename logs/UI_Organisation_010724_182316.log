@@ -1,4 +1,0 @@
-01/07/2024 18:23:16 - INFO - Log started as 'logs/UI_Organisation_010724_182316.log'.
-01/07/2024 18:23:17 - INFO - Hello this is a test
-01/07/2024 18:23:17 - WARNING - Image 'Hello' overwritten from '<Surface(200x200x32 SW)>' to '<Surface(500x200x32 SW)>'
-01/07/2024 18:23:17 - CRITICAL - Invalid colour name. 'BLACK' wasn't found in dictonary.

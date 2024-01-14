@@ -1,0 +1,4 @@
+01/13/2024 23:13:51 - INFO - Log started as 'logs/UI_Organisation_011324_231351.log'.
+01/13/2024 23:13:52 - INFO - Colour 'BLACK' added as '(0, 0, 0)'.
+01/13/2024 23:13:52 - INFO - Image 'test_surf' added as '<Surface(200x200x32 SW)>'.
+01/13/2024 23:13:52 - CRITICAL - Invalid type when adding UI Element. '<ui_element.Image object at 0x00000189F0857190>' is of type <class 'ui_element.Image'>, expected <class 'ui_element.UIElement'>.

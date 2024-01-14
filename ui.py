@@ -1,6 +1,6 @@
 
 import ctypes
-from ui_element import UIElement, Text, Image
+from ui_element import UIElement, Text, Image, Button
 from logger import Logger
 import pygame
 import globvar
@@ -13,6 +13,9 @@ globvar.init()
 class WindowUI:
     """Class for handeling the window and its UI
     """    
+    
+    __INVALID_TYPE_UI_ELEM = "Invalid type when adding UI Element."
+    __OVERWRITTEN = "{data_type} '{name}' overwritten from '{pre_data}' to '{post_data}'."
     
     def __init__(self, win_dim: tuple[int, int] = (700, 500)):
         """Constructor for UI class
@@ -87,6 +90,28 @@ class WindowUI:
         self.win_dim = (self.win.get_width(), self.win.get_height())
         self.__resize_elems()
         
+    def __add_to_elem_dict(self, elem_name:str, elem: UIElement):
+        """Adds a UI Element to the UI Element dict.
+
+        Args:
+            elem_name (str): Arbitary name of UI Element.
+            elem (UIElement): The UI Element.
+        """        
+        
+        if not Logger.raise_incorrect_type(
+            elem, UIElement, self.__INVALID_TYPE_UI_ELEM):
+            
+            if elem_name in self.__ui_elems:
+                Logger.log_warning(self.__OVERWRITTEN.format(
+                    data_type = UIElement,
+                    name = elem_name,
+                    pre_data = self.__ui_elems[elem_name],
+                    post_data = elem
+                ))
+            
+            self.__ui_elems[elem_name] = elem
+        
+        
     
     def add_elem(self, 
                  elem_name: str, 
@@ -108,13 +133,13 @@ class WindowUI:
             align_right=<bool>, align_down=<bool>, align_left=<bool>.
         """        
         
-        self.__ui_elems[elem_name] = UIElement(self.win_dim, 
-                                               dim, 
-                                               offset, 
-                                               alpha,
-                                               centered, 
-                                               display,
-                                               **align_args)
+        self.__add_to_elem_dict(elem_name, UIElement(self.win_dim, 
+                                          dim, 
+                                          offset, 
+                                          alpha,
+                                          centered, 
+                                          display,
+                                          **align_args))
         
     def add_text(self, 
                  elem_name: str, 
@@ -128,7 +153,7 @@ class WindowUI:
                  display: bool = True,
                  **align_args: dict[str, bool]):
 
-        self.__ui_elems[elem_name] = Text(
+        self.__add_to_elem_dict(elem_name, Text(
             self.win_dim, 
             text,
             size,
@@ -138,7 +163,7 @@ class WindowUI:
             alpha,
             centered,
             display,
-            **align_args)
+            **align_args))
         
     def add_img_surf(self,
                      elem_name: str,
@@ -150,7 +175,7 @@ class WindowUI:
                      display: bool = True,
                      **align_args: dict[str, bool]):
     
-        self.__ui_elems[elem_name] = Image(
+        self.__add_to_elem_dict(elem_name, Image(
             self.win_dim, 
             img_name,
             scale,
@@ -158,7 +183,14 @@ class WindowUI:
             alpha,
             centered,
             display,
-            **align_args)
+            **align_args))
+        
+        
+    def add_button(self, 
+                   elem_name: str, 
+                   display: bool = True):
+        
+        self.__add_to_elem_dict(elem_name, Button(display=display))
 
         
     def __draw_elems(self):
@@ -226,7 +258,7 @@ globvar.add_img_surf("test_surf", test_surf)
 
 window = WindowUI((1920, 1080))
 
-window.add_img_surf("hello", "test_surf", align_top = True)
+window.add_img_surf("hello", "test_surf")
 
 window.add_text(
     "text_test", 
@@ -246,6 +278,8 @@ window.add_text(
     centered=False,
     align_top = True,
     align_left = True)
+
+# window.add_button("button_test")
 
 
 run = True

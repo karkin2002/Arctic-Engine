@@ -1,0 +1,4 @@
+01/13/2024 23:22:38 - INFO - Log started as 'logs/UI_Organisation_011324_232238.log'.
+01/13/2024 23:22:39 - INFO - Colour 'BLACK' added as '(0, 0, 0)'.
+01/13/2024 23:22:39 - INFO - Image 'test_surf' added as '<Surface(200x200x32 SW)>'.
+01/13/2024 23:22:39 - WARNING - <class 'ui_element.UIElement'> 'hello' overwritten from '<ui_element.Image object at 0x0000023BB42F1050>' to '<ui_element.Image object at 0x0000023BB42F1610>'.

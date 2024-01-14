@@ -53,8 +53,6 @@ class Logger:
         
         log_start_text = self.__START_TEXT.format(filename = log_filename)
         
-        logging.info(log_start_text)
-        
         Logger.log_info(log_start_text)
         
         
@@ -107,10 +105,6 @@ class Logger:
             variables defining the error numbers. Defaults to 0.
             additional_text (str, optional): Additional text to be added to the 
             error msg. Defaults to None.
-
-        Raises:
-            TypeError: _description_
-            KeyError: _description_
         """        
         
         if additional_text != None:
@@ -141,7 +135,7 @@ class Logger:
             bool: Returns False if the data is of correct object type.
         """          
         
-        if type(value) == expected_type:
+        if type(value) == expected_type or type(value).__bases__[0] == expected_type:
             return False
         
         else:  
