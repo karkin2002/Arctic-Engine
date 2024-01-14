@@ -1,0 +1,7 @@
+01/14/2024 00:56:17 - INFO - Log started as 'logs/UI_Organisation_011424_005617.log'.
+01/14/2024 00:56:18 - INFO - Colour 'BLACK' added as '(0, 0, 0)'.
+01/14/2024 00:56:18 - INFO - Image 'test_surf' added as '<Surface(200x200x32 SW)>'.
+01/14/2024 00:56:18 - INFO - UI Element 'hello' added as '<ui_element.Image object at 0x00000220C4752B50>'.
+01/14/2024 00:56:18 - INFO - UI Element 'text_test' added as '<ui_element.Text object at 0x00000220C52EFC10>'.
+01/14/2024 00:56:18 - INFO - UI Element 'player_name' added as '<ui_element.Text object at 0x00000220C5427950>'.
+01/14/2024 00:56:18 - INFO - UI Element 'test_button' added as '<ui_element.Button object at 0x00000220C5427CD0>'.

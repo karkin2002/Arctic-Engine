@@ -16,6 +16,7 @@ class WindowUI:
     
     __INVALID_TYPE_UI_ELEM = "Invalid type when adding UI Element."
     __OVERWRITTEN = "{data_type} '{name}' overwritten from '{pre_data}' to '{post_data}'."
+    __ADDED_UI_ELEM = "UI Element '{name}' added as '{data_type}'."
     
     def __init__(self, win_dim: tuple[int, int] = (700, 500)):
         """Constructor for UI class
@@ -90,107 +91,32 @@ class WindowUI:
         self.win_dim = (self.win.get_width(), self.win.get_height())
         self.__resize_elems()
         
-    def __add_to_elem_dict(self, elem_name:str, elem: UIElement):
-        """Adds a UI Element to the UI Element dict.
 
-        Args:
-            elem_name (str): Arbitary name of UI Element.
-            elem (UIElement): The UI Element.
-        """        
-        
-        if not Logger.raise_incorrect_type(
-            elem, UIElement, self.__INVALID_TYPE_UI_ELEM):
-            
-            if elem_name in self.__ui_elems:
-                Logger.log_warning(self.__OVERWRITTEN.format(
-                    data_type = UIElement,
-                    name = elem_name,
-                    pre_data = self.__ui_elems[elem_name],
-                    post_data = elem
-                ))
-            
-            self.__ui_elems[elem_name] = elem
-        
-        
     
     def add_elem(self, 
                  elem_name: str, 
-                 dim: tuple[int, int], 
-                 offset: tuple[int, int] = (0, 0), 
-                 alpha: int = 255,
-                 centered: bool = True, 
-                 display: bool = True,
-                 **align_args: dict[str, bool]):
+                 elem: UIElement):
         """Adds a UI Element to be displayed on the window.
 
         Args:
             elem_name (str): Arbitrary name.
-            dim (tuple[int, int]): Dimensions of the UI Element.
-            offset (tuple[int, int], optional): Offset in pixels from it's 
-            original alignment. Defaults to (0, 0).
-            align_args (dict[str, bool], optional): Specify which side of the
-            window the UI Element should align to. Options are align_up=<bool>, 
-            align_right=<bool>, align_down=<bool>, align_left=<bool>.
-        """        
+            elem (UIElement): The UI Element.
+        """     
         
-        self.__add_to_elem_dict(elem_name, UIElement(self.win_dim, 
-                                          dim, 
-                                          offset, 
-                                          alpha,
-                                          centered, 
-                                          display,
-                                          **align_args))
+        Logger.log_info(self.__ADDED_UI_ELEM.format(
+            data_type = elem, name = elem_name))   
         
-    def add_text(self, 
-                 elem_name: str, 
-                 text: str,
-                 size: str,
-                 font: str,
-                 colour: str,
-                 offset: tuple[int, int] = (0, 0),
-                 alpha: int = 255,
-                 centered: bool = True,
-                 display: bool = True,
-                 **align_args: dict[str, bool]):
-
-        self.__add_to_elem_dict(elem_name, Text(
-            self.win_dim, 
-            text,
-            size,
-            font,
-            colour,
-            offset,
-            alpha,
-            centered,
-            display,
-            **align_args))
+        if elem_name in self.__ui_elems:
+            Logger.log_warning(self.__OVERWRITTEN.format(
+                data_type = UIElement,
+                name = elem_name,
+                pre_data = self.__ui_elems[elem_name],
+                post_data = elem
+            ))
+            
+        self.__ui_elems[elem_name] = elem
         
-    def add_img_surf(self,
-                     elem_name: str,
-                     img_name: str,
-                     scale: float = 1.0,
-                     offset: tuple[int, int] = (0, 0),
-                     alpha: int = 255,
-                     centered: bool = True,
-                     display: bool = True,
-                     **align_args: dict[str, bool]):
-    
-        self.__add_to_elem_dict(elem_name, Image(
-            self.win_dim, 
-            img_name,
-            scale,
-            offset,
-            alpha,
-            centered,
-            display,
-            **align_args))
-        
-        
-    def add_button(self, 
-                   elem_name: str, 
-                   display: bool = True):
-        
-        self.__add_to_elem_dict(elem_name, Button(display=display))
+        self.__ui_elems[elem_name].set_surf(self.win_dim)
 
         
     def __draw_elems(self):
@@ -258,28 +184,32 @@ globvar.add_img_surf("test_surf", test_surf)
 
 window = WindowUI((1920, 1080))
 
-window.add_img_surf("hello", "test_surf")
+window.add_elem("hello", 
+                Image("test_surf", align_right = True))
 
-window.add_text(
-    "text_test", 
-    "GUI Organisation Test", 
-    100, 
-    "verdana", 
-    "BLACK", 
-    offset = (0, 80),
-    align_top = True)
+window.add_elem("text_test",
+                Text("GUI Organisation Test",
+                     100, 
+                     "verdana", 
+                     "BLACK", 
+                     offset = (0, 80),
+                     align_top = True))
 
-window.add_text(
-    "player_name", 
-    "Arctic Survival Build 1.0", 
-    15, 
-    "verdana", 
-    "BLACK", 
-    centered=False,
-    align_top = True,
-    align_left = True)
+window.add_elem("player_name",
+                Text("Arctic Survival Build 1.0", 
+                     15, 
+                     "verdana", 
+                     "BLACK", 
+                     centered=False,
+                     align_top = True,
+                     align_left = True))
 
-# window.add_button("button_test")
+
+
+p_text = Text("test",100,"verdana", "BLACK") 
+h_text = Text("test",100,"verdana", "BLACK")
+u_text = Text("test",100,"verdana", "BLACK")  
+window.add_elem("test_button", Button(p_text, h_text, u_text))
 
 
 run = True

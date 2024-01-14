@@ -23,7 +23,6 @@ class UIElement:
     DEFAULT_DIM = (100, 100)
 
     def __init__(self, 
-                 surf_dim: tuple[int, int], 
                  dim: tuple[int, int], 
                  offset: tuple[int, int] = (0, 0), 
                  alpha: int = 255,
@@ -34,8 +33,6 @@ class UIElement:
         """Constuctor for UIElement class.
 
         Args:
-            surf_dim (tuple[int, int]): (<width>, <height>) of surf to be drawn 
-            on.
             dim (tuple[int, int]): Dimensions as (<width>, <height>).
             offset (tuple[int, int], optional): Offset in pixels from it's 
             original alignment. Defaults to (0, 0).
@@ -53,7 +50,7 @@ class UIElement:
         self.__set_align(**align_args)
         self.__centered = centered
         
-        self.set_pos(surf_dim)
+        self.__pos = [0, 0]
         
         self.__alpha = alpha
         self.__display = display
@@ -75,7 +72,7 @@ class UIElement:
                     self.alignment[align_name] = align_args[align_name]          
                 
                 
-    def _set_surf(self, surf_dim: tuple[int, int], surf: pygame.Surface):
+    def _create_surf(self, surf_dim: tuple[int, int], surf: pygame.Surface):
         """Sets the UI Elements surface. 
 
         Args:
@@ -119,7 +116,6 @@ class UIElement:
             drawn on.
         """        
         
-        self.__pos = [0, 0]
         for i in range(2):
             
             half_surf_len = round(surf_dim[i] / 2)
@@ -152,7 +148,6 @@ class UIElement:
 class Text(UIElement):
     
     def __init__(self, 
-                 surf_dim: tuple[int, int], 
                  text: str,
                  size: str,
                  font: str,
@@ -164,7 +159,6 @@ class Text(UIElement):
                  **align_args: dict[str, bool]):
         
         super().__init__(
-            surf_dim,
             self.DEFAULT_DIM,
             offset,
             alpha,
@@ -177,8 +171,6 @@ class Text(UIElement):
         self.size = size
         self.font = font
         self.colour = colour
-        
-        self.__create_surf(surf_dim)
         
     def createText(text: str, 
                    font: str, 
@@ -206,9 +198,9 @@ class Text(UIElement):
 
         return message
         
-    def __create_surf(self, surf_dim: tuple[int, int]):
+    def set_surf(self, surf_dim: tuple[int, int]):
             
-        self._set_surf(
+        self._create_surf(
             surf_dim, 
             Text.createText(
                 self.text,
@@ -229,14 +221,13 @@ class Text(UIElement):
         self.font = font
         self.colour = colour
         
-        self.__create_surf(surf_dim)
+        self.set_surf(surf_dim)
         
 
 
 class Image(UIElement):
     
     def __init__(self, 
-                 surf_dim: tuple[int, int], 
                  img_name: str,
                  scale: float = 1.0,
                  offset: tuple[int, int] = (0, 0),
@@ -246,7 +237,6 @@ class Image(UIElement):
                  **align_args: dict[str, bool]):
         
         super().__init__(
-            surf_dim,
             self.DEFAULT_DIM,
             offset,
             alpha,
@@ -257,17 +247,15 @@ class Image(UIElement):
         
         self.img_name = img_name
         self.scale = scale
-
-        self.__create_surf(surf_dim)
         
         
-    def __create_surf(self, surf_dim: tuple[int, int]):
+    def set_surf(self, surf_dim: tuple[int, int]):
         
         img_surf = globvar.get_img_surf(self.img_name)
         
         new_surf = pygame.transform.scale_by(img_surf, self.scale)
         
-        self._set_surf(surf_dim, new_surf)
+        self._create_surf(surf_dim, new_surf)
         
         
         
@@ -282,7 +270,7 @@ class Button:
     
     
     def __init__(self, 
-                 unpress_elem: UIElement = None,
+                 unpress_elem: UIElement,
                  hover_elem: UIElement = None,
                  press_elem: UIElement = None,
                  display: bool = True):
@@ -298,7 +286,7 @@ class Button:
         self.display = display
         
     
-    def add_state(self, **ui_elements: dict[str, UIElement]):
+    def set_state(self, **ui_elements: dict[str, UIElement]):
         
         for state_name in ui_elements:
             
@@ -311,14 +299,20 @@ class Button:
                     self.__button_states[state_name] = ui_elements[state_name]
         
         
-    def draw(self, surf):
+    def set_surf(self, surf_dim: tuple[int, int]):
+        for state_name in self.__button_states:
+            if self.__button_states[state_name] != None:
+                self.__button_states[state_name].set_surf(surf_dim)
+        
+        
+    def draw(self, surf: pygame.Surface):
         if self.__button_states[self.state] != None:
             self.__button_states[self.state].draw(surf)
         
     
-    def set_pos(self):
+    def set_pos(self, surf_dim: tuple[int, int]):
         for state_name in self.__button_states:
             if self.__button_states[state_name] != None:
-                self.__button_states[state_name].set_pos()
+                self.__button_states[state_name].set_pos(surf_dim)
                 
         
