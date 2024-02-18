@@ -1,2 +1,0 @@
-01/13/2024 23:21:49 - INFO - Log started as 'logs/UI_Organisation_011324_232149.log'.
-01/13/2024 23:21:50 - CRITICAL - Invalid colour value. '<class 'int'>' is of type <class 'type'>, expected <class 'tuple'>.

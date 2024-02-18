@@ -1,6 +1,6 @@
-from pygame import Surface
-from basic import is_only_type, get_first_item_of_incorrect_type
-from logger import Logger
+from pygame import Surface, font as pyfont
+from scripts.basic import is_only_type, get_first_item_of_incorrect_type
+from scripts.logger import Logger
 
 
 
@@ -14,6 +14,10 @@ def init():
     global glob_img_dict
     glob_img_dict = {}
     
+    ## Global Font Dictonary Variables
+    global glob_font_dict
+    glob_font_dict = {}
+    
 
 OVERWRITTEN = "{data_type} '{name}' overwritten from '{pre_data}' to '{post_data}'."
 ADDED_TO_DICT = "{data_type} '{name}' added as '{data}'."
@@ -24,7 +28,10 @@ INVALID_COLOUR_NAME = "Invalid colour name."
 
 IMG = "Image"
 INVALID_IMG_SURF = "Invalid image surface."
-INVALID_IMG_NAME = "Invalid imgage name."
+INVALID_IMG_NAME = "Invalid image name."
+
+FONT = "Font"
+INVALID_FONT_NAME = "Invalid font name."
 
 
 def add_colour(colour_name: str, colour: tuple[int, int, int]):
@@ -120,3 +127,52 @@ def get_img_surf(img_name: str) -> Surface:
                                   INVALID_IMG_NAME):
     
         return glob_img_dict[img_name]
+    
+
+def add_font(font_name: str, font: str, size: int):
+    """
+    Add a font to the global font dictionary.
+    
+    Parameters:
+        font_name (str): Arbitrary font name.
+        font (str): The name of the font, or the filepath of the font.
+        size (int): The size of the font.
+    """
+    
+    if font in pyfont.get_fonts():
+        fontFormat = pyfont.SysFont(font, size)
+    else:
+        fontFormat = pyfont.Font(str(font), size)
+    
+    if font_name in glob_font_dict:
+        Logger.log_warning(
+            OVERWRITTEN.format(
+                data_type = FONT,
+                name = font_name,
+                pre_data = glob_font_dict[font_name],
+                post_data = fontFormat))
+        
+    glob_font_dict[font_name] = fontFormat
+        
+    Logger.log_info(ADDED_TO_DICT.format(
+        data_type = FONT,
+        name = font_name,
+        data = fontFormat))
+
+
+def get_font(font_name: str) -> pyfont.Font:
+    """
+    Returns a font from the global font dictonary.
+
+    Parameters:
+        font_name (str): Arbitrary font name.
+
+    Returns:
+        Font: The font object.
+    """
+    
+    if not Logger.raise_key_error(glob_font_dict, 
+                                  font_name,
+                                  INVALID_FONT_NAME):
+        
+        return glob_font_dict.get(font_name)

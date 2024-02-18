@@ -1,7 +1,7 @@
 import pygame
 from pygame import font as pyfont
-from logger import Logger
-import globvar
+from scripts.logger import Logger
+import scripts.globvar as globvar
 globvar.init()
 
 
@@ -56,6 +56,27 @@ class UIElement:
         self.__display = display
         
         self.__surf = None
+        self.__in_surf_bounds = True
+        
+        
+    def set_display(self, display: bool):
+        """Sets whether the UIElement should be displayed.
+
+        Args:
+            display (bool): True to display the UIElement, False to hide it.
+        """
+        self.__display = display
+        
+        
+    def get_display(self) -> bool:
+        """Returns whether the UIElement is being displayed.
+
+        Returns:
+            bool: Whether it's being displayed.
+        """
+        return self.__display
+        
+        
         
     def __set_align(self, **align_args: dict[str, bool]):
         """Sets the alignment for the UI Element.
@@ -104,9 +125,25 @@ class UIElement:
         Returns:
             bool: Whether it's being displayed.
         """        
-        return self.__display and self.__alpha > 0 and self.__surf != None
+        return (self.__display and 
+                self.__alpha > 0 and 
+                self.__surf != None and 
+                self.__in_surf_bounds)
+    
+    
+    def __set_in_surf_bounds(self, surf_dim: tuple[int, int]):
+        """Sets whether the UIElement is visible on the surface.
+
+        Args:
+            surf_dim (tuple[int, int]): (<width>, <height>) of the surface to be 
+            drawn on.
+        """        
         
-        
+        self.__in_surf_bounds = (self.__pos[0] + self.dim[0] >= 0 and
+                                 self.__pos[0] <= surf_dim[0] and
+                                 self.__pos[1] + self.dim[1] >= 0 and
+                                 self.__pos[1] <= surf_dim[1])
+            
         
     def set_pos(self, surf_dim: tuple[int, int]):
         """Sets the position for the UI Element to be displayed on a surface.
@@ -142,21 +179,43 @@ class UIElement:
                 offset -= round(self.dim[i] / 2)
             
             self.__pos[i] = half_surf_len + offset
+            
+        self.__set_in_surf_bounds(surf_dim)
+        
+        
+    def intersects(self, pos: tuple[int, int]) -> bool:
+        """Returns whether pos is within the ui element.
+
+        Args:
+            pos (tuple[int, int]): The position to check.
+
+        Returns:
+            bool: True if pos is within the object's dimensions, False 
+            otherwise.
+        """
+        
+        if self.__is_displayed:
+            return (self.__pos[0] <= pos[0] <= self.__pos[0] + self.dim[0] and 
+                    self.__pos[1] <= pos[1] <= self.__pos[1] + self.dim[1])
+        
+        else:
+            return False
                     
+
+
 
 
 class Text(UIElement):
     
     def __init__(self, 
                  text: str,
-                 size: str,
                  font: str,
                  colour: str,
                  offset: tuple[int, int] = (0, 0),
                  alpha: int = 255,
                  centered: bool = True,
                  display: bool = True,
-                 **align_args: dict[str, bool]):
+                 **align_args: dict[str, bool]):       
         
         super().__init__(
             self.DEFAULT_DIM,
@@ -168,33 +227,24 @@ class Text(UIElement):
         )
         
         self.text = text
-        self.size = size
         self.font = font
         self.colour = colour
         
     def createText(text: str, 
                    font: str, 
-                   colour: tuple, 
-                   size: int) -> pygame.Surface:
-        
+                   colour: tuple) -> pygame.Surface:
         """Creates a surface with text on it.
 
         Args:
             text (str): Text to be drawn on the surface.
             font (str): Font of the text.
             colour (tuple): Colour of the text.
-            size (int): Size of the text.
 
         Returns:
             pygame.Surface: Surface with text.
         """
 
-        if font in pyfont.get_fonts():
-            fontFormat = pyfont.SysFont(font, size)
-        else:
-            fontFormat = pyfont.Font(str(font), size)
-
-        message = fontFormat.render(text, True, colour)
+        message = globvar.get_font(font).render(text, True, colour)
 
         return message
         
@@ -205,23 +255,33 @@ class Text(UIElement):
             Text.createText(
                 self.text,
                 self.font, 
-                globvar.get_colour(self.colour), 
-                self.size))
+                globvar.get_colour(self.colour)
+            )
+        )
         
         
     def update_text(self, 
                     surf_dim: tuple[int, int],
                     text: str = None, 
                     font: str = None, 
-                    colour: str = None, 
-                    size: int = None):
+                    colour: int = None):
         
-        self.text = text
-        self.size = size
-        self.font = font
-        self.colour = colour
+        update = False
         
-        self.set_surf(surf_dim)
+        if text != None and text != self.text: 
+            self.text = text
+            update = True
+        
+        if font != None and font != self.font: 
+            self.font = font
+            update = True
+        
+        if colour != None and colour != self.colour: 
+            self.colour = colour
+            update = True
+        
+        if update:
+            self.set_surf(surf_dim)
         
 
 
@@ -275,44 +335,121 @@ class Button:
                  press_elem: UIElement = None,
                  display: bool = True):
         
-        self.__button_states = {
+        self.__states = {
             self.UNPRESS: unpress_elem,
             self.HOVER: hover_elem,
             self.PRESS: press_elem
         }
+
+        for state in self.__states.values():
+            if state != None:
+                state.set_display(False)
         
-        self.state = self.UNPRESS
+        self.current_state = self.UNPRESS
         
-        self.display = display
+        self.set_display(display)
+        
+
+
+    def set_display(self, display: bool):
+        """Sets whether the button should be displayed.
+
+        Args:
+            display (bool): The display value to set.
+        """
+        
+        self.__display = display
+        self.__states[self.current_state].set_display(display)
+                    
+
+    def get_display(self) -> bool:
+        """Returns whether the Button is being displayed.
+
+        Returns:
+            bool: Whether it's being displayed.
+        """
+        return self.__display
         
     
-    def set_state(self, **ui_elements: dict[str, UIElement]):
+    def set_state_ui_elem(self, **ui_elements: dict[str, UIElement]):
         
         for state_name in ui_elements:
             
             if not Logger.raise_key_error(
-                self.__button_states, state_name, self.__INVALID_STATE):
+                self.__states, state_name, self.__INVALID_STATE):
                 
                 if not Logger.raise_incorrect_type(
                     ui_elements[state_name], UIElement, self.__INVALID_TYPE):
                 
-                    self.__button_states[state_name] = ui_elements[state_name]
+                    self.__states[state_name] = ui_elements[state_name]
+                    
+    
+    def __set_curent_state(self, state_name: str):
+        """Sets the current state of the button.
+
+        Args:
+            state_name (str): State name, predefined within Button class.
+        """        
+        
+        if self.current_state != state_name:
+            if not Logger.raise_key_error(
+                self.__states, state_name, self.__INVALID_STATE):
+                
+                if self.__states[state_name] != None:
+                    
+                    self.__states[self.current_state].set_display(False)
+                    self.current_state = state_name
+                    if self.__display:
+                        self.__states[self.current_state].set_display(True)
+            
         
         
     def set_surf(self, surf_dim: tuple[int, int]):
-        for state_name in self.__button_states:
-            if self.__button_states[state_name] != None:
-                self.__button_states[state_name].set_surf(surf_dim)
+        for state_name in self.__states:
+            if self.__states[state_name] != None:
+                self.__states[state_name].set_surf(surf_dim)
         
         
     def draw(self, surf: pygame.Surface):
-        if self.__button_states[self.state] != None:
-            self.__button_states[self.state].draw(surf)
+        if self.__states[self.current_state] != None:
+            self.__states[self.current_state].draw(surf)
         
     
     def set_pos(self, surf_dim: tuple[int, int]):
-        for state_name in self.__button_states:
-            if self.__button_states[state_name] != None:
-                self.__button_states[state_name].set_pos(surf_dim)
+        for state_name in self.__states:
+            if self.__states[state_name] != None:
+                self.__states[state_name].set_pos(surf_dim)
+                
+
+    def intersects(self, pos: tuple[int, int], press: bool = False) -> bool:
+        """
+        Checks if the UI element intersects a given position.
+
+        Args:
+            pos (tuple[int, int]): The position of the click.
+            press (bool, optional): The press state of the click. Defaults to 
+            False.
+
+        Returns:
+            bool: True if the UI element is pressed, False otherwise.
+        """
+        
+        if self.__states[self.UNPRESS].intersects(pos) and self.__display:
+            
+            if press:
+                self.__set_curent_state(self.PRESS)
+            
+            elif self.__states[self.HOVER] != None:
+                    self.__set_curent_state(self.HOVER)
+            
+            else:
+                self.__set_curent_state(self.UNPRESS)
+            
+            return True
+        
+        self.__set_curent_state(self.UNPRESS)
+        
+        return False
+                
                 
         
