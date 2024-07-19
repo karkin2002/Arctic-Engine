@@ -1,67 +1,64 @@
-import pygame, scripts.globvar as globvar
-from scripts.logger import Logger
-from scripts.ui import WindowUI
-from scripts.ui_element import Text, Image, Button
+import time
+import pygame, scripts.utility.glob as glob
+from scripts.utility.logger import Logger
+from scripts.ui.ui import WindowUI
+from scripts.ui.ui_element import Text, Image, Button
+from scripts.audio.audio import UIAudio
 
 
 
 ## Loading Logger and initialising.
 Logger("logs/UI_Organisation")  
 pygame.init()
-globvar.init()
-
+glob.init()
 
 
 ## Loading global items.
-globvar.add_font("title_font", "verdana", 90)
-globvar.add_font("button_up_font", "verdana", 60)
-globvar.add_font("button_h_font", "verdana", 65)
-globvar.add_font("button_p_font", "verdana", 60)
-globvar.add_colour("BLACK", (0, 0, 0))
-
-red_surf = pygame.Surface((200, 200))
-red_surf.fill((200, 100, 100))
-globvar.add_img_surf("red_sqr", red_surf)
-
-green_surf = pygame.Surface((200, 200))
-green_surf.fill((100, 200, 100))
-globvar.add_img_surf("green_sqr", green_surf)
-
-globvar.add_img_surf("back_img", pygame.image.load("background.png"))
+glob.add_font("title_font", "calibri", 90)
+glob.add_font("button_up_font", "calibri", 60)
+glob.add_font("button_h_font", "calibri", 65)
+glob.add_font("button_p_font", "calibri", 60)
+glob.add_colour("BLACK", (0, 0, 0))
 
 
 
 ## Loading window UI.
 window = WindowUI((1920, 1080))
 
-window.add_elem("BACK_IMG",
-                Image("back_img", 1),
-                "Pig")
-
 window.add_elem("title",
-                Text("Project Arctic",
+                Text("PA Audio Testing Env",
                      "title_font", 
                      "BLACK", 
                      offset = (0, 70),
                      align_top = True))
 
-text = ["Continue", "Load Save", "Settings", "Exit"]
 
-start = 60
-gap = 150   
-y_offset = -((len(text)/2)*gap) + start
-for button_text in text:
-    
-    p_text = Text(button_text, "button_p_font", "BLACK", (35, y_offset), centered=False, align_left = True) 
-    h_text = Text(button_text, "button_h_font", "BLACK", (35, y_offset), centered=False, align_left = True)
-    u_text = Text(button_text, "button_up_font", "BLACK", (35, y_offset), centered=False, align_left = True)  
-    
-    window.add_elem(button_text, Button(u_text, 
-                                        hover_elem=h_text, 
-                                        press_elem=p_text, 
-                                        display=True))
-    
-    y_offset += gap
+on_text = Text( "Currently: Playing", "button_up_font", "BLACK", centered=True)
+off_text = Text("Currently: Paused", "button_up_font", "BLACK", centered=True)
+
+window.add_elem(
+    "toggle_button",
+    Button(
+        off_text,
+        None,
+        on_text,
+        defualt_toggle_state=True
+    )
+)
+
+
+### AUDIO TESTING ------------
+
+audio_test = UIAudio(100)
+audio_test.addCat("Home")
+audio_test.addAudio("Home", "music.wav")
+audio_test.play("Home", "music", 99)
+playing = True
+
+### --------------------------
+
+
+
 
 
 
@@ -69,8 +66,17 @@ for button_text in text:
 run = True
 while run:
     
-    for button_text in text:
-        window.is_pressed(button_text)
+    if window.is_pressed("toggle_button", toggle = True):
+        if not playing:
+            audio_test.unpause("Home", "music")
+            playing = True
+    
+    else:
+        if playing:
+            audio_test.pause("Home", "music")
+            playing = False
+        
+            
 
     if not window.events():
         run = False
