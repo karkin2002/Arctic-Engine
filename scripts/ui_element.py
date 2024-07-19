@@ -249,7 +249,7 @@ class Text(UIElement):
         return message
         
     def set_surf(self, surf_dim: tuple[int, int]):
-            
+
         self._create_surf(
             surf_dim, 
             Text.createText(
@@ -261,27 +261,28 @@ class Text(UIElement):
         
         
     def update_text(self, 
-                    surf_dim: tuple[int, int],
-                    text: str = None, 
-                    font: str = None, 
-                    colour: int = None):
-        
-        update = False
-        
-        if text != None and text != self.text: 
-            self.text = text
-            update = True
-        
-        if font != None and font != self.font: 
-            self.font = font
-            update = True
-        
-        if colour != None and colour != self.colour: 
-            self.colour = colour
-            update = True
-        
-        if update:
-            self.set_surf(surf_dim)
+                        surf_dim: tuple[int, int],
+                        text: str = None, 
+                        font: str = None, 
+                        colour: int = None):
+
+            
+            update = False
+            
+            if text != None and text != self.text: 
+                self.text = text
+                update = True
+            
+            if font != None and font != self.font: 
+                self.font = font
+                update = True
+            
+            if colour != None and colour != self.colour: 
+                self.colour = colour
+                update = True
+            
+            if update:
+                self.set_surf(surf_dim)
         
 
 
@@ -313,9 +314,10 @@ class Image(UIElement):
         
         img_surf = globvar.get_img_surf(self.img_name)
         
-        new_surf = pygame.transform.scale_by(img_surf, self.scale)
+        if self.scale != 1:
+            img_surf = pygame.transform.scale_by(img_surf, self.scale)
         
-        self._create_surf(surf_dim, new_surf)
+        self._create_surf(surf_dim, img_surf)
         
         
         
@@ -450,6 +452,73 @@ class Button:
         self.__set_curent_state(self.UNPRESS)
         
         return False
-                
-                
+    
+    
+    
+
+class Group:
+    
+    __OVERWRITTEN = "{data_type} '{name}' in '{group_name}' overwritten from '{pre_data}' to '{post_data}'."
+    __ADDED_UI_ELEM = "UI Element '{elem_name}' added to '{group_name}' as '{data}'."
+
+    def __init__(self, name: str, display: bool = True):
+        """
+        Initializes a new instance of the UIElement class.
+        """
         
+        self.__NAME: str = name
+        self.ui_elems: dict[str, UIElement] = {}
+        
+        self.display: bool = display
+            
+    def get_elem(self, elem_name: str) -> UIElement | Button:
+        """
+        Retrieves the UI element with the given name.
+
+        Args:
+            elem_name (str): The name of the UI element to retrieve.
+
+        Returns:
+            UIElement | Button: The UI element with the given name.
+
+        """
+        
+        return self.ui_elems[elem_name]
+
+
+    def add_elem(self, elem_name: str, elem: UIElement | Button):
+        """
+        Adds an element to the ui_elems dictionary.
+
+        Args:
+            elem_name (str): The name of the element.
+            elem (UIElement | Button): The element to be added.
+        """
+        
+        if elem_name in self.ui_elems:
+            Logger.log_warning(self.__OVERWRITTEN.format(
+                data_type = UIElement,
+                name = elem_name,
+                group_name = self.__NAME,
+                pre_data = self.ui_elems[elem_name],
+                post_data = elem
+            ))
+        
+        self.ui_elems[elem_name] = elem
+        
+        Logger.log_info(self.__ADDED_UI_ELEM.format(
+                elem_name = elem_name,
+                group_name = self.__NAME,
+                data = elem))
+
+
+    def draw(self, surf: pygame.Surface):
+        """
+        Draws all UI elements on the given surface.
+
+        Args:
+            surf (Surface): The surface on which the UI elements will be drawn.
+        """
+        
+        for elem_name in self.ui_elems:
+            self.ui_elems[elem_name].draw(surf)

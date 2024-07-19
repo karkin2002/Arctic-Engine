@@ -1,6 +1,6 @@
 
 import ctypes
-from scripts.ui_element import UIElement, Button, Text
+from scripts.ui_element import UIElement, Button, Text, Group
 from scripts.logger import Logger
 import pygame
 import scripts.globvar as globvar
@@ -9,14 +9,15 @@ globvar.init()
 
 
 ## UI Class
-
 class WindowUI:
     """Class for handeling the window and its UI
     """    
     
     __INVALID_TEXT_UPDATE = "Couldn't update text for '{elem_name}'."
     __OVERWRITTEN = "{data_type} '{name}' overwritten from '{pre_data}' to '{post_data}'."
-    __ADDED_UI_ELEM = "UI Element '{name}' added as '{data_type}'."
+    __ADDED_UI_ELEM = "UI Element '{name}' added as '{data}'."
+    __ADDED_GROUP = "Group '{name}' added as '{data}'."
+    __INVALID_GROUP_NAME = "Invalid Group name."
     
     def __init__(self, win_dim: tuple[int, int] = (700, 500)):
         """Constructor for UI class
@@ -35,7 +36,8 @@ class WindowUI:
         self.__set_win(win_dim)
         self.resized: bool = False
         
-        self.__ui_elems: dict[str, UIElement] = {}
+        self.__ui_elems: dict[str, UIElement | Button] = {}
+        self.__groups: dict[str, Group] = {}
         
         self.mouse_pos: tuple[int, int] = (0, 0)
         self.mouse_press: bool = False
@@ -96,7 +98,7 @@ class WindowUI:
         
         self.win.fill((255, 255, 255))
         
-        self.__draw_elems()
+        self.draw_elems()
 
         pygame.display.flip()
 
@@ -108,13 +110,38 @@ class WindowUI:
         """        
         
         self.win_dim = (self.win.get_width(), self.win.get_height())
-        self.__resize_elems()
+        self.resize_elems()
         
+
+    def __add_group(self, group_name: str) -> bool:
+        """
+        Adds a new group to the UI.
+
+        Args:
+            group_name (str): The name of the group to be added.
+
+        Returns:
+            bool: True if the group was successfully added, False otherwise.
+        """
+        
+        if not Logger.raise_incorrect_type(group_name, str, self.__INVALID_GROUP_NAME):
+            if group_name not in self.__groups:
+                self.__groups[group_name] = Group(group_name)
+                Logger.log_info(self.__ADDED_GROUP.format(
+                    name=group_name,
+                    data=self.__groups[group_name]))
+                
+                return True
+        
+        return False
+                
 
     
     def add_elem(self, 
                  elem_name: str, 
-                 elem: UIElement | Button):
+                 elem: UIElement | Button,
+                 *group_names: list[str]):
+        
         """Adds a UI Element to be displayed on the window.
 
         Args:
@@ -122,20 +149,30 @@ class WindowUI:
             elem (UIElement | Button): UI Element to be added.
         """     
         
-        Logger.log_info(self.__ADDED_UI_ELEM.format(
-            data_type = elem, name = elem_name))   
-        
-        if elem_name in self.__ui_elems:
-            Logger.log_warning(self.__OVERWRITTEN.format(
-                data_type = UIElement,
-                name = elem_name,
-                pre_data = self.__ui_elems[elem_name],
-                post_data = elem
-            ))
+        if len(group_names) >= 1:
+            for group_name in group_names:
+                self.__add_group(group_name)
+                self.__groups[group_name].add_elem(elem_name, elem)
+                self.__groups[group_name].get_elem(elem_name).set_surf(
+                    self.win_dim)
             
-        self.__ui_elems[elem_name] = elem
+        else:           
+            if elem_name in self.__ui_elems:
+                Logger.log_warning(self.__OVERWRITTEN.format(
+                    data_type = UIElement,
+                    name = elem_name,
+                    pre_data = self.__ui_elems[elem_name],
+                    post_data = elem
+                ))
+            
+            self.__ui_elems[elem_name] = elem
+            
+            self.__ui_elems[elem_name].set_surf(self.win_dim)
+            
+            Logger.log_info(self.__ADDED_UI_ELEM.format(
+                    name = elem_name,
+                    data = elem))
         
-        self.__ui_elems[elem_name].set_surf(self.win_dim)
         
         
     def get_elem(self, elem_name: str) -> UIElement | Button:
@@ -151,22 +188,55 @@ class WindowUI:
         return self.__ui_elems[elem_name]
 
         
-    def __draw_elems(self):
+    def draw_elems(self):
         """Draws UI elements on the window.
-        """        
+        """
+        for group_name in self.__groups:
+            if self.__groups[group_name].display:
+                self.__groups[group_name].draw(self.win)
+        
         for elem_name in self.__ui_elems:
             self.__ui_elems[elem_name].draw(self.win)
             
             
-    def __resize_elems(self):
+    def resize_elems(self):
         """Resizes UI Elements based on the window dimensions.
         """ 
               
         for elem_name in self.__ui_elems:
             self.__ui_elems[elem_name].set_pos(self.win_dim)
-            
     
-    def is_pressed(self, elem_name: str, hold: bool = False) -> bool:
+    def update_text(self, 
+                    elem_name: str,
+                    text: str = None, 
+                    font: str = None, 
+                    colour: int = None):
+        """
+        Update the text of a UI element.
+
+        Args:
+            elem_name (str): The name of the UI element.
+            text (str, optional): The new text to be set. Defaults to None.
+            font (str, optional): The new font of the text. Defaults to None.
+            colour (int, optional): The new colour of the text. Defaults to 
+            None.
+        """
+        
+        text_elem = self.get_elem(elem_name)
+        
+        if not Logger.raise_incorrect_type(
+                text_elem, 
+                Text, 
+                self.__INVALID_TEXT_UPDATE.format(elem_name = elem_name)):
+            
+            text_elem.update_text(self.win_dim, 
+                                  text, 
+                                  font, 
+                                  colour)            
+    
+    def is_pressed(self,
+                   elem_name: str, 
+                   hold: bool = False) -> bool:
         """
         Checks if a UI element is pressed.
 
@@ -197,33 +267,3 @@ class WindowUI:
         
         else:
             return intersects and self.mouse_press_frames == 1
-    
-    
-    
-    def update_text(self, 
-                    elem_name: str,
-                    text: str = None, 
-                    font: str = None, 
-                    colour: int = None):
-        """
-        Update the text of a UI element.
-
-        Args:
-            elem_name (str): The name of the UI element.
-            text (str, optional): The new text to be set. Defaults to None.
-            font (str, optional): The new font of the text. Defaults to None.
-            colour (int, optional): The new colour of the text. Defaults to 
-            None.
-        """
-        
-        text_elem = self.get_elem(elem_name)
-        
-        if not Logger.raise_incorrect_type(
-                text_elem, 
-                Text, 
-                self.__INVALID_TEXT_UPDATE.format(elem_name = elem_name)):
-            
-            text_elem.update_text(self.win_dim, 
-                                  text, 
-                                  font, 
-                                  colour)

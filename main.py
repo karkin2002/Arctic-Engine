@@ -4,6 +4,7 @@ from scripts.ui import WindowUI
 from scripts.ui_element import Text, Image, Button
 
 
+
 ## Loading Logger and initialising.
 Logger("logs/UI_Organisation")  
 pygame.init()
@@ -34,10 +35,11 @@ globvar.add_img_surf("back_img", pygame.image.load("background.png"))
 window = WindowUI((1920, 1080))
 
 window.add_elem("BACK_IMG",
-                Image("back_img", 1))
+                Image("back_img", 1),
+                "Pig")
 
 window.add_elem("title",
-                Text("Ark Survival",
+                Text("Project Arctic",
                      "title_font", 
                      "BLACK", 
                      offset = (0, 70),
@@ -45,8 +47,8 @@ window.add_elem("title",
 
 text = ["Continue", "Load Save", "Settings", "Exit"]
 
-start = 80
-gap = 150
+start = 60
+gap = 150   
 y_offset = -((len(text)/2)*gap) + start
 for button_text in text:
     
