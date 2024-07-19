@@ -12,11 +12,16 @@ class WindowUI:
     """Class for handeling the window and its UI
     """    
     
+    __DEFUALT_CAPTION = "New Window"
+    
     __INVALID_TEXT_UPDATE = "Couldn't update text for '{elem_name}'."
     __OVERWRITTEN = "{data_type} '{name}' overwritten from '{pre_data}' to '{post_data}'."
     __ADDED_UI_ELEM = "UI Element '{name}' added as '{data}'."
     
-    def __init__(self, win_dim: tuple[int, int] = (700, 500)):
+    def __init__(self, 
+                 win_dim: tuple[int, int] = (700, 500), 
+                 caption: str = None,
+                 icon: str = None):
         """Constructor for UI class
 
         Args:
@@ -32,6 +37,7 @@ class WindowUI:
         
         self.__set_win(win_dim)
         self.resized: bool = False
+        self.set_caption(caption)
         
         self.__ui_elems: dict[str, UIElement | Button] = {}
         
@@ -49,6 +55,20 @@ class WindowUI:
 
         self.win_dim = win_dim
         self.win = pygame.display.set_mode(self.win_dim, pygame.RESIZABLE)
+        
+        
+    def set_caption(self, caption: str):
+        """Sets the window caption.
+
+        Args:
+            caption (str): Window caption.
+        """        
+        
+        if caption == None:
+            pygame.display.set_caption(self.__DEFUALT_CAPTION)
+        else:
+            pygame.display.set_caption(caption)
+            
 
 
     def events(self) -> bool:

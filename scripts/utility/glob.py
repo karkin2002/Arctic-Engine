@@ -192,7 +192,11 @@ def get_font(font_name: str) -> pyfont.Font:
 
 
 def add_tag(tag: Tag):
-    
+    """Adds a tag to the global tag dictonary.
+
+    Args:
+        tag (Tag): Tag object.
+    """
     
     if not Logger.raise_incorrect_type(tag.tag_id, str, INVALID_TAG_ID):
         if not Logger.raise_incorrect_type(tag, Tag, INVALID_TAG):
@@ -210,10 +214,27 @@ def add_tag(tag: Tag):
             Logger.log_info(ADDED_TAG.format(name = str(tag.tag_id), data = glob_tags[tag.tag_id]))
         
 
-def get_tag(tag_id: str):
+def get_tag(tag_id: str) -> Tag:
+    """Returns a tag from the global tag dictonary.
+
+    Args:
+        tag_id (str): Tag ID.
+
+    Returns:
+        Tag: Tag object.
+    """
     
     return glob_tags[tag_id]
 
-def is_tag(tag_id: str):
+
+def is_tag(tag_id: str) -> bool:
+    """Returns whether a tag exists in the global tag dictonary.
+
+    Args:
+        tag_id (str): Tag ID.
+
+    Returns:
+        bool: Whether the tag exists.
+    """
     
     return tag_id in glob_tags

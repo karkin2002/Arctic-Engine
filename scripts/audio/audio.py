@@ -263,7 +263,7 @@ class AudioCategory:
 
 
 ## Class used for all audio on the UI
-class UIAudio:
+class AudioUI:
 
     """Handles all UI audio
     """
