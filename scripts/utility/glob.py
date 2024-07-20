@@ -1,4 +1,5 @@
 from pygame import Surface, font as pyfont
+from scripts.audio.audio import AudioUI
 from scripts.utility.basic import is_only_type, get_first_item_of_incorrect_type
 from scripts.utility.logger import Logger
 from dataclasses import dataclass
@@ -24,6 +25,9 @@ def init():
     
     global audio
     audio = None
+    
+    global scale
+    scale = 1.0
     
 OVERWRITTEN = "{data_type} '{name}' overwritten from '{pre_data}' to '{post_data}'."
 ADDED_TO_DICT = "{data_type} '{name}' added as '{data}'."
@@ -145,6 +149,9 @@ def get_img_surf(img_name: str) -> Surface:
         return glob_img_dict[img_name]
     
 
+
+
+### FONTS -------------------------
 def add_font(font_name: str, font: str, size: int):
     """
     Add a font to the global font dictionary.
@@ -156,9 +163,9 @@ def add_font(font_name: str, font: str, size: int):
     """
     
     if font in pyfont.get_fonts():
-        fontFormat = pyfont.SysFont(font, size)
+        font_format = pyfont.SysFont(font, round(size * scale))
     else:
-        fontFormat = pyfont.Font(str(font), size)
+        font_format = pyfont.Font(str(font), round(size * scale))
     
     if font_name in glob_font_dict:
         Logger.log_warning(
@@ -166,14 +173,14 @@ def add_font(font_name: str, font: str, size: int):
                 data_type = FONT,
                 name = font_name,
                 pre_data = glob_font_dict[font_name],
-                post_data = fontFormat))
+                post_data = font_format))
         
-    glob_font_dict[font_name] = fontFormat
+    glob_font_dict[font_name] = (font, size, font_format)
         
     Logger.log_info(ADDED_TO_DICT.format(
         data_type = FONT,
         name = font_name,
-        data = fontFormat))
+        data = font_format))
 
 
 def get_font(font_name: str) -> pyfont.Font:
@@ -191,9 +198,21 @@ def get_font(font_name: str) -> pyfont.Font:
                                   font_name,
                                   INVALID_FONT_NAME):
         
-        return glob_font_dict.get(font_name)
+        return glob_font_dict.get(font_name)[2]
+    
+    
+def set_font_scale():
+    for font_name in glob_font_dict:
+        font = glob_font_dict[font_name][0]
+        size = glob_font_dict[font_name][1]
+        add_font(font_name, font, size)
+        
+        
+### ------------------------------------
 
 
+
+### TAGS ---------------------
 def add_tag(tag: Tag):
     """Adds a tag to the global tag dictonary.
 
@@ -241,3 +260,4 @@ def is_tag(tag_id: str) -> bool:
     """
     
     return tag_id in glob_tags
+### -------------------------------------

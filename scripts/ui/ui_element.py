@@ -187,7 +187,7 @@ class UIElement:
             
             half_surf_len = round(surf_dim[i] / 2)
             
-            offset = self.offset[i]
+            offset = self.offset[i] * glob.scale
             
             if i == 0 and not (self.alignment[self.ALIGN_RIGHT_KW] and self.alignment[self.ALIGN_LEFT_KW]):
                 
@@ -345,7 +345,9 @@ class Image(UIElement):
         img_surf = glob.get_img_surf(self.img_name)
         
         if self.scale != 1:
-            img_surf = pygame.transform.scale_by(img_surf, self.scale)
+            img_surf = pygame.transform.scale_by(
+                img_surf, 
+                self.scale * glob.scale)
         
         self._create_surf(surf_dim, img_surf)
         

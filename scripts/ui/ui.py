@@ -180,11 +180,15 @@ class WindowUI:
             self.__ui_elems[elem_name].draw(self.win)
             
             
-    def resize_elems(self):
+    def resize_elems(self, update_scale: bool = False):
         """Resizes UI Elements based on the window dimensions.
-        """ 
-              
+        """      
+        
         for elem_name in self.__ui_elems:
+            
+            if update_scale:
+                self.__ui_elems[elem_name].set_surf(self.win_dim)
+            
             self.__ui_elems[elem_name].set_pos(self.win_dim)
     
     def update_text(self, 
@@ -265,3 +269,12 @@ class WindowUI:
         ## Returning the results
         return outcome
                 
+                
+    def set_scale(self, value: float):
+        
+        if value != glob.scale:
+            glob.scale = value
+            
+            glob.set_font_scale()
+            
+            self.resize_elems(True)

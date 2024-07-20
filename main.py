@@ -6,9 +6,6 @@ from scripts.ui.ui_element import Text, Image, Button
 
 
 ## TO-DO:
-## - Scaling UI elements. Have a universal scale value. At the lowest level
-## possible, scale all dimensions/positioning by this value. Allow user to edit
-## value.
 ## - Recreate the Korean Demo main menu
 
 
@@ -31,13 +28,15 @@ glob.add_font("menu_button_u", KOREAN_REGULAR, 48)
 glob.add_font("menu_button_h", KOREAN_BOLD, 46)
 glob.add_font("menu_button_p", KOREAN_REGULAR, 40)
 
+glob.add_font("font", "calibri", 40)
+
 glob.add_colour("BLACK", (0, 0, 0))
 
 
 ## Loading window UI.
-window = WindowUI((1920, 1080), caption = "유학생 - Yu-Hak-Saeng")
-
-
+window = WindowUI(
+    (1920, 1080), 
+    "유학생 - Yu-Hak-Saeng")
 
 ## Setting Audio
 AUDIO_MAIN_MENU = "main_menu"
@@ -82,8 +81,7 @@ for i in range(len(MENU_BUTTONS)):
                Text(MENU_BUTTONS[i], "menu_button_p", "BLACK", 
                     offset=(0, offset + (i * gap)), tags = [MAIN_MENU]),
                ("ui", "button_3"),
-               ("ui", "button_1"))
-    )
+               ("ui", "button_1")))
 ### ------------------------------------------
 
 
@@ -91,24 +89,27 @@ for i in range(len(MENU_BUTTONS)):
 
 
 ### Main Loop -----------------------------
+glob.audio.setVolume(100)
 glob.audio.play(AUDIO_MAIN_MENU, "music", 99)
+window.set_scale(2)
 
 run = True
 while run:
     
     ## Main menu buttons
-    for button_name in MENU_BUTTONS:
-        
-        if button_name == "Continue" and window.is_pressed(button_name):
-            glob.audio.pause(AUDIO_MAIN_MENU, "music")
-            glob.get_tag(MAIN_MENU).display = False
-        
-        elif button_name == "Quit" and window.is_pressed(button_name):
-            run = False
-        
-        else:
-            window.is_pressed(button_name)
+    
+    if glob.get_tag(MAIN_MENU).display:
+        for button_name in MENU_BUTTONS:
             
+            if button_name == "Continue" and window.is_pressed(button_name):
+                glob.audio.pause(AUDIO_MAIN_MENU, "music")
+                glob.get_tag(MAIN_MENU).display = False
+            
+            elif button_name == "Quit" and window.is_pressed(button_name):
+                run = False
+            
+            else:
+                window.is_pressed(button_name)   
 
     if not window.events():
         run = False
