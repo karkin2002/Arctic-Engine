@@ -22,6 +22,9 @@ def init():
     global glob_tags
     glob_tags = {}
     
+    global audio
+    audio = None
+    
 OVERWRITTEN = "{data_type} '{name}' overwritten from '{pre_data}' to '{post_data}'."
 ADDED_TO_DICT = "{data_type} '{name}' added as '{data}'."
 

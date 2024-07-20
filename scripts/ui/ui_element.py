@@ -140,11 +140,11 @@ class UIElement:
             surf (Surface): Surface to be drawn on.
         """   
             
-        if self.__is_displayed():
+        if self.is_displayed():
             surf.blit(self.__surf, self.__pos)
             
             
-    def __is_displayed(self) -> bool:
+    def is_displayed(self) -> bool:
         """Returns whether the UIElement is being displayed.
 
         Returns:
@@ -224,12 +224,8 @@ class UIElement:
             otherwise.
         """
         
-        if self.__is_displayed:
-            return (self.__pos[0] <= pos[0] <= self.__pos[0] + self.dim[0] and 
-                    self.__pos[1] <= pos[1] <= self.__pos[1] + self.dim[1])
-        
-        else:
-            return False
+        return (self.__pos[0] <= pos[0] <= self.__pos[0] + self.dim[0] and 
+                self.__pos[1] <= pos[1] <= self.__pos[1] + self.dim[1])
                     
 
 
@@ -375,6 +371,8 @@ class Button:
                  unpress_elem: UIElement,
                  hover_elem: UIElement = None,
                  press_elem: UIElement = None,
+                 hover_audio: tuple[str, str] = None,
+                 press_audio: tuple[str, str] = None,
                  defualt_toggle_state: bool = False,
                  display: bool = True):
         
@@ -382,6 +380,11 @@ class Button:
             self.UNPRESS: unpress_elem,
             self.HOVER: hover_elem,
             self.PRESS: press_elem
+        }
+        
+        self.__audio = {
+            self.HOVER: hover_audio,
+            self.PRESS: press_audio
         }
 
         for state in self.__states.values():
@@ -428,6 +431,17 @@ class Button:
                 
                     self.__states[state_name] = ui_elements[state_name]
                     
+                    
+    def __play_state_audio(self, state_name: str):
+        
+        if state_name in self.__audio:
+            
+            audio_data = self.__audio[state_name]
+            
+            if audio_data != None:
+                glob.audio.play(audio_data[0], audio_data[1])
+        
+                    
     
     def set_curent_state(self, state_name: str):
         """Sets the current state of the button.
@@ -448,6 +462,8 @@ class Button:
                     self.current_state = state_name
                     if self.__display:
                         self.__states[self.current_state].set_display(True)
+                        
+                self.__play_state_audio(state_name)
             
         
         
@@ -467,6 +483,18 @@ class Button:
             if self.__states[state_name] != None:
                 self.__states[state_name].set_pos(surf_dim)
                 
+    
+    def __is_states_displayed(self) -> bool:
+        """
+        Check if at least one state is displayed.
+
+        Returns:
+            bool: True if at least one state is displayed, False otherwise.
+        """
+        
+        return any(self.__states[state_name].is_displayed() 
+                   for state_name in self.__states)
+                
 
     def intersects(self, pos: tuple[int, int], press: bool = False, toggle: bool = False) -> bool:
         """
@@ -481,7 +509,9 @@ class Button:
             bool: True if the UI element is pressed, False otherwise.
         """
         
-        if self.__states[self.UNPRESS].intersects(pos) and self.__display:
+        if (self.__display and 
+            self.__is_states_displayed() and 
+            self.__states[self.UNPRESS].intersects(pos)):
             
             if press:
                 if not toggle:

@@ -74,11 +74,11 @@ class Audio:
     """Class for individual audio
     """
 
-    def __init__(self, name: str, dir: str, volume: float = 50):
+    def __init__(self, name: str, path: str, volume: float = 50):
         self.__name = name
         self.setVolume(volume)
 
-        self.audio = mixer.Sound(dir) 
+        self.audio = mixer.Sound(path) 
 
     def getName(self):
         return self.__name
@@ -199,14 +199,14 @@ class AudioCategory:
 
 
     ## Adds audio to the audio_dict and sets its volume, doesn't play the audio
-    def addAudio(self, name: str, dir: str, overall_volume: float, volume: float = 50):
+    def addAudio(self, name: str, path: str, overall_volume: float, volume: float = 50):
 
         """Adds audio to audio dict, sets its volume (doesn't play the audio)
         """
 
         if name == None:
-            name = get_filename(dir, False)
-        self.audio_dict[name] = Audio(name, dir, volume)
+            name = get_filename(path, False)
+        self.audio_dict[name] = Audio(name, path, volume)
         self.setAudioVolume(name, overall_volume, volume)
         
         Logger.log_info(self.AUDIO_ADD.format(
@@ -343,12 +343,12 @@ class AudioUI:
             Logger.log_info(self.CAT_EXISTS.format(cat_name = cat_name))
 
     ## Adds an audio to an audioCat
-    def addAudio(self, cat_name: str, dir: str, audio_name: str = None , volume: float = 50):
+    def addAudio(self, cat_name: str, path: str, audio_name: str = None , volume: float = 50):
 
         """Adds a new audio to an category
         """
 
-        self.__getAudioCat(cat_name).addAudio(audio_name, dir, self.volume, volume)
+        self.__getAudioCat(cat_name).addAudio(audio_name, path, self.volume, volume)
     
     ## Sets the volume of the audioCat
     def setCatVolume(self, cat_name: str, value: float):

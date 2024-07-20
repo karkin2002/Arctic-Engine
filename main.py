@@ -1,14 +1,11 @@
-import time
 import pygame, scripts.utility.glob as glob
 from scripts.utility.glob import Tag
 from scripts.utility.logger import Logger
 from scripts.ui.ui import WindowUI
 from scripts.ui.ui_element import Text, Image, Button
-from scripts.audio.audio import AudioUI
 
 
 ## TO-DO:
-## - Get Audio UI working with buttons / intergrated within window UI
 ## - Scaling UI elements. Have a universal scale value. At the lowest level
 ## possible, scale all dimensions/positioning by this value. Allow user to edit
 ## value.
@@ -42,6 +39,18 @@ window = WindowUI((1920, 1080), caption = "유학생 - Yu-Hak-Saeng")
 
 
 
+## Setting Audio
+AUDIO_MAIN_MENU = "main_menu"
+glob.audio.addCat(AUDIO_MAIN_MENU)
+glob.audio.addAudio(AUDIO_MAIN_MENU, r"static\audio\music\music.wav")
+
+AUDIO_UI = "ui"
+glob.audio.addCat(AUDIO_UI)
+glob.audio.addAudio(AUDIO_UI, r"static\audio\sfx\ui\button_1.wav")
+glob.audio.addAudio(AUDIO_UI, r"static\audio\sfx\ui\button_2.wav")
+glob.audio.addAudio(AUDIO_UI, r"static\audio\sfx\ui\button_3.wav")
+glob.audio.addAudio(AUDIO_UI, r"static\audio\sfx\ui\button_4.wav")
+
 
 ### MAIN MENU ----------------------------
 MAIN_MENU = "main_menu"
@@ -71,7 +80,9 @@ for i in range(len(MENU_BUTTONS)):
                Text(MENU_BUTTONS[i], "menu_button_h", "BLACK", 
                     offset=(0, offset + (i * gap)), tags = [MAIN_MENU]),
                Text(MENU_BUTTONS[i], "menu_button_p", "BLACK", 
-                    offset=(0, offset + (i * gap)), tags = [MAIN_MENU]))
+                    offset=(0, offset + (i * gap)), tags = [MAIN_MENU]),
+               ("ui", "button_3"),
+               ("ui", "button_1"))
     )
 ### ------------------------------------------
 
@@ -80,6 +91,8 @@ for i in range(len(MENU_BUTTONS)):
 
 
 ### Main Loop -----------------------------
+glob.audio.play(AUDIO_MAIN_MENU, "music", 99)
+
 run = True
 while run:
     
@@ -87,6 +100,7 @@ while run:
     for button_name in MENU_BUTTONS:
         
         if button_name == "Continue" and window.is_pressed(button_name):
+            glob.audio.pause(AUDIO_MAIN_MENU, "music")
             glob.get_tag(MAIN_MENU).display = False
         
         elif button_name == "Quit" and window.is_pressed(button_name):

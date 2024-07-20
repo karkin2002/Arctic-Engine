@@ -1,11 +1,9 @@
 
-import ctypes
+import ctypes, pygame, scripts.utility.glob as glob
 from scripts.ui.ui_element import UIElement, Button, Text
 from scripts.utility.logger import Logger
-import pygame
-import scripts.utility.glob as glob
+from scripts.audio.audio import AudioUI
 glob.init()
-
 
 ## UI Class
 class WindowUI:
@@ -21,7 +19,8 @@ class WindowUI:
     def __init__(self, 
                  win_dim: tuple[int, int] = (700, 500), 
                  caption: str = None,
-                 icon: str = None):
+                 icon: str = None,
+                 volume: float = 50.0):
         """Constructor for UI class
 
         Args:
@@ -44,6 +43,8 @@ class WindowUI:
         self.mouse_pos: tuple[int, int] = (0, 0)
         self.mouse_press: bool = False
         self.mouse_press_frames: int = 0
+        
+        glob.audio = AudioUI(volume)
 
 
     def __set_win(self, win_dim: tuple[int, int]):
