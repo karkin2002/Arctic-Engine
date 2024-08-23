@@ -1,14 +1,7 @@
 import pygame, scripts.utility.glob as glob
-from scripts.utility.glob import Tag
 from scripts.utility.logger import Logger
 from scripts.ui.ui import WindowUI
-from scripts.ui.ui_element import Text, Image, Button
-
-
-## TO-DO:
-## - Recreate the Korean Demo main menu
-
-
+from scripts.game.menu import Menu
 
 ## Loading Logger and initialising.
 Logger("logs/UI_Organisation")  
@@ -30,18 +23,19 @@ glob.add_font("menu_button_p", KOREAN_REGULAR, 40)
 
 glob.add_font("font", "calibri", 40)
 
+glob.add_colour("WHITE", (255, 255, 255))
 glob.add_colour("BLACK", (0, 0, 0))
-
+glob.add_colour("MENU_BACK", (254, 44, 84))
 
 ## Loading window UI.
 window = WindowUI(
     (1920, 1080), 
-    "유학생 - Yu-Hak-Saeng")
+    "유학생 - Yu-Hak-Saeng",
+    b_colour="MENU_BACK")
 
 ## Setting Audio
-AUDIO_MAIN_MENU = "main_menu"
-glob.audio.addCat(AUDIO_MAIN_MENU)
-glob.audio.addAudio(AUDIO_MAIN_MENU, r"static\audio\music\music.wav")
+glob.audio.addCat(Menu.AUDIO_MAIN_MENU)
+glob.audio.addAudio(Menu.AUDIO_MAIN_MENU, r"static\audio\music\music.wav")
 
 AUDIO_UI = "ui"
 glob.audio.addCat(AUDIO_UI)
@@ -50,66 +44,18 @@ glob.audio.addAudio(AUDIO_UI, r"static\audio\sfx\ui\button_2.wav")
 glob.audio.addAudio(AUDIO_UI, r"static\audio\sfx\ui\button_3.wav")
 glob.audio.addAudio(AUDIO_UI, r"static\audio\sfx\ui\button_4.wav")
 
-
-### MAIN MENU ----------------------------
-MAIN_MENU = "main_menu"
-glob.add_tag(Tag(MAIN_MENU, "Main menu elements.", True))
-
-window.add_elem("title",
-                Text("유학생", "title", "BLACK", 
-                     offset = (0, -330),
-                     tags = [MAIN_MENU]))
-
-window.add_elem("sub_title",
-                Text("Yu-Hak-Saeng", "sub_title", "BLACK", 
-                     offset = (0, -230),
-                     tags = [MAIN_MENU]))
-
-MENU_BUTTONS = ["Continue", "New Save", "Load Save", "Options", "Quit"]
-
-offset = 0
-gap = 90
-count = 0
-for i in range(len(MENU_BUTTONS)):
-    window.add_elem(
-        MENU_BUTTONS[i],
-        Button(
-               Text(MENU_BUTTONS[i], "menu_button_u", "BLACK", 
-                    offset=(0, offset + (i * gap)), tags = [MAIN_MENU]),
-               Text(MENU_BUTTONS[i], "menu_button_h", "BLACK", 
-                    offset=(0, offset + (i * gap)), tags = [MAIN_MENU]),
-               Text(MENU_BUTTONS[i], "menu_button_p", "BLACK", 
-                    offset=(0, offset + (i * gap)), tags = [MAIN_MENU]),
-               ("ui", "button_3"),
-               ("ui", "button_1")))
-### ------------------------------------------
-
-
-
-
+## Setting Menus
+Menu.set_main_menu(window)
+Menu.set_options_menu(window)
 
 ### Main Loop -----------------------------
-glob.audio.setVolume(100)
-glob.audio.play(AUDIO_MAIN_MENU, "music", 99)
-window.set_scale(2)
+glob.audio.setVolume(50)
+window.set_scale(1)
 
 run = True
 while run:
     
-    ## Main menu buttons
-    
-    if glob.get_tag(MAIN_MENU).display:
-        for button_name in MENU_BUTTONS:
-            
-            if button_name == "Continue" and window.is_pressed(button_name):
-                glob.audio.pause(AUDIO_MAIN_MENU, "music")
-                glob.get_tag(MAIN_MENU).display = False
-            
-            elif button_name == "Quit" and window.is_pressed(button_name):
-                run = False
-            
-            else:
-                window.is_pressed(button_name)   
+    run = Menu.handle_menus(window, run)
 
     if not window.events():
         run = False

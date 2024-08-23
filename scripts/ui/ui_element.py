@@ -493,9 +493,7 @@ class Button:
         Returns:
             bool: True if at least one state is displayed, False otherwise.
         """
-        
-        return any(self.__states[state_name].is_displayed() 
-                   for state_name in self.__states)
+        return any(state.is_displayed() for state in self.__states.values() if state is not None)
                 
 
     def intersects(self, pos: tuple[int, int], press: bool = False, toggle: bool = False) -> bool:

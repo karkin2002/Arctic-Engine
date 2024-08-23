@@ -20,6 +20,7 @@ class WindowUI:
                  win_dim: tuple[int, int] = (700, 500), 
                  caption: str = None,
                  icon: str = None,
+                 b_colour: str = None,
                  volume: float = 50.0):
         """Constructor for UI class
 
@@ -33,10 +34,13 @@ class WindowUI:
         self.win: pygame.Surface = None
 
         self.__clock = pygame.time.Clock()
+        self.framerate = None
         
         self.__set_win(win_dim)
         self.resized: bool = False
         self.set_caption(caption)
+        
+        self.b_colour = b_colour
         
         self.__ui_elems: dict[str, UIElement | Button] = {}
         
@@ -70,6 +74,14 @@ class WindowUI:
         else:
             pygame.display.set_caption(caption)
             
+            
+    
+    def __set_clock_tick(self):
+        
+        glob.update_delta_time()
+        
+        if self.framerate != None:
+            self.__clock.tick(self.framerate)
 
 
     def events(self) -> bool:
@@ -105,21 +117,28 @@ class WindowUI:
         
         if self.resized:
             self.__resize()
+            
+        self.__set_clock_tick()
                 
         return True
     
     
-    def draw(self):
+    def draw(self, b_surf: pygame.Surface = None, f_surf: pygame.Surface = None):
         """Draws a new frame of the window; including all its elements.
         """
         
-        self.win.fill((255, 255, 255))
+        if self.b_colour != None:
+            self.win.fill(glob.get_colour(self.b_colour))
+            
+        if b_surf != None:
+            self.win.blit(b_surf, (0,0))
         
         self.draw_elems()
+        
+        if f_surf != None:
+            self.win.blit(f_surf, (0,0))
 
         pygame.display.flip()
-
-        self.__clock.tick(60)
         
         
     def __resize(self):

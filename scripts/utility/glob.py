@@ -1,3 +1,4 @@
+import time
 from pygame import Surface, font as pyfont
 from scripts.audio.audio import AudioUI
 from scripts.utility.basic import is_only_type, get_first_item_of_incorrect_type
@@ -28,6 +29,11 @@ def init():
     
     global scale
     scale = 1.0
+    
+    global last_delta_time, delta_time, framerate
+    last_delta_time = time.time()
+    delta_time = time.time() - last_delta_time
+    framerate = 60
     
 OVERWRITTEN = "{data_type} '{name}' overwritten from '{pre_data}' to '{post_data}'."
 ADDED_TO_DICT = "{data_type} '{name}' added as '{data}'."
@@ -260,4 +266,15 @@ def is_tag(tag_id: str) -> bool:
     """
     
     return tag_id in glob_tags
+### -------------------------------------
+
+
+### Delta time ---------------------------
+
+def update_delta_time():
+    global last_delta_time, delta_time, framerate
+    delta_time = time.time() - last_delta_time
+    delta_time *= framerate
+    last_delta_time = time.time()
+
 ### -------------------------------------
