@@ -21,6 +21,7 @@ class WindowUI:
                  caption: str = None,
                  icon: str = None,
                  b_colour: str = None,
+                 framerate: int = None,
                  volume: float = 50.0):
         """Constructor for UI class
 
@@ -34,7 +35,7 @@ class WindowUI:
         self.win: pygame.Surface = None
 
         self.__clock = pygame.time.Clock()
-        self.framerate = None
+        self.framerate = framerate
         
         self.__set_win(win_dim)
         self.resized: bool = False
@@ -82,6 +83,10 @@ class WindowUI:
         
         if self.framerate != None:
             self.__clock.tick(self.framerate)
+            
+    def get_fps(self) -> float:
+        return self.__clock.get_fps()
+        
 
 
     def events(self) -> bool:
@@ -123,7 +128,9 @@ class WindowUI:
         return True
     
     
-    def draw(self, b_surf: pygame.Surface = None, f_surf: pygame.Surface = None):
+    def draw(self, 
+             b_surf: tuple[pygame.Surface, tuple[int, int]] = None, 
+             f_surf: tuple[pygame.Surface, tuple[int, int]] = None):
         """Draws a new frame of the window; including all its elements.
         """
         
@@ -131,12 +138,12 @@ class WindowUI:
             self.win.fill(glob.get_colour(self.b_colour))
             
         if b_surf != None:
-            self.win.blit(b_surf, (0,0))
+            self.win.blit(b_surf[0], b_surf[1])
         
         self.draw_elems()
         
         if f_surf != None:
-            self.win.blit(f_surf, (0,0))
+            self.win.blit(f_surf[0], f_surf[1])
 
         pygame.display.flip()
         

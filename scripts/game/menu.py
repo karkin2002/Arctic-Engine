@@ -2,10 +2,15 @@ from scripts.ui.ui import WindowUI
 from scripts.ui.ui_element import Text, Button, Image
 import scripts.utility.glob as glob
 from scripts.utility.glob import Tag
+from scripts.utility.timer import Timer
 glob.init()
 
     
 class Menu:
+    
+    FPS = "fps"
+    FPS_TITLE= "fps_text"
+    FPS_TEXT = "FPS: {fps}"
     
     SELECTION_OFF = "{text} [OFF]"
     SELECTION_ON = "{text} [ON]"
@@ -25,7 +30,33 @@ class Menu:
                        ("Music", True, True), 
                        ("Scale", glob.scale, False)]
     
+    FPS_UPDATE_TIME_IN_SEC = 0.2
+    
     music_playing = False
+    
+    
+    def __init__(self):
+        self.fps_timer = Timer()
+        self.fps_timer.start(self.FPS_UPDATE_TIME_IN_SEC)
+        
+    
+    
+    def set_fps_counter(window: WindowUI):
+        
+        glob.add_tag(Tag(Menu.FPS, "Counter displaying the FPS", True))
+        
+        window.add_elem(
+            Menu.FPS_TITLE,
+            Text(
+                Menu.FPS_TEXT.format(fps = 0),
+                Menu.SUB_TITLE,
+                "WHITE",
+                centered = False,
+                tags = [Menu.FPS],
+                align_left = True,
+                align_top = True
+            )
+        )
     
     
     
@@ -190,7 +221,18 @@ class Menu:
         
         ### -----------------------------------
     
-    def handle_menus(window: WindowUI, run: bool):
+    def handle_menus(self, window: WindowUI, run: bool):
+        
+        if glob.get_tag(Menu.FPS).display:
+            
+            if self.fps_timer.is_end():
+                window.update_text(
+                    Menu.FPS_TITLE, 
+                    Menu.FPS_TEXT.format(fps = int(window.get_fps())))
+
+                self.fps_timer.start(Menu.FPS_UPDATE_TIME_IN_SEC)
+        
+        
         if glob.get_tag(Menu.MAIN_MENU).display:
             for button_name in Menu.MENU_BUTTONS:
                 
