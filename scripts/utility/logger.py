@@ -18,6 +18,8 @@ class Logger:
     ## Level Names
     __INFO = "INFO"
     __WARNING = "WARNING"
+    __ERROR = "ERROR"
+    __CRITICAL = "CRITICAL"
     
     ## Error types
     TYPE_ERROR = 0
@@ -56,7 +58,7 @@ class Logger:
         Logger.log_info(log_start_text)
         
         
-    def __print_log(level: str, msg:str):
+    def __print_log(level: str, msg: str):
         """Prints a log to the terminal.
 
         Args:
@@ -92,6 +94,30 @@ class Logger:
         Logger.__print_log(Logger.__WARNING, msg)
         
         logging.warning(msg)
+        
+        
+    def log_error(msg: str):
+        """Creates a log with the level ERROR.
+
+        Args:
+            msg (str): Log message.
+        """        
+        
+        Logger.__print_log(Logger.__ERROR, msg)
+        
+        logging.error(msg)
+    
+    
+    def log_critical(msg: str):
+        """Creates a log with the level CRITICAL.
+
+        Args:
+            msg (str): Log message.
+        """
+        
+        Logger.__print_log(Logger.__CRITICAL, msg)
+        
+        logging.critical(msg)
     
     
     def raise_exception(error_msg: str, 

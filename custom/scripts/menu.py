@@ -28,7 +28,7 @@ class Menu:
     OPTIONS_SUB_TITLE = "options_sub_title"
     OPTIONS_BUTTONS = [("Audio", True, True), 
                        ("Music", True, True), 
-                       ("Scale", glob.scale, False)]
+                       ("UI Scale", glob.scale, False)]
     
     FPS_UPDATE_TIME_IN_SEC = 0.2
     
@@ -122,7 +122,7 @@ class Menu:
             ))
         
         
-    def add_no_selection(window: WindowUI, elem_name: str, text: str, y_offset: int, value: float):
+    def add_no_selection(window: WindowUI, elem_name: str, text: str, y_offset: int, value: float, tags: list[str] = [], **align_args: dict[str, bool]):
         
         offset = (0, y_offset)
         
@@ -131,8 +131,8 @@ class Menu:
             Text(Menu.SELECTION_NO.format(text = text, value = value), "menu_button_u", "WHITE", 
                  offset = (0, y_offset),
                  centered=True, 
-                 tags = [Menu.OPTIONS_MENU], 
-                 align_left = False)
+                 tags = tags,
+                 **align_args)
         )
         
         text_width = window.get_elem(f"{elem_name}_text").dim[0] / 2
@@ -142,25 +142,29 @@ class Menu:
             "menu_button_u", 
             "WHITE", 
             offset = (text_width + button_gap, y_offset),
-            tags = [Menu.OPTIONS_MENU])
+            tags = tags,
+            **align_args)
         
         h_up_text = Text(">", 
             "menu_button_h", 
             "WHITE", 
             offset = (text_width + button_gap, y_offset),
-            tags = [Menu.OPTIONS_MENU])
+            tags = tags,
+            **align_args)
         
         down_text = Text("<", 
             "menu_button_u", 
             "WHITE", 
             offset = (-text_width - button_gap, y_offset),
-            tags = [Menu.OPTIONS_MENU])
+            tags = tags,
+            **align_args)
         
         h_down_text = Text("<", 
             "menu_button_h", 
             "WHITE", 
             offset = (-text_width - button_gap, y_offset),
-            tags = [Menu.OPTIONS_MENU])
+            tags = tags,
+            **align_args)
         
         window.add_elem(
             f"{elem_name}_up", 
@@ -205,7 +209,8 @@ class Menu:
                     Menu.OPTIONS_BUTTONS[i][0], 
                     Menu.OPTIONS_BUTTONS[i][0],
                     i * Menu.GAP, 
-                    Menu.OPTIONS_BUTTONS[i][1])
+                    Menu.OPTIONS_BUTTONS[i][1],
+                    tags = [Menu.OPTIONS_MENU])
                 
             back_offset = (18, -70)
                 
@@ -277,18 +282,16 @@ class Menu:
                     else:
                         window.is_pressed(button_name, toggle=True)
                         
-                        
-            
                 else:
                     if window.is_pressed(button_name + "_up"):
-                        if button_name == "Scale":
+                        if button_name == "UI Scale":
                             window.set_scale(glob.scale + 0.1)
                             window.update_text(
                                 button_name + "_text", 
                                 Menu.SELECTION_NO.format(text=button_name, value = round(glob.scale, 1)))
                     
                     elif window.is_pressed(button_name + "_down"):
-                        if button_name == "Scale" and glob.scale > 0.5:
+                        if button_name == "UI Scale" and glob.scale > 0.5:
                             window.set_scale(glob.scale - 0.1)
                             window.update_text(
                                 button_name + "_text", 

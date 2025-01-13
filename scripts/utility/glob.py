@@ -112,6 +112,9 @@ def get_colour(colour_name: str) -> tuple[int, int, int]:
         return glob_colour_dict[colour_name]
     
 
+
+
+### IMAGES ----------------------------------
 def add_img_surf(img_name: str, img_surf: Surface):
     """Adds a new surface to the global image dictonary.
 
@@ -153,6 +156,21 @@ def get_img_surf(img_name: str) -> Surface:
                                   INVALID_IMG_NAME):
     
         return glob_img_dict[img_name]
+
+def get_img_dim(img_name: str) -> tuple[int, int]:
+    """
+    Get the dimensions of an image.
+    
+    Args:
+        img_name (str): The name of the image.
+    
+    Returns:
+        tuple[int, int]: A tuple containing the width and height of the image.
+    """
+    
+    img_surf = get_img_surf(img_name)
+    return (img_surf.get_width(), img_surf.get_height())
+### ------------------------------------------
     
 
 
