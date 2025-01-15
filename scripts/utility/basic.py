@@ -1,4 +1,6 @@
+from scripts.utility.logger import Logger
 from typing import List, TypeVar
+from json import JSONDecodeError, load as json_load
 
 T = TypeVar('T')
 
@@ -74,4 +76,42 @@ def get_filename(file_path: str, include_extension: bool = True) -> str:
         return filename.split('.')[0]
 
     return filename
+
+
+def load_json_file(file_path: str) -> dict:
+    """
+    Load a JSON file from the specified file path.
+    
+    Args:
+        file_path (str): The path to the JSON file to be loaded.
+    
+    Returns:
+        dict: The contents of the JSON file as a dictionary.
+    
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        JSONDecodeError: If the file contains invalid JSON.
+        Exception: For any other exceptions that occur during file loading.
+    """
+    
+    
+    try:
+        with open(file_path, 'r') as file:
+            data = json_load(file)
+            
+        Logger.log_info(f"Loaded '{file_path}' successfully.")
+        
+        return data
+
+    except FileNotFoundError:
+        Logger.log_error(f"Error loading file. Filepath '{file_path}' does not exist.")
+
+    except JSONDecodeError:
+        Logger.log_error(f"Error loading file. '{file_path}' contains invalid JSON.")
+
+    except Exception as e:
+        Logger.log_error(f"Error loading file. Attempting to load '{file_path}' resulted in the following exception: {e}.")
+        
+    return {}
+    
     

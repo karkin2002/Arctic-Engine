@@ -22,13 +22,15 @@ class Logger:
     __CRITICAL = "CRITICAL"
     
     ## Error types
-    TYPE_ERROR = 0
-    KEY_ERROR = 1
+    TYPE_ERROR = 1
+    KEY_ERROR = 2
+    INDEX_ERROR = 3
     
     ##Exception Error Msgs
     __INCORRECT_TYPE = "'{value}' is of type {value_type}, expected {expected_type}."
     __INCORRECT_LEN = "'{data}' is of length {data_length}, expected {expected_length}."
-    __INCORRECT_KEY = "'{key}' wasn't found in dictonary."
+    __INCORRECT_KEY = "'{key}' was not found in dictonary."
+    __INCORRECT_INDEX = "'{index}' is not a valid index, expected value from 0 to {max_index}."
     
     
     
@@ -143,11 +145,18 @@ class Logger:
         
         elif error_type == Logger.KEY_ERROR:
             raise KeyError(error_msg)
+        
+        elif error_type == Logger.INDEX_ERROR:
+            raise IndexError(error_msg)
+        
+        else:
+            raise Exception(error_msg)
 
         
     def raise_incorrect_type(value: any, 
                              expected_type: T, 
-                             additional_text: str = None) -> bool:
+                             additional_text: str = None,
+                             raise_exception: bool = True) -> bool:
         """Returns False if the value is of the correct object type, otherwise 
         raises an exception for values being the incorrect object type.
 
@@ -156,6 +165,7 @@ class Logger:
             expected_type (T): Expected type for the value.
             additional_text (str, optional): Additional text to be added to the 
             error msg. Defaults to None.
+            raise_exception (bool, optional): Whether to raise an exception. Defaults to True.
 
         Returns:
             bool: Returns False if the data is of correct object type.
@@ -170,12 +180,18 @@ class Logger:
                 value_type = type(value),
                 expected_type = expected_type)
             
-            Logger.raise_exception(error_msg, Logger.TYPE_ERROR, additional_text)
+            if raise_exception:
+                Logger.raise_exception(error_msg, Logger.TYPE_ERROR, additional_text)
+            else:
+                Logger.log_error(additional_text + " " + error_msg)
+                
+        return True
             
             
     def raise_incorrect_len(data: any,
                             expected_length: int,
-                            additional_text: str = None) -> bool:
+                            additional_text: str = None,
+                            raise_exception: bool = True) -> bool:
         """Returns False if the data is the correct length, otherwise raises an 
         exception for data being the incorrect length.
 
@@ -184,6 +200,7 @@ class Logger:
             expected_length (int): Expected length of the data.
             additional_text (str, optional): Additional text to be added to the 
             error msg. Defaults to None.
+            raise_exception (bool, optional): Whether to raise an exception. Defaults to True.
 
         Returns:
             bool: Returns False if the data is of correct length.
@@ -198,12 +215,18 @@ class Logger:
                 data_length = len(data),
                 expected_length = expected_length)
             
-            Logger.raise_exception(error_msg, Logger.TYPE_ERROR, additional_text)
+            if raise_exception:
+                Logger.raise_exception(error_msg, Logger.TYPE_ERROR, additional_text)
+            else:
+                Logger.log_error(additional_text + " " + error_msg)
+                
+        return True
         
 
     def raise_key_error(dictonary: dict,
                         key: any,
-                        additional_text: str = None) -> bool:
+                        additional_text: str = None,
+                        raise_exception = True) -> bool:
         """Returns False if the key is found within the dict, otherwise raises a
         key error.
 
@@ -212,6 +235,7 @@ class Logger:
             key (any): Expected key.
             additional_text (str, optional): Additional text to be added to the 
             error msg. Defaults to None. Defaults to None.
+            raise_exception (bool, optional): Whether to raise an exception. Defaults to True.
 
         Returns:
             bool: Returns False if the key is valid within the dict.
@@ -224,6 +248,53 @@ class Logger:
         else:
             error_msg = Logger.__INCORRECT_KEY.format(key = key)
             
-            Logger.raise_exception(error_msg, Logger.KEY_ERROR, additional_text)
+            if raise_exception:
+                Logger.raise_exception(
+                    error_msg, 
+                    Logger.KEY_ERROR, 
+                    additional_text)
+            
+            else:
+                Logger.log_error(additional_text + " " + error_msg)
+                
+        return True
+    
+    
+    def raise_index_error(list_being_indexed: list,
+                      index: int,
+                      additional_text: str = None,
+                      raise_exception = True) -> bool:
         
+        """Returns False if the index is valid within the list, otherwise raises an
+        index error.
+
+        Args:
+            list_being_indexed (list): List.
+            index (int): Expected index.
+            additional_text (str, optional): Additional text to be added to the 
+            error msg. Defaults to None.
+            raise_exception (bool, optional): Whether to raise an exception. Defaults to True.
+
+        Returns:
+            bool: Returns False if the index is valid within the list.
+        """        
         
+        list_length = len(list_being_indexed)
+        
+        if 0 <= index < list_length:
+            return False
+        
+        else:
+            error_msg = Logger.__INCORRECT_INDEX.format(index = index,
+                                                      max_index = list_length)
+            
+            if raise_exception:
+                Logger.raise_exception(
+                    error_msg, 
+                    Logger.INDEX_ERROR, 
+                    additional_text)
+            
+            else:
+                Logger.log_error(additional_text + " " + error_msg)
+                
+        return True

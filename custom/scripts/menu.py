@@ -77,7 +77,7 @@ class Menu:
                             offset = (0, -230),
                             tags = [Menu.MAIN_MENU]))
 
-        offset = 0
+        offset = -80
         gap = 90
         count = 0
         for i in range(len(Menu.MENU_BUTTONS)):

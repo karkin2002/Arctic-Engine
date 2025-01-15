@@ -54,6 +54,7 @@ menu = Menu()
 Menu.set_fps_counter(window)
 Menu.set_main_menu(window)
 Menu.set_options_menu(window)
+glob.get_tag("fps").display = False
 
 
 ## TILE TEST SUITE ----------------------------
@@ -64,25 +65,20 @@ test_tile = StaticTile("test_texture")
 arc_eng = ArcticEngine()
 arc_eng.new_map((2,2), "test_texture")
 
-Menu.add_no_selection(window, "game_scale", "Game Scale", -60, arc_eng.get_game_scale(), align_bottom = True)
-
 arc_eng.set_game_scale(10)
 ## --------------------------------------------
 
-# Create a pygame surface with transparent background
 surface = pygame.Surface((4, 4), pygame.SRCALPHA)
 
-# Draw a red circle on the surface
 pygame.draw.circle(surface, (255, 0, 0), (2, 2), 2)
 
 
-
 ### Main Loop -----------------------------
-glob.audio.setVolume(100)
+glob.audio.setVolume(0)
 
 run = True
 while run:
-    
+
     run = menu.handle_menus(window, run)
 
     if not window.events():
@@ -92,14 +88,16 @@ while run:
         window.draw()
         
     else:
-        if window.is_pressed("game_scale_up", hold=True):
-            arc_eng.set_game_scale(arc_eng.get_game_scale() + (0.02 * glob.delta_time))
+        if window.keyboard.is_pressed("zoom_in", hold=True):
+            arc_eng.set_game_scale(arc_eng.get_game_scale() + (0.4 * glob.delta_time))
         
-        if window.is_pressed("game_scale_down", hold=True):
-            arc_eng.set_game_scale(arc_eng.get_game_scale() - (0.02 * glob.delta_time))
+        if window.keyboard.is_pressed("zoom_out", hold=True):
+            arc_eng.set_game_scale(arc_eng.get_game_scale() - (0.4 * glob.delta_time))
+        
+        arc_eng.set_game_surf(window.resized, window.win_dim)
         
         window.draw(
-            b_surf=(arc_eng.get_game_surf(window.resized, window.win_dim), (0,0)),
+            b_surf=(arc_eng.game_surf, arc_eng.game_surf_pos),
             f_surf=(surface,(window.win_dim[0]/2 - 2, window.win_dim[1]/2 - 2))
         )
 

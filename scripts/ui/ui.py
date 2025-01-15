@@ -3,6 +3,7 @@ import ctypes, pygame, scripts.utility.glob as glob
 from scripts.ui.ui_element import UIElement, Button, Text
 from scripts.utility.logger import Logger
 from scripts.audio.audio import AudioUI
+from scripts.ui.key_input import KeyInput
 glob.init()
 
 ## UI Class
@@ -50,6 +51,7 @@ class WindowUI:
         self.mouse_press_frames: int = 0
         
         glob.audio = AudioUI(volume)
+        self.keyboard = KeyInput()
 
 
     def __set_win(self, win_dim: tuple[int, int]):
@@ -88,7 +90,6 @@ class WindowUI:
         return self.__clock.get_fps()
         
 
-
     def events(self) -> bool:
         """Handles the window events, including resizing and quitting.
 
@@ -97,6 +98,8 @@ class WindowUI:
         """
         
         self.resized = False
+        
+        self.keyboard.set_current_inputs()
 
         for event in pygame.event.get():
             
