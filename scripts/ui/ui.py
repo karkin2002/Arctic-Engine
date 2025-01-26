@@ -14,7 +14,6 @@ class WindowUI:
     __DEFUALT_CAPTION = "New Window"
     
     __INVALID_TEXT_UPDATE = "Couldn't update text for '{elem_name}'."
-    __OVERWRITTEN = "{data_type} '{name}' overwritten from '{pre_data}' to '{post_data}'."
     __ADDED_UI_ELEM = "UI Element '{name}' added as '{data}'."
     
     def __init__(self, 
@@ -171,12 +170,11 @@ class WindowUI:
         """     
                     
         if elem_name in self.__ui_elems:
-            Logger.log_warning(self.__OVERWRITTEN.format(
-                data_type = UIElement,
-                name = elem_name,
-                pre_data = self.__ui_elems[elem_name],
-                post_data = elem
-            ))
+            
+            Logger.warn_overwritten(
+                elem_name,
+                self.__ui_elems[elem_name], 
+                elem)
         
         self.__ui_elems[elem_name] = elem
         

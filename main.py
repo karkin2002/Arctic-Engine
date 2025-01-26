@@ -2,6 +2,7 @@ import pygame, scripts.utility.glob as glob
 from scripts.utility.logger import Logger
 from scripts.ui.ui import WindowUI
 from custom.scripts.menu import Menu
+from scripts.game.Camera import Camera
 
 ## Arctic Engine Test ---------------
 from scripts.game.Tile import StaticTile
@@ -54,31 +55,30 @@ menu = Menu()
 Menu.set_fps_counter(window)
 Menu.set_main_menu(window)
 Menu.set_options_menu(window)
+
 glob.get_tag("fps").display = False
 
 
 ## TILE TEST SUITE ----------------------------
 glob.add_img_surf("test_texture", pygame.image.load(r"static\images\tile_texture.png"))
 
-test_tile = StaticTile("test_texture")
-
 arc_eng = ArcticEngine()
-arc_eng.new_map((2,2), "test_texture")
+arc_eng.new_map((20,20), "test_texture")
 
-arc_eng.set_game_scale(10)
 ## --------------------------------------------
 
 surface = pygame.Surface((4, 4), pygame.SRCALPHA)
 
 pygame.draw.circle(surface, (255, 0, 0), (2, 2), 2)
 
-
 ### Main Loop -----------------------------
-glob.audio.setVolume(0)
+glob.audio.setVolume(100)
+
+arc_eng.add_camera("test_camera", Camera((0,0), 1))
+arc_eng.get_camera("test_camera").set_scale(10)
 
 run = True
 while run:
-
     run = menu.handle_menus(window, run)
 
     if not window.events():
@@ -88,13 +88,29 @@ while run:
         window.draw()
         
     else:
+        camera = arc_eng.get_camera("test_camera")
+        
+        if window.keyboard.is_pressed("camera_up", hold=True):
+            camera.move_pos((0, 2))
+            
+        if window.keyboard.is_pressed("camera_down", hold=True):
+            camera.move_pos((0, -2))
+            
+        if window.keyboard.is_pressed("camera_right", hold=True):
+            camera.move_pos((-2, 0))
+            
+        if window.keyboard.is_pressed("camera_left", hold=True):
+            camera.move_pos((2, 0))
+        
         if window.keyboard.is_pressed("zoom_in", hold=True):
-            arc_eng.set_game_scale(arc_eng.get_game_scale() + (0.4 * glob.delta_time))
+            camera.adjust_scale(0.2)
         
         if window.keyboard.is_pressed("zoom_out", hold=True):
-            arc_eng.set_game_scale(arc_eng.get_game_scale() - (0.4 * glob.delta_time))
-        
-        arc_eng.set_game_surf(window.resized, window.win_dim)
+            camera.adjust_scale(-0.2)
+
+
+        arc_eng.set_game_surf(window.resized, window.win_dim, "test_camera")
+
         
         window.draw(
             b_surf=(arc_eng.game_surf, arc_eng.game_surf_pos),

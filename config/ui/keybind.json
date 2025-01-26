@@ -1,4 +1,8 @@
 {
     "zoom_in": "=",
-    "zoom_out": "-"
+    "zoom_out": "-",
+    "camera_up": "w",
+    "camera_down": "s",
+    "camera_right": "d",
+    "camera_left": "a"
 }
