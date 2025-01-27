@@ -395,7 +395,7 @@ class AudioUI:
 
         if self.__getAudioCat(cat_name).isAudio(audio_name):
             self.__getAudioCat(cat_name).playAudio(audio_name, self.max_channels, loops)
-            Logger.log_info(f"Playing '{audio_name}' from '{cat_name}' with {loops} loops.")
+            #Logger.log_info(f"Playing '{audio_name}' from '{cat_name}' with {loops} loops.")
 
     ## Pauses the audio
     def pause(self, cat_name: str, audio_name: str):

@@ -297,7 +297,7 @@ class Menu:
                                 button_name + "_text", 
                                 Menu.SELECTION_NO.format(text=button_name, value = round(glob.scale, 1)))
                             
-            if window.is_pressed("back"):
+            if window.is_pressed("back") or window.keyboard.is_pressed("back", hold=False):
                 glob.get_tag(Menu.MAIN_MENU).display = True
                 glob.get_tag(Menu.OPTIONS_MENU).display = False
                 

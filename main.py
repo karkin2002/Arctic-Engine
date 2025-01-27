@@ -3,6 +3,8 @@ from scripts.utility.logger import Logger
 from scripts.ui.ui import WindowUI
 from custom.scripts.menu import Menu
 from scripts.game.Camera import Camera
+from scripts.game.Map import Map
+from scripts.game.MapLayer import MapLayer
 
 ## Arctic Engine Test ---------------
 from scripts.game.Tile import StaticTile
@@ -10,7 +12,7 @@ from scripts.game.ArcticEngine import ArcticEngine
 ## ----------------------------------
 
 ## Loading Logger and initialising.
-Logger("logs/UI_Organisation")  
+Logger(r"logs\UI_Organisation")  
 pygame.init()
 glob.init()
 
@@ -34,8 +36,8 @@ glob.add_colour("MENU_BACK", (254, 44, 84))
 
 ## Loading window UI.
 window = WindowUI(
-    (1920, 1080),
-    "유학생 - Yu-Hak-Saeng",
+    (1000, 1000),
+    "Arctic Engine",
     b_colour="MENU_BACK",
     framerate=9999)
 
@@ -60,22 +62,27 @@ glob.get_tag("fps").display = False
 
 
 ## TILE TEST SUITE ----------------------------
-glob.add_img_surf("test_texture", pygame.image.load(r"static\images\tile_texture.png"))
+glob.add_img_surf("test_texture_1", pygame.image.load(r"static\images\tile_texture_1.png"))
+glob.add_img_surf("test_texture_2", pygame.image.load(r"static\images\tile_texture_2.png"))
 
 arc_eng = ArcticEngine()
-arc_eng.new_map((20,20), "test_texture")
 
+arc_eng.add_map("test_map", Map((20,20)))
+
+test_map = arc_eng.get_map("test_map")
+
+test_map.add_map_layer()
+test_map.get_map_layer(0).generate_map_array([None, "test_texture_1", "test_texture_2"], [0.1, 0.1, 0.8])
+test_map.set_map_surf()
 ## --------------------------------------------
 
-surface = pygame.Surface((4, 4), pygame.SRCALPHA)
-
-pygame.draw.circle(surface, (255, 0, 0), (2, 2), 2)
 
 ### Main Loop -----------------------------
 glob.audio.setVolume(100)
 
 arc_eng.add_camera("test_camera", Camera((0,0), 1))
-arc_eng.get_camera("test_camera").set_scale(10)
+camera = arc_eng.get_camera("test_camera")
+camera.set_scale(5)
 
 run = True
 while run:
@@ -88,8 +95,6 @@ while run:
         window.draw()
         
     else:
-        camera = arc_eng.get_camera("test_camera")
-        
         if window.keyboard.is_pressed("camera_up", hold=True):
             camera.move_pos((0, 2))
             
@@ -103,19 +108,17 @@ while run:
             camera.move_pos((2, 0))
         
         if window.keyboard.is_pressed("zoom_in", hold=True):
-            camera.adjust_scale(0.2)
+            camera.adjust_scale(0.1)
         
         if window.keyboard.is_pressed("zoom_out", hold=True):
-            camera.adjust_scale(-0.2)
+            camera.adjust_scale(-0.1)
+            
+        if window.keyboard.is_pressed("back", hold=False):
+            glob.get_tag(Menu.MAIN_MENU).display = True
+            
+        arc_eng.set_game_surf(window.resized, window.win_dim, test_map, camera)
 
-
-        arc_eng.set_game_surf(window.resized, window.win_dim, "test_camera")
-
-        
-        window.draw(
-            b_surf=(arc_eng.game_surf, arc_eng.game_surf_pos),
-            f_surf=(surface,(window.win_dim[0]/2 - 2, window.win_dim[1]/2 - 2))
-        )
+        window.draw(b_surf=(arc_eng.game_surf, arc_eng.game_surf_pos))
 
 pygame.quit()
 ### -----------------------------------------

@@ -1,4 +1,5 @@
 from pygame import Surface, transform
+from scripts.game.Map import Map
 from scripts.utility.logger import Logger
 from scripts.game.Tile import StaticTile, DynamicTile
 from scripts.game.Camera import Camera
@@ -7,8 +8,7 @@ class ArcticEngine:
     
     __TUPLE_NOT_IN_RANGE = "{topic} not in range '{value}'. Ensure values are >= 1."
     __GAME_SURF_DIM = "Specified game surface dimensions"
-    __MAP_DIM = "Specified map dimensions"
-    __NEW_MAP = "Map created of size: '{map_dim}'."
+    __INVALID_MAP_NAME_TEXT = "Map does not exist."
     
     DEFAULT_CAMERA_NAME = "default_camera"
     __CAMERA_NAME_NOT_EXIST = "Camera name does not exist, returning default camera."
@@ -22,72 +22,11 @@ class ArcticEngine:
         self.game_surf_dim: tuple[int, int] = None
         self.game_surf_pos: tuple[int, int] = (0, 0)
         
-        self.map_surf: Surface = None
-        self.map_surf_dim: tuple[int, int] = None
-        self.map_array: list[list[StaticTile | DynamicTile]] = None
-        self.map_dim: tuple[int, int] = None
-        self.map_tile_dim: int = None
+        self.map_dict: dict[str, Map] = {}
         
         self.__camera_dict: dict[str, Camera] = {
             self.DEFAULT_CAMERA_NAME: Camera()
         }
-        
-    
-    
-    def new_map(self,
-                dim: tuple[int,int], 
-                texture_img_name: str):
-        """
-        Creates a new map with the specified dimensions and texture image name. 
-        The map_tile_dim is set based on the first tiles texture in the map
-        array.
-        
-        Args:
-            dim (tuple[int,int]): A tuple representing the dimensions of the map.
-            texture_img_name (str): The name of the texture image to be used for the map.
-        """
-        
-        if all(i >= 1 for i in dim):
-            
-            self.map_array = []
-            
-            self.map_dim = dim
-            
-            for y in range(dim[1]):
-                
-                self.map_array.append([])
-                for x in range(dim[0]):
-                    
-                    new_map_tile = StaticTile(texture_img_name)
-                    
-                    if y == 0 and x == 0:
-                        self.map_tile_dim = new_map_tile.dim
-                    
-                    self.map_array[y].append(new_map_tile)
-                    
-            self.__set_map_surf()
-                    
-            Logger.log_info(
-                ArcticEngine.__NEW_MAP.format(map_dim = dim))
-                    
-        else:
-            Logger.log_error(
-                ArcticEngine.__TUPLE_NOT_IN_RANGE.format(
-                    topic = ArcticEngine.__MAP_DIM, value = dim))
-            
-            
-    def __set_map_surf(self):
-        
-        self.map_surf_dim = (
-            self.map_dim[0] * self.map_tile_dim[0],
-            self.map_dim[1] * self.map_tile_dim[1])
-        
-        self.map_surf = Surface(self.map_surf_dim)
-        
-        for y in range(len(self.map_array)):
-            for x in range(len(self.map_array[y])):
-                self.map_surf.blit(self.map_array[y][x].get_texture_surf(), (self.map_tile_dim[0] * x, self.map_tile_dim[1] * y))
-
             
     def __set_unscaled_game_surf(self, surf_resized: bool, surf_dim: tuple[int, int], camera: Camera):
         
@@ -134,29 +73,27 @@ class ArcticEngine:
         self.__set_game_surf_pos(camera)
                 
                 
-    def __draw_map(self, camera: Camera):
+    def __draw_map(self, map_obj: Map, camera: Camera):
         self.unscaled_game_surf.fill((0,0,0))
         
         ## Drawing the map onto the game window
-        self.unscaled_game_surf.blit(self.map_surf, (
+        self.unscaled_game_surf.blit(map_obj.map_surf, (
             (self.unscaled_game_surf_dim[0] / 2) + round(camera.pos[0]),
             (self.unscaled_game_surf_dim[1] / 2) + round(camera.pos[1]),
         ))
         
 
-
     def set_game_surf(self, 
                       surf_resized: bool, 
                       surf_dim: tuple[int, int], 
-                      camera_name: str = DEFAULT_CAMERA_NAME) -> Surface:
-        
-        camera = self.get_camera(camera_name)
+                      map_obj: Map,
+                      camera: Camera) -> Surface:
         
         ## Setting the game window
         self.__set_unscaled_game_surf(surf_resized, surf_dim, camera)
         
         ## Drawing the map
-        self.__draw_map(camera)
+        self.__draw_map(map_obj, camera)
         
         ## Scaleding the game window to match the size of the surface being drawn on
         self.__set_scaled_game_surf(surf_resized, surf_dim, camera)
@@ -165,7 +102,32 @@ class ArcticEngine:
         camera.camera_pos_changed = False
         
         
-    def get_camera(self, camera_name: str) -> Camera:
+    def add_map(self, map_name: str, new_map: Map):
+        
+        if map_name in self.map_dict:
+            Logger.log_info(Logger.__OVERWRITTEN.format(
+                data_type = type(new_map),
+                name = map_name,
+                pre_data = self.map_dict[map_name],
+                post_data = new_map
+            ))
+            
+        self.map_dict[map_name] = new_map
+        
+    def get_map(self, map_name: str) -> Map:
+        
+        if not Logger.raise_key_error(
+            self.map_dict,
+            map_name,
+            self.__INVALID_MAP_NAME_TEXT,
+            False):
+            
+            return self.map_dict[map_name]
+        
+        return None
+        
+        
+    def get_camera(self, camera_name: str = DEFAULT_CAMERA_NAME) -> Camera:
         
         if not Logger.raise_key_error(
             self.__camera_dict,
