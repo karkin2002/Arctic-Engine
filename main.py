@@ -12,14 +12,14 @@ from scripts.game.ArcticEngine import ArcticEngine
 ## ----------------------------------
 
 ## Loading Logger and initialising.
-Logger(r"logs\UI_Organisation")  
+Logger(r"logs/UI_Organisation")  
 pygame.init()
 glob.init()
 
 ## Setting global data.
-KOREAN_TITLE = r"static\fonts\korean_title.ttf"
-KOREAN_REGULAR = r"static\fonts\korean_regular.ttf"
-KOREAN_BOLD = r"static\fonts\korean_bold.ttf"
+KOREAN_TITLE = r"static/fonts/korean_title.ttf"
+KOREAN_REGULAR = r"static/fonts/korean_regular.ttf"
+KOREAN_BOLD = r"static/fonts/korean_bold.ttf"
 
 glob.add_font("title", KOREAN_TITLE, 120)
 glob.add_font("sub_title", KOREAN_TITLE, 30)
@@ -28,29 +28,27 @@ glob.add_font("menu_button_u", KOREAN_REGULAR, 48)
 glob.add_font("menu_button_h", KOREAN_BOLD, 46)
 glob.add_font("menu_button_p", KOREAN_REGULAR, 40)
 
-glob.add_font("font", "calibri", 40)
-
 glob.add_colour("WHITE", (255, 255, 255))
 glob.add_colour("BLACK", (0, 0, 0))
 glob.add_colour("MENU_BACK", (254, 44, 84))
 
 ## Loading window UI.
 window = WindowUI(
-    (1000, 1000),
+    (1920, 1080),
     "Arctic Engine",
     b_colour="MENU_BACK",
     framerate=9999)
 
 ## Setting Audio
 glob.audio.addCat(Menu.AUDIO_MAIN_MENU)
-glob.audio.addAudio(Menu.AUDIO_MAIN_MENU, r"static\audio\music\music.wav")
+glob.audio.addAudio(Menu.AUDIO_MAIN_MENU, r"static/audio/music/music.wav")
 
 AUDIO_UI = "ui"
 glob.audio.addCat(AUDIO_UI)
-glob.audio.addAudio(AUDIO_UI, r"static\audio\sfx\ui\button_1.wav")
-glob.audio.addAudio(AUDIO_UI, r"static\audio\sfx\ui\button_2.wav")
-glob.audio.addAudio(AUDIO_UI, r"static\audio\sfx\ui\button_3.wav")
-glob.audio.addAudio(AUDIO_UI, r"static\audio\sfx\ui\button_4.wav")
+glob.audio.addAudio(AUDIO_UI, r"static/audio/sfx/ui/button_1.wav")
+glob.audio.addAudio(AUDIO_UI, r"static/audio/sfx/ui/button_2.wav")
+glob.audio.addAudio(AUDIO_UI, r"static/audio/sfx/ui/button_3.wav")
+glob.audio.addAudio(AUDIO_UI, r"static/audio/sfx/ui/button_4.wav")
 
 ## Setting Menus
 menu = Menu()
@@ -62,8 +60,8 @@ glob.get_tag("fps").display = False
 
 
 ## TILE TEST SUITE ----------------------------
-glob.add_img_surf("test_texture_1", pygame.image.load(r"static\images\tile_texture_1.png"))
-glob.add_img_surf("test_texture_2", pygame.image.load(r"static\images\tile_texture_2.png"))
+glob.add_img_surf("test_texture_1", pygame.image.load(r"static/images/tile_texture_1.png"))
+glob.add_img_surf("test_texture_2", pygame.image.load(r"static/images/tile_texture_2.png"))
 
 arc_eng = ArcticEngine()
 
