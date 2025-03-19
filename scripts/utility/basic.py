@@ -67,8 +67,8 @@ def get_filename(file_path: str, include_extension: bool = True) -> str:
     """
     if '/' in file_path:
         filename = file_path.split('/')[-1]
-    elif '\\' in file_path:
-        filename = file_path.split('\\')[-1]
+    elif '//' in file_path:
+        filename = file_path.split('//')[-1]
     else:
         filename = file_path
 

@@ -12,7 +12,7 @@ from scripts.game.ArcticEngine import ArcticEngine
 ## ----------------------------------
 
 ## Loading Logger and initialising.
-Logger(r"logs\UI_Organisation")  
+Logger(r"logs/UI_Organisation")  
 pygame.init()
 glob.init()
 
@@ -42,14 +42,14 @@ window = WindowUI(
 
 ## Setting Audio
 glob.audio.addCat(Menu.AUDIO_MAIN_MENU)
-glob.audio.addAudio(Menu.AUDIO_MAIN_MENU, r"static\audio\music\music.wav")
+glob.audio.addAudio(Menu.AUDIO_MAIN_MENU, r"static/audio/music/music.wav")
 
 AUDIO_UI = "ui"
 glob.audio.addCat(AUDIO_UI)
-glob.audio.addAudio(AUDIO_UI, r"static\audio\sfx\ui\button_1.wav")
-glob.audio.addAudio(AUDIO_UI, r"static\audio\sfx\ui\button_2.wav")
-glob.audio.addAudio(AUDIO_UI, r"static\audio\sfx\ui\button_3.wav")
-glob.audio.addAudio(AUDIO_UI, r"static\audio\sfx\ui\button_4.wav")
+glob.audio.addAudio(AUDIO_UI, r"static/audio/sfx/ui/button_1.wav")
+glob.audio.addAudio(AUDIO_UI, r"static/audio/sfx/ui/button_2.wav")
+glob.audio.addAudio(AUDIO_UI, r"static/audio/sfx/ui/button_3.wav")
+glob.audio.addAudio(AUDIO_UI, r"static/audio/sfx/ui/button_4.wav")
 
 ## Setting Menus
 menu = Menu()

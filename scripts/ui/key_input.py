@@ -3,7 +3,7 @@ from scripts.utility.basic import load_json_file
 import pygame
 
 class KeyInput:
-    KEYBIND_JSON_PATH = r"config\ui\keybind.json"
+    KEYBIND_JSON_PATH = r"config/ui/keybind.json"
     
     KEYBIND_NOT_EXIST_TEXT = "Custom keybind name does not exist."
     KEYCODE_NOT_EXIST_TEXT = "Keycode does not exist."
