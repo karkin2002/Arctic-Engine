@@ -1,8 +1,10 @@
 import pygame
 from pygame import font as pyfont
 from scripts.utility.logger import Logger
+from abc import abstractmethod
 import scripts.utility.glob as glob
 glob.init()
+
 
 
 
@@ -67,7 +69,10 @@ class UIElement:
         self.tags = []
         
         self.__set_tags(tags)
-        
+    
+    @abstractmethod
+    def set_surf(self, surf_dim: tuple[int, int]):
+        pass
         
     def set_display(self, display: bool):
         """Sets whether the UIElement should be displayed.
@@ -228,7 +233,39 @@ class UIElement:
                 self.__pos[1] <= pos[1] <= self.__pos[1] + self.dim[1])
                     
 
-
+class Box(UIElement):
+    def __init__(self,
+                 box_dim: tuple[int, int],
+                 colour: str,
+                 offset: tuple[int, int] = (0, 0),
+                 alpha: int = 255,
+                 centered: bool = True,
+                 display: bool = True,
+                 tags: list[str] = [],
+                 **align_args: dict[str, bool]):
+        
+        super().__init__(
+            self.DEFAULT_DIM,
+            offset,
+            alpha,
+            centered,
+            display,
+            tags,
+            **align_args
+        )
+        
+        self.original_box_dim = box_dim
+        self.box_dim = self.original_box_dim
+        self.colour = colour
+        
+        
+    def set_surf(self, surf_dim: tuple[int, int]):
+        surface = pygame.Surface([self.box_dim[0] * glob.scale, self.box_dim[1] * glob.scale], pygame.SRCALPHA)
+        surface.fill(glob.get_colour(self.colour))
+        
+        self._create_surf(
+            surf_dim, 
+            surface)
 
 
 class Text(UIElement):
@@ -311,6 +348,95 @@ class Text(UIElement):
             
             if update:
                 self.set_surf(surf_dim)
+                
+                
+                
+class TextBox(Text):
+    def __init__(self, 
+                    box_dim: tuple[int, int],
+                    bg_colour: str,
+                    text: str,
+                    font: str,
+                    colour: str,
+                    offset: tuple[int, int] = (0, 0),
+                    alpha: int = 255,
+                    centered: bool = True,
+                    display: bool = True,
+                    tags: list[str] = [],
+                    **align_args: dict[str, bool]):
+        
+        super().__init__(
+            text,
+            font,
+            colour,
+            offset,
+            alpha,
+            centered,
+            display,
+            tags,
+            **align_args
+        )
+        
+        self.box_dim = box_dim
+        self.bg_colour = bg_colour
+        
+        
+    def set_surf(self, surf_dim: tuple[int, int]):
+        new_box_dim = (self.box_dim[0] * glob.scale, self.box_dim[1] * glob.scale)
+        
+        if self.bg_colour == None:
+            surface = pygame.Surface(new_box_dim, pygame.SRCALPHA)
+        else:
+            surface = pygame.Surface(new_box_dim, pygame.SRCALPHA)
+            surface.fill(glob.get_colour(self.bg_colour))
+            
+        font = glob.get_font(self.font)
+        
+        words = self.text.split(' ')
+        space_width, _ = font.size(' ')
+        x, y = 0, 0
+        
+        # Ellipsis size
+        ellipsis_width, ellipsis_height = font.size('...')
+        
+        for i, word in enumerate(words):
+            word_width, word_height = font.size(word)
+            
+            # If the word doesn't fit on the current line, move to the next line
+            if x + word_width > new_box_dim[0]:
+                x = 0
+                y += word_height
+            
+            # If the next word or ellipsis won't fit in the box, stop and add "..."
+            next_word_width, _ = font.size(words[i + 1]) if i + 1 < len(words) else (0, 0)
+            if (
+                y + word_height > new_box_dim[1] or  # Text exceeds box height
+                (x + word_width + next_word_width + space_width > new_box_dim[0] and y + word_height + ellipsis_height > new_box_dim[1])  # Not enough room for next word or "..."
+            ):
+                # Only add ellipsis if it fits in the current line
+                if x + ellipsis_width <= new_box_dim[0] and y + ellipsis_height <= new_box_dim[1]:
+                    surface.blit(
+                        Text.createText('...', self.font, glob.get_colour(self.colour)), (x, y)
+                    )
+                break
+            
+            # Draw the word if there's still space
+            surface.blit(
+                Text.createText(word, self.font, glob.get_colour(self.colour)), (x, y)
+            )
+            x += word_width + space_width
+
+        self._create_surf(
+            surf_dim, 
+            surface
+        )
+            
+            
+        
+        
+    
+                
+
         
 
 

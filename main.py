@@ -4,7 +4,7 @@ from scripts.ui.ui import WindowUI
 from custom.scripts.menu import Menu
 from scripts.game.Camera import Camera
 from scripts.game.Map import Map
-from scripts.game.MapLayer import MapLayer
+from scripts.ui.ui_element import Image, Box, TextBox
 
 ## Arctic Engine Test ---------------
 from scripts.game.Tile import StaticTile
@@ -17,17 +17,16 @@ pygame.init()
 glob.init()
 
 ## Setting global data.
-KOREAN_TITLE = r"static\fonts\korean_title.ttf"
-KOREAN_REGULAR = r"static\fonts\korean_regular.ttf"
-KOREAN_BOLD = r"static\fonts\korean_bold.ttf"
+TITLE = r"static\fonts\korean_title.ttf"
+REGULAR = r"static\fonts\korean_regular.ttf"
+BOLD = r"static\fonts\korean_bold.ttf"
 
-glob.add_font("title", KOREAN_TITLE, 120)
-glob.add_font("sub_title", KOREAN_TITLE, 30)
+glob.add_font("title", TITLE, 110)
+glob.add_font("sub_title", TITLE, 30)
 
-glob.add_font("menu_button_u", KOREAN_REGULAR, 48)
-glob.add_font("menu_button_h", KOREAN_BOLD, 46)
-glob.add_font("menu_button_p", KOREAN_REGULAR, 40)
-
+glob.add_font("menu_button_u", REGULAR, 48)
+glob.add_font("menu_button_h", BOLD, 46)
+glob.add_font("menu_button_p", REGULAR, 40)
 glob.add_font("font", "calibri", 40)
 
 glob.add_colour("WHITE", (255, 255, 255))
@@ -36,7 +35,7 @@ glob.add_colour("MENU_BACK", (254, 44, 84))
 
 ## Loading window UI.
 window = WindowUI(
-    (1000, 1000),
+    (1920 , 1080),
     "Arctic Engine",
     b_colour="MENU_BACK",
     framerate=9999)
@@ -61,64 +60,81 @@ Menu.set_options_menu(window)
 glob.get_tag("fps").display = False
 
 
-## TILE TEST SUITE ----------------------------
-glob.add_img_surf("test_texture_1", pygame.image.load(r"static\images\tile_texture_1.png"))
-glob.add_img_surf("test_texture_2", pygame.image.load(r"static\images\tile_texture_2.png"))
+def set_dim_based_on_win_dim(run_first_time, window, ui_element, box_dim, dynamic_width = False, dynamic_height = False):
+    
+    if window.resized or window.rescaled or run_first_time:
+        
+        if dynamic_width:
+            width = (window.win_dim[0] - ((box_dim[0]*glob.scale)*2)) / glob.scale
+        else:
+            width = box_dim[0]
+        
+        if dynamic_height:
+            height = (window.win_dim[1] - ((box_dim[1]*glob.scale)*2)) / glob.scale
+        else:
+            height = box_dim[1]
+        
+        if width < 0:
+            width = 0
+        if height < 0:
+            height = 0
+        
+        ui_element.box_dim = (width, height)
+        
+        ui_element.set_surf(window.win_dim)
 
-arc_eng = ArcticEngine()
+window.add_elem("text_box_1", 
+                TextBox(
+                (0, 0), 
+                "WHITE", 
+                "This is text box 1", 
+                "menu_button_u",
+                "BLACK",
+                (50, 50),
+                centered=False,
+                align_left = True,
+                align_top = True))
+text_box_1 = window.get_elem("text_box_1")
 
-arc_eng.add_map("test_map", Map((20,20)))
-
-test_map = arc_eng.get_map("test_map")
-
-test_map.add_map_layer()
-test_map.get_map_layer(0).generate_map_array([None, "test_texture_1", "test_texture_2"], [0.1, 0.1, 0.8])
-test_map.set_map_surf()
-## --------------------------------------------
+window.add_elem("text_box_2", 
+                TextBox(
+                (0, 0), 
+                "WHITE", 
+                "This is text box 2", 
+                "menu_button_u",
+                "BLACK",
+                (50, 600),
+                centered=False,
+                align_left = True,
+                align_top = True))
+text_box_2 = window.get_elem("text_box_2")
 
 
 ### Main Loop -----------------------------
-glob.audio.setVolume(100)
+glob.audio.setVolume(0)
 
-arc_eng.add_camera("test_camera", Camera((0,0), 1))
-camera = arc_eng.get_camera("test_camera")
-camera.set_scale(5)
+run_first_time = True
 
 run = True
 while run:
     run = menu.handle_menus(window, run)
-
+    
     if not window.events():
         run = False
         
-    if glob.get_tag(Menu.MAIN_MENU).display or glob.get_tag(Menu.OPTIONS_MENU).display:
-        window.draw()
+    set_dim_based_on_win_dim(run_first_time, window, text_box_1, (50, 300), dynamic_width=True)
+    set_dim_based_on_win_dim(run_first_time, window, text_box_2, (50, 300), dynamic_width=True)
         
-    else:
-        if window.keyboard.is_pressed("camera_up", hold=True):
-            camera.move_pos((0, 2))
-            
-        if window.keyboard.is_pressed("camera_down", hold=True):
-            camera.move_pos((0, -2))
-            
-        if window.keyboard.is_pressed("camera_right", hold=True):
-            camera.move_pos((-2, 0))
-            
-        if window.keyboard.is_pressed("camera_left", hold=True):
-            camera.move_pos((2, 0))
-        
-        if window.keyboard.is_pressed("zoom_in", hold=True):
-            camera.adjust_scale(0.1)
-        
-        if window.keyboard.is_pressed("zoom_out", hold=True):
-            camera.adjust_scale(-0.1)
-            
-        if window.keyboard.is_pressed("back", hold=False):
-            glob.get_tag(Menu.MAIN_MENU).display = True
-            
-        arc_eng.set_game_surf(window.resized, window.win_dim, test_map, camera)
-
-        window.draw(b_surf=(arc_eng.game_surf, arc_eng.game_surf_pos))
+    if window.is_pressed("text_box_1"):
+        window.input_stream.set_input_stream(text_box_1)
+    
+    elif window.is_pressed("text_box_2"):
+        window.input_stream.set_input_stream(text_box_2)
+    
+    window.draw()
+    
+    if run_first_time:
+        run_first_time = False
 
 pygame.quit()
 ### -----------------------------------------

@@ -4,6 +4,7 @@ from scripts.ui.ui_element import UIElement, Button, Text
 from scripts.utility.logger import Logger
 from scripts.audio.audio import AudioUI
 from scripts.ui.key_input import KeyInput
+from scripts.ui.input_stream import InputStream
 glob.init()
 
 ## UI Class
@@ -39,6 +40,7 @@ class WindowUI:
         
         self.__set_win(win_dim)
         self.resized: bool = False
+        self.rescaled: bool = False
         self.set_caption(caption)
         
         self.b_colour = b_colour
@@ -51,6 +53,7 @@ class WindowUI:
         
         glob.audio = AudioUI(volume)
         self.keyboard = KeyInput()
+        self.input_stream = InputStream()
 
 
     def __set_win(self, win_dim: tuple[int, int]):
@@ -97,6 +100,7 @@ class WindowUI:
         """
         
         self.resized = False
+        self.rescaled = False
         
         self.keyboard.set_current_inputs()
 
@@ -118,6 +122,12 @@ class WindowUI:
             
             if event.type == pygame.VIDEORESIZE:
                 self.resized = True
+                
+        self.input_stream.modify_text(
+            self.win_dim, 
+            self.keyboard.pressed_keys, 
+            self.keyboard.past_pressed_keys
+        )
                 
         if self.mouse_press:
             self.mouse_press_frames += 1
@@ -267,10 +277,10 @@ class WindowUI:
         
         
         ## Verifying whether there is an intersection
-        if type(ui_elem) == UIElement:
+        if isinstance(ui_elem, UIElement):
             intersects = ui_elem.intersects(self.mouse_pos)
             
-        elif type(ui_elem) == Button:
+        elif isinstance(ui_elem, Button):
             intersects = ui_elem.intersects(self.mouse_pos, self.mouse_press, toggle)
         
         else:
@@ -302,6 +312,10 @@ class WindowUI:
         if value != glob.scale:
             glob.scale = value
             
+            self.rescaled = True
+            
             glob.set_font_scale()
             
             self.resize_elems(True)
+    
+   

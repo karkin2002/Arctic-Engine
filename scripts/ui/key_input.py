@@ -13,6 +13,8 @@ class KeyInput:
         
         self.__current_inputs = pygame.key.get_pressed()
         self.__past_input = self.__current_inputs
+        self.pressed_keys = []
+        self.past_pressed_keys = self.pressed_keys
         
         
     def __get_key_code(self, keybind_name: str) -> int:
@@ -27,10 +29,10 @@ class KeyInput:
         else:
             return -1
         
-        
     def set_current_inputs(self):
         self.__past_input = self.__current_inputs
         self.__current_inputs = pygame.key.get_pressed()
+        self.__set_pressed_keys()
         
         
     def is_pressed(self, keybind_name: str, hold = False) -> bool:
@@ -48,8 +50,22 @@ class KeyInput:
             else:
                 return (self.__current_inputs[self.__get_key_code(keybind_name)] and
                         not self.__past_input[self.__get_key_code(keybind_name)])
+            
         
         return False
+    
+    def __set_pressed_keys(self):
+
+        self.past_pressed_keys = self.pressed_keys
+        self.pressed_keys = []
+        for key_code in range(len(self.__current_inputs)):
+            if self.__current_inputs[key_code]:
+                try:
+                    key_name = pygame.key.name(key_code)
+                    self.pressed_keys.append(key_name)
+                except ValueError:
+                    # Ignore invalid key codes
+                    pass
             
         
         

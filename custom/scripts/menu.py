@@ -67,13 +67,13 @@ class Menu:
 
 
         window.add_elem(Menu.TITLE,
-                        Text("유학생", "title", "WHITE", 
+                        Text("UI Test Suite", "title", "WHITE", 
                             offset = (0, -330),
                             tags = [Menu.MAIN_MENU]))
 
 
         window.add_elem(Menu.SUB_TITLE,
-                        Text("Yu-Hak-Saeng", "sub_title", "WHITE", 
+                        Text("Kaya Arkin", "sub_title", "WHITE", 
                             offset = (0, -230),
                             tags = [Menu.MAIN_MENU]))
 
