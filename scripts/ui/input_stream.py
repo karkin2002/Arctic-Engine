@@ -1,3 +1,16 @@
+__author__ = "Kaya Arkin"
+__copyright__ = "Copyright Kaya Arkin"
+__license__ = "GPL"
+__email__ = "karkin2002@gmail.com"
+__status__ = "Development"
+
+"""
+This file is part of Arctic Engine Project by Kaya Arkin. For more information,
+look at the README.md file in the root directory of the project, or visit the
+GitHub Repo:https://github.com/karkin2002/Arctic-Engine.
+"""
+
+
 from scripts.utility.logger import Logger
 from scripts.ui.ui_element import Text
 import pygame

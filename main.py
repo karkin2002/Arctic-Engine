@@ -1,3 +1,15 @@
+__author__ = "Kaya Arkin"
+__copyright__ = "Copyright Kaya Arkin"
+__license__ = "GPL"
+__email__ = "karkin2002@gmail.com"
+__status__ = "Development"
+
+"""
+This file is part of Arctic Engine Project by Kaya Arkin. For more information,
+look at the README.md file in the root directory of the project, or visit the
+GitHub Repo:https://github.com/karkin2002/Arctic-Engine.
+"""
+
 import pygame, scripts.utility.glob as glob
 from scripts.utility.logger import Logger
 from scripts.ui.ui import WindowUI
@@ -5,11 +17,6 @@ from custom.scripts.menu import Menu
 from scripts.game.Camera import Camera
 from scripts.game.Map import Map
 from scripts.ui.ui_element import Image, Box, TextBox
-
-## Arctic Engine Test ---------------
-from scripts.game.Tile import StaticTile
-from scripts.game.ArcticEngine import ArcticEngine
-## ----------------------------------
 
 ## Loading Logger and initialising.
 Logger(r"logs/UI_Organisation")  
