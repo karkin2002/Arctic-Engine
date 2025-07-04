@@ -10,13 +10,15 @@ look at the README.md file in the root directory, or visit the
 GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
-import ctypes, pygame, scripts.utility.glob as glob
+import ctypes, pygame, scripts.utility.glob as glob, platform
 from scripts.ui.ui_element import UIElement, Button, Text
 from scripts.utility.logger import Logger
 from scripts.audio.audio import AudioUI
 from scripts.ui.key_input import KeyInput
 from scripts.ui.input_stream import InputStream
 glob.init()
+
+WINDOWS_PLATFORM_NAME = "Windows"
 
 ## UI Class
 class WindowUI:
@@ -39,9 +41,10 @@ class WindowUI:
 
         Args:
             win_dim (tuple[int, int], optional): Window (<width>, <height>). Defaults to (700, 500).
-        """        
-        
-        # ctypes.windll.user32.SetProcessDPIAware() ## DON'T TURN THIS ON WITH FULLSCREEN
+        """
+
+        if platform.system() == WINDOWS_PLATFORM_NAME:
+            ctypes.windll.user32.SetProcessDPIAware()  ## DON'T TURN THIS ON WITH FULLSCREEN
         
         self.win_dim: tuple[int, int] = None
         self.win: pygame.Surface = None
@@ -181,7 +184,7 @@ class WindowUI:
     
     def add_elem(self, 
                  elem_name: str, 
-                 elem: UIElement | Button):
+                 elem: UIElement | Button) -> UIElement | Button:
         
         """Adds a UI Element to be displayed on the window.
 
@@ -204,6 +207,8 @@ class WindowUI:
         Logger.log_info(self.__ADDED_UI_ELEM.format(
                 name = elem_name,
                 data = elem))
+
+        return self.__ui_elems[elem_name]
         
         
         
@@ -223,7 +228,6 @@ class WindowUI:
     def draw_elems(self):
         """Draws UI elements on the window.
         """
-        
         for elem_name in self.__ui_elems:
             self.__ui_elems[elem_name].draw(self.win)
             

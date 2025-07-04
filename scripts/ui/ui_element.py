@@ -246,6 +246,9 @@ class Box(UIElement):
     def __init__(self,
                  box_dim: tuple[int, int],
                  colour: str,
+                 outline_width: int = 0,
+                 outline_colour: str = None,
+                 border_radius: int = 0,
                  offset: tuple[int, int] = (0, 0),
                  alpha: int = 255,
                  centered: bool = True,
@@ -266,11 +269,31 @@ class Box(UIElement):
         self.original_box_dim = box_dim
         self.box_dim = self.original_box_dim
         self.colour = colour
-        
+        self.border_radius = border_radius
+        self.outline_width = outline_width
+        self.outline_colour = outline_colour
+
         
     def set_surf(self, surf_dim: tuple[int, int]):
-        surface = pygame.Surface([self.box_dim[0] * glob.scale, self.box_dim[1] * glob.scale], pygame.SRCALPHA)
-        surface.fill(glob.get_colour(self.colour))
+
+        rect_dim = (self.box_dim[0] * glob.scale, self.box_dim[1] * glob.scale)
+        surface = pygame.Surface(rect_dim, pygame.SRCALPHA)
+
+        pygame.draw.rect(
+            surface,
+            glob.get_colour(self.colour),
+            [0, 0, rect_dim[0], rect_dim[1]],
+            border_radius = round(self.border_radius * glob.scale)
+        )
+
+        if self.outline_width > 0:
+            pygame.draw.rect(
+                surface,
+                glob.get_colour(self.outline_colour),
+                [0, 0, rect_dim[0], rect_dim[1]],
+                self.outline_width,
+                border_radius = round(self.border_radius * glob.scale)
+            )
         
         self._create_surf(
             surf_dim, 
@@ -361,18 +384,21 @@ class Text(UIElement):
                 
                 
 class TextBox(Text):
-    def __init__(self, 
-                    box_dim: tuple[int, int],
-                    bg_colour: str,
-                    text: str,
-                    font: str,
-                    colour: str,
-                    offset: tuple[int, int] = (0, 0),
-                    alpha: int = 255,
-                    centered: bool = True,
-                    display: bool = True,
-                    tags: list[str] = [],
-                    **align_args: dict[str, bool]):
+    def __init__(self,
+                 box_dim: tuple[int, int],
+                 text: str,
+                 font: str,
+                 colour: str,
+                 box_colour: str = None,
+                 outline_width: int = 0,
+                 outline_colour: str = None,
+                 border_radius: int = 0,
+                 offset: tuple[int, int] = (0, 0),
+                 alpha: int = 255,
+                 centered: bool = True,
+                 display: bool = True,
+                 tags: list[str] = [],
+                 **align_args: dict[str, bool]):
         
         super().__init__(
             text,
@@ -387,56 +413,80 @@ class TextBox(Text):
         )
         
         self.box_dim = box_dim
-        self.bg_colour = bg_colour
+        self.box_colour = box_colour
+        self.outline_width = outline_width
+        self.outline_colour = outline_colour
+        self.border_radius = border_radius
         
         
     def set_surf(self, surf_dim: tuple[int, int]):
+        new_edge_box_dim = ((self.box_dim[0] + self.outline_width) * glob.scale, (self.box_dim[1] + self.outline_width) * glob.scale)
         new_box_dim = (self.box_dim[0] * glob.scale, self.box_dim[1] * glob.scale)
-        
-        if self.bg_colour == None:
-            surface = pygame.Surface(new_box_dim, pygame.SRCALPHA)
-        else:
-            surface = pygame.Surface(new_box_dim, pygame.SRCALPHA)
-            surface.fill(glob.get_colour(self.bg_colour))
-            
+
+        surface = pygame.Surface(new_edge_box_dim, pygame.SRCALPHA)
+
+        if self.box_colour != None:
+            pygame.draw.rect(
+                surface,
+                glob.get_colour(self.box_colour),
+                [0, 0, new_edge_box_dim[0], new_edge_box_dim[1]],
+                border_radius = round(self.border_radius * glob.scale)
+            )
+
+            if self.outline_width > 0:
+                pygame.draw.rect(
+                    surface,
+                    glob.get_colour(self.outline_colour),
+                    [0, 0, new_edge_box_dim[0], new_edge_box_dim[1]],
+                    self.outline_width,
+                    border_radius = round(self.border_radius * glob.scale)
+                )
+
         font = glob.get_font(self.font)
-        
-        words = self.text.split(' ')
+        lines = self.text.split('\n')  # Split text into lines based on '\n'
         space_width, _ = font.size(' ')
         x, y = 0, 0
-        
+
         # Ellipsis size
         ellipsis_width, ellipsis_height = font.size('...')
-        
-        for i, word in enumerate(words):
-            word_width, word_height = font.size(word)
-            
-            # If the word doesn't fit on the current line, move to the next line
-            if x + word_width > new_box_dim[0]:
-                x = 0
-                y += word_height
-            
-            # If the next word or ellipsis won't fit in the box, stop and add "..."
-            next_word_width, _ = font.size(words[i + 1]) if i + 1 < len(words) else (0, 0)
-            if (
-                y + word_height > new_box_dim[1] or  # Text exceeds box height
-                (x + word_width + next_word_width + space_width > new_box_dim[0] and y + word_height + ellipsis_height > new_box_dim[1])  # Not enough room for next word or "..."
-            ):
-                # Only add ellipsis if it fits in the current line
-                if x + ellipsis_width <= new_box_dim[0] and y + ellipsis_height <= new_box_dim[1]:
-                    surface.blit(
-                        Text.createText('...', self.font, glob.get_colour(self.colour)), (x, y)
-                    )
-                break
-            
-            # Draw the word if there's still space
-            surface.blit(
-                Text.createText(word, self.font, glob.get_colour(self.colour)), (x, y)
-            )
-            x += word_width + space_width
+
+        for line in lines:
+            words = line.split(' ')
+            for i, word in enumerate(words):
+                word_width, word_height = font.size(word)
+
+                # If the word doesn't fit on the current line, move to the next line
+                if x + word_width > new_box_dim[0]:
+                    x = 0
+                    y += word_height
+
+                # If the next word or ellipsis won't fit in the box, stop and add "..."
+                next_word_width, _ = font.size(words[i + 1]) if i + 1 < len(words) else (0, 0)
+                if (
+                    y + word_height > new_box_dim[1] or  # Text exceeds box height
+                    (x + word_width + next_word_width + space_width > new_box_dim[0] and y + word_height + ellipsis_height > new_box_dim[1])  # Not enough room for next word or "..."
+                ):
+                    # Only add ellipsis if it fits in the current line
+                    if x + ellipsis_width <= new_box_dim[0] and y + ellipsis_height <= new_box_dim[1]:
+                        surface.blit(
+                            Text.createText('...', self.font, glob.get_colour(self.colour)),
+                            (x + (self.outline_width * glob.scale), y + (self.outline_width * glob.scale))
+                        )
+                    break
+
+                # Draw the word if there's still space
+                surface.blit(
+                    Text.createText(word, self.font, glob.get_colour(self.colour)),
+                    (x + (self.outline_width * glob.scale), y + (self.outline_width * glob.scale))
+                )
+                x += word_width + space_width
+
+            # Move to the next line after finishing the current line
+            x = 0
+            y += font.size(' ')[1]
 
         self._create_surf(
-            surf_dim, 
+            surf_dim,
             surface
         )
             
@@ -513,7 +563,7 @@ class Button:
                  defualt_toggle_state: bool = False,
                  display: bool = True):
         
-        self.__states = {
+        self.states = {
             self.UNPRESS: unpress_elem,
             self.HOVER: hover_elem,
             self.PRESS: press_elem
@@ -524,7 +574,7 @@ class Button:
             self.PRESS: press_audio
         }
 
-        for state in self.__states.values():
+        for state in self.states.values():
             if state != None:
                 state.set_display(False)
         
@@ -544,7 +594,7 @@ class Button:
         """
         
         self.__display = display
-        self.__states[self.current_state].set_display(display)
+        self.states[self.current_state].set_display(display)
                     
 
     def get_display(self) -> bool:
@@ -561,12 +611,12 @@ class Button:
         for state_name in ui_elements:
             
             if not Logger.raise_key_error(
-                self.__states, state_name, self.__INVALID_STATE):
+                self.states, state_name, self.__INVALID_STATE):
                 
                 if not Logger.raise_incorrect_type(
                     ui_elements[state_name], UIElement, self.__INVALID_TYPE):
                 
-                    self.__states[state_name] = ui_elements[state_name]
+                    self.states[state_name] = ui_elements[state_name]
                     
                     
     def __play_state_audio(self, state_name: str):
@@ -589,36 +639,36 @@ class Button:
         
         if self.current_state != state_name:
             if not Logger.raise_key_error(
-                self.__states, state_name, self.__INVALID_STATE):
+                self.states, state_name, self.__INVALID_STATE):
                 
-                if self.__states[state_name] != None:
+                if self.states[state_name] != None:
                     
                     self.toggle_state = self.__TOGGLE_STATES[state_name]
                     
-                    self.__states[self.current_state].set_display(False)
+                    self.states[self.current_state].set_display(False)
                     self.current_state = state_name
                     if self.__display:
-                        self.__states[self.current_state].set_display(True)
+                        self.states[self.current_state].set_display(True)
                         
                 self.__play_state_audio(state_name)
             
         
         
     def set_surf(self, surf_dim: tuple[int, int]):
-        for state_name in self.__states:
-            if self.__states[state_name] != None:
-                self.__states[state_name].set_surf(surf_dim)
+        for state_name in self.states:
+            if self.states[state_name] != None:
+                self.states[state_name].set_surf(surf_dim)
         
         
     def draw(self, surf: pygame.Surface):
-        if self.__states[self.current_state] != None:
-            self.__states[self.current_state].draw(surf)
+        if self.states[self.current_state] != None:
+            self.states[self.current_state].draw(surf)
         
     
     def set_pos(self, surf_dim: tuple[int, int]):
-        for state_name in self.__states:
-            if self.__states[state_name] != None:
-                self.__states[state_name].set_pos(surf_dim)
+        for state_name in self.states:
+            if self.states[state_name] != None:
+                self.states[state_name].set_pos(surf_dim)
                 
     
     def __is_states_displayed(self) -> bool:
@@ -628,7 +678,7 @@ class Button:
         Returns:
             bool: True if at least one state is displayed, False otherwise.
         """
-        return any(state.is_displayed() for state in self.__states.values() if state is not None)
+        return any(state.is_displayed() for state in self.states.values() if state is not None)
                 
 
     def intersects(self, pos: tuple[int, int], press: bool = False, toggle: bool = False) -> bool:
@@ -646,14 +696,14 @@ class Button:
         
         if (self.__display and 
             self.__is_states_displayed() and 
-            self.__states[self.UNPRESS].intersects(pos)):
+            self.states[self.UNPRESS].intersects(pos)):
             
             if press:
                 if not toggle:
                     self.set_curent_state(self.PRESS)
                     
             
-            elif self.__states[self.HOVER] != None:
+            elif self.states[self.HOVER] != None:
                     self.set_curent_state(self.HOVER)
             
             else:
