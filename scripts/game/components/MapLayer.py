@@ -10,9 +10,8 @@ look at the README.md file in the root directory, or visit the
 GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
-from pygame import Surface
 from scripts.utility.logger import Logger
-from scripts.game.Tile import StaticTile, DynamicTile
+from scripts.game.components.Tile import StaticTile, DynamicTile
 import numpy as np
 
 class MapLayer:

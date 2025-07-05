@@ -11,7 +11,7 @@ GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
 from pygame import Surface, SRCALPHA
-from scripts.game.MapLayer import MapLayer
+from scripts.game.components.MapLayer import MapLayer
 from scripts.utility.logger import Logger
 
 class Map:

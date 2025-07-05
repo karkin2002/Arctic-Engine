@@ -14,6 +14,7 @@ import pygame, scripts.utility.glob as glob
 from scripts.utility.logger import Logger
 from scripts.ui.ui import WindowUI
 from custom.scripts.menu import Menu
+from scripts.game.ArcticEngine import ArcticEngine
 
 ## Loading Logger and initialising.
 Logger(r"logs/UI_Organisation")  
