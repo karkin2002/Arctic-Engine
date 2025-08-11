@@ -13,18 +13,39 @@ GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 import pygame, scripts.utility.glob as glob
 from scripts.utility.logger import Logger
 from scripts.game.ArcticEngine import ArcticEngine
+from scripts.game.components.map.Map import Map
+from scripts.game.components.camera.Camera import Camera
+
 
 ## Loading Logger and initialising.
 Logger(r"logs/UI_Organisation")  
 pygame.init()
 glob.init()
 
-### Main Loop -----------------------------
-ae = ArcticEngine()
+### Setup Game Engine -----------------------------
+glob.add_colour("red", (200,100,100))
+ae = ArcticEngine(background="red")
 
+## Map
+glob.add_img_surf("test_texture_1", pygame.image.load("static/images/tile_texture_1.png"))
+glob.add_img_surf("test_texture_2", pygame.image.load("static/images/tile_texture_2.png"))
+test_map = Map((100, 100))
+test_map.add_map_layer()
+test_map.get_map_layer(0).generate_map_array(["test_texture_1", "test_texture_2"], [0.2, 0.8])
+test_map.set_map_surf()
+ae.components["map"] = test_map
+
+## Camera
+test_camera = Camera((0, 0))
+ae.components["camera"] = test_camera
+ae.set_camera("camera")
+
+
+### Main Loop -----------------------------
 run = True
 while run:
-    ae.handle_events()
+
+    run = ae.handle_events()
 
 pygame.quit()
 ### -----------------------------------------

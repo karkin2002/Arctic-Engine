@@ -264,10 +264,10 @@ class Menu:
                     if button_name == "Audio":
                         if window.is_pressed(button_name, toggle=True):
                             if glob.audio.volume <= 0:
-                                glob.audio.setVolume(50)
+                                glob.audio.set_volume(50)
                         else:
                             if glob.audio.volume > 0:
-                                glob.audio.setVolume(0)
+                                glob.audio.set_volume(0)
                     
                     elif button_name == "Music":
                         if window.is_pressed(button_name, toggle=True):

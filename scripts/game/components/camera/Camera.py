@@ -10,11 +10,12 @@ look at the README.md file in the root directory, or visit the
 GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
+
+from scripts.game.components.Component import Component
 import scripts.utility.glob as glob
 glob.init()
 
-
-class Camera:
+class Camera(Component):
 
     """Class for camera used for game
     """
@@ -22,8 +23,8 @@ class Camera:
     def __init__(self,
             pos: tuple = (0, 0),
             scale: float = 1):
-        
-        self.pos = list(pos)
+
+        super().__init__(pos = list(pos))
         self.scale = scale
         self.camera_scale_changed = False
         self.camera_pos_changed = False

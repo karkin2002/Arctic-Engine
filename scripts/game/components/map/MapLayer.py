@@ -11,7 +11,7 @@ GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
 from scripts.utility.logger import Logger
-from scripts.game.components.Tile import StaticTile, DynamicTile
+from scripts.game.components.map.Tile import StaticTile, DynamicTile
 import numpy as np
 
 class MapLayer:

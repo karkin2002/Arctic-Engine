@@ -21,20 +21,20 @@ NEW_CHANNEL_ADDED = "Added new channel. No of channels: '{no_channels}'"
 
 
 ## Sets volume of audio class
-def setAudioVolume(audio, value):
+def set_audio_volume(audio, value):
     audio.set_volume(value/100)        
 
 
 ## Sets num of audio channels
-def setNumChannels(value: int):
+def set_num_channels(value: int):
 
-    """Sets number of audio channels (how many sounds you caan play at once).
+    """Sets number of audio channels (how many sounds you can play at once).
     """
 
     mixer.set_num_channels(value)
 
 ## Gets the num of audio channels
-def getNumChannels() -> int:
+def get_num_channels() -> int:
 
     """Returns num of audio channels.
 
@@ -45,15 +45,15 @@ def getNumChannels() -> int:
     return mixer.get_num_channels()
 
 ## Adds a new channel
-def addChannel():
+def add_channel():
 
     """Adds a new audio channel.
     """
 
-    setNumChannels(getNumChannels()+1)
+    set_num_channels(get_num_channels() + 1)
 
 ## finds an empty channel, creates new if no empty
-def findChannel(max_channels: int) -> mixer.Channel:
+def find_channel(max_channels: int) -> mixer.Channel | None:
 
     """Finds a channel with no audio playing, otherwise creates a new one,
     otherwise return None.
@@ -62,17 +62,17 @@ def findChannel(max_channels: int) -> mixer.Channel:
         Channel: empty channel
     """
 
-    audioChannel = mixer.find_channel()
+    audio_channel = mixer.find_channel()
     
-    if audioChannel != None:
-        return audioChannel
+    if audio_channel is not None:
+        return audio_channel
     
     else:
-        if getNumChannels() < max_channels:
-            addChannel()
+        if get_num_channels() < max_channels:
+            add_channel()
             Logger.log_info(
-                NEW_CHANNEL_ADDED.format(no_channels=getNumChannels()))
-            return mixer.Channel(getNumChannels()-1)
+                NEW_CHANNEL_ADDED.format(no_channels=get_num_channels()))
+            return mixer.Channel(get_num_channels() - 1)
 
         else:
             Logger.log_warning(
@@ -88,26 +88,28 @@ class Audio:
     """
 
     def __init__(self, name: str, path: str, volume: float = 50):
+        self.__volume = None
+        self.get_name = None
         self.__name = name
-        self.setVolume(volume)
+        self.set_volume(volume)
 
         self.audio = mixer.Sound(path) 
 
-    def getName(self):
+    def get_name(self):
         return self.__name
 
-    def getVolume(self):
+    def get_volume(self):
         return self.__volume
 
-    def setVolume(self, value):
+    def set_volume(self, value):
         self.__volume = value
 
-    def getAudio(self):
+    def get_audio(self):
         return self.audio
 
     def play(self, max_channels, loops = 0):
-        channel = findChannel(max_channels)
-        if channel != None:
+        channel = find_channel(max_channels)
+        if channel is not None:
             channel.play(self.audio, loops)
 
 
@@ -118,7 +120,7 @@ class AudioCategory:
     AUDIO_ERROR = "The audio '{audio_name}' doesn't exist."
     AUDIO_ADD = "Audio '{audio_name}' added as '{audio}'"
     
-    def __init__(self, name, volume, channel = False):
+    def __init__(self, name, volume):
         self.name = name
         self.volume = volume
         self.mute = False
@@ -127,7 +129,7 @@ class AudioCategory:
     
 
     ## Returns the name of the audio category
-    def getName(self) -> str:
+    def get_name(self) -> str:
 
         """Returns the name of the audio category.
 
@@ -138,7 +140,7 @@ class AudioCategory:
         return self.name
     
     ## Returns the volume of an audio
-    def getVolume(self) -> float:
+    def get_volume(self) -> float:
 
         """Returns volume of the audio category
 
@@ -149,7 +151,7 @@ class AudioCategory:
         return self.volume
     
     ## checks if an audio is in the audio_dict
-    def isAudio(self, name: str) -> bool:
+    def is_audio(self, name: str) -> bool:
         """Checks if an audio exists in the audio dict
 
         Returns:
@@ -165,8 +167,8 @@ class AudioCategory:
         return False
     
 
-    ## returns a audio class
-    def __getAudio(self, name: str) -> Audio:
+    ## returns an audio class
+    def __get_audio(self, name: str) -> Audio:
 
         """Returns audio from audio dict
 
@@ -177,65 +179,65 @@ class AudioCategory:
         return self.audio_dict[name]
 
     # Sets the volume of the category
-    def setCatVolume(self, overall_volume: float, value: float):
+    def set_cat_volume(self, overall_volume: float, value: float):
 
         """Sets the category volume
         """
         self.volume = value
         for each_audio in self.audio_dict:
-            self.setAudioVolume(each_audio, overall_volume, value)
+            self.set_audio_volume(each_audio, overall_volume, value)
 
     ## Sets the volume of an audio
-    def setAudioVolume(self, name: str, overall_volume: float, value: float = None):
+    def set_audio_volume(self, name: str, overall_volume: float, value: float = None):
         
         """Sets the volume of an audio
         """
         
-        if self.isAudio(name):
-            audio = self.__getAudio(name)
-            if value != None:
-                audio.setVolume(value)
+        if self.is_audio(name):
+            audio = self.__get_audio(name)
+            if value is not None:
+                audio.set_volume(value)
 
                 # (overall*(category/100))*(audio/100)
-                volume_value = (overall_volume * (self.volume/100)) * (audio.getVolume()/100)
-                setAudioVolume(audio.getAudio(), volume_value)
+                volume_value = (overall_volume * (self.volume/100)) * (audio.get_volume() / 100)
+                set_audio_volume(audio.get_audio(), volume_value)
 
     ## Returns the volume of an audio
-    def getAudioVolume(self, name: str) -> int:
+    def get_audio_volume(self, name: str) -> int:
         """Returns the volume of an audio
 
         Returns:
             int: volume
         """        
         
-        return self.__getAudio(name).getVolume()
+        return self.__get_audio(name).get_volume()
 
 
     ## Adds audio to the audio_dict and sets its volume, doesn't play the audio
-    def addAudio(self, name: str, path: str, overall_volume: float, volume: float = 50):
+    def add_audio(self, name: str, path: str, overall_volume: float, volume: float = 50):
 
         """Adds audio to audio dict, sets its volume (doesn't play the audio)
         """
 
-        if name == None:
+        if name is None:
             name = get_filename(path, False)
         self.audio_dict[name] = Audio(name, path, volume)
-        self.setAudioVolume(name, overall_volume, volume)
+        self.set_audio_volume(name, overall_volume, volume)
         
         Logger.log_info(self.AUDIO_ADD.format(
             audio_name = name, 
             audio=self.audio_dict[name]))
 
     ## Plays audio
-    def playAudio(self, name: str, max_channels: int, loops: int = 0):
+    def play_audio(self, name: str, max_channels: int, loops: int = 0):
 
         """Plays audio
         """
 
-        self.__getAudio(name).play(max_channels, loops)
+        self.__get_audio(name).play(max_channels, loops)
 
     ## Finds which channel an audio is playing in
-    def __findChannelByAudio(self, name: str) -> mixer.Channel:
+    def __find_channel_by_audio(self, name: str) -> int | None:
 
         """Returns a channel which an audio is playing in
 
@@ -243,33 +245,33 @@ class AudioCategory:
             Channel: channel with audio playing
         """
         
-        audio = self.__getAudio(name).audio
-        for eachChannel in range(getNumChannels()):
+        audio = self.__get_audio(name).audio
+        for eachChannel in range(get_num_channels()):
             if mixer.Channel(eachChannel).get_sound() == audio:
                 return eachChannel
 
     ## Pauses an audio
-    def pauseAudio(self, name: str):
+    def pause_audio(self, name: str):
         """Pauses an audio
         """
 
-        mixer.Channel(self.__findChannelByAudio(name)).pause()
+        mixer.Channel(self.__find_channel_by_audio(name)).pause()
 
     ## Unpauses an audio
-    def unpauseAudio(self, name: str):
+    def unpause_audio(self, name: str):
         """Unpauses an audio
         """
 
-        mixer.Channel(self.__findChannelByAudio(name)).unpause()
+        mixer.Channel(self.__find_channel_by_audio(name)).unpause()
 
     ## Queues an audio after another audio on a channel
-    def queueAudio(self, audio_name: str, audio_queue_name: str):
+    def queue_audio(self, audio_name: str, audio_queue_name: str):
         """Queues an audio after another audio on a specific channel
         """
 
-        if self.isAudio(audio_name) and self.isAudio(audio_queue_name):
-            channel = self.__findChannelByAudio(audio_name)
-            mixer.Channel(channel).queue(self.__getAudio(audio_queue_name).getAudio())
+        if self.is_audio(audio_name) and self.is_audio(audio_queue_name):
+            channel = self.__find_channel_by_audio(audio_name)
+            mixer.Channel(channel).queue(self.__get_audio(audio_queue_name).get_audio())
 
 
 
@@ -281,9 +283,9 @@ class AudioUI:
     """Handles all UI audio
     """
     
-    CAT_ERROR = "Audio categoary '{cat_name}' doesn't exist"
-    CAT_ADD = "Audio categoary '{cat_name}' created."
-    CAT_EXISTS = "Audio categoary '{cat_name}' already exists."
+    CAT_ERROR = "Audio category '{cat_name}' doesn't exist"
+    CAT_ADD = "Audio category '{cat_name}' created."
+    CAT_EXISTS = "Audio category '{cat_name}' already exists."
 
     def __init__(self, 
             volume: float, 
@@ -303,11 +305,11 @@ class AudioUI:
 
         self.max_channels = max_channels
 
-        if max_channels < getNumChannels():
-            setNumChannels(max_channels)
+        if max_channels < get_num_channels():
+            set_num_channels(max_channels)
 
     ## Sets the overall volume for the application
-    def setVolume(self, value: int):
+    def set_volume(self, value: int):
         """Sets the overall volume for the application
         """        
 
@@ -315,10 +317,10 @@ class AudioUI:
             self.volume = value
 
             for cat_name in self.cat_dict:
-                self.setCatVolume(cat_name, self.getCatVolume(cat_name))
+                self.set_cat_volume(cat_name, self.get_cat_volume(cat_name))
 
     ## Returns the overall volume for the application
-    def getVolume(self):
+    def get_volume(self):
         """Returns the overall volume for the application
 
         Returns:
@@ -328,7 +330,7 @@ class AudioUI:
         return self.volume 
         
     ## Returns whether the category exists
-    def __isCat(self, cat_name: str):
+    def __is_cat(self, cat_name: str):
         
         if not Logger.raise_key_error(self.cat_dict, 
                                       cat_name,
@@ -337,13 +339,13 @@ class AudioUI:
         
         return False
 
-    ## Retruns the audio cat object
-    def __getAudioCat(self, cat_name) -> AudioCategory:
-        if self.__isCat(cat_name):
+    ## Returns the audio cat object
+    def __get_audio_cat(self, cat_name) -> AudioCategory | None:
+        if self.__is_cat(cat_name):
             return self.cat_dict[cat_name]
 
     ## Adds a new Audio Cat to a dict
-    def addCat(self, cat_name: str, volume: float = 50):
+    def add_cat(self, cat_name: str, volume: float = 50):
 
         """Adds a new category
         """
@@ -356,49 +358,49 @@ class AudioUI:
             Logger.log_info(self.CAT_EXISTS.format(cat_name = cat_name))
 
     ## Adds an audio to an audioCat
-    def addAudio(self, cat_name: str, path: str, audio_name: str = None , volume: float = 50):
+    def add_audio(self, cat_name: str, path: str, audio_name: str = None, volume: float = 50):
 
-        """Adds a new audio to an category
+        """Adds a new audio to a category
         """
 
-        self.__getAudioCat(cat_name).addAudio(audio_name, path, self.volume, volume)
+        self.__get_audio_cat(cat_name).add_audio(audio_name, path, self.volume, volume)
     
     ## Sets the volume of the audioCat
-    def setCatVolume(self, cat_name: str, value: float):
+    def set_cat_volume(self, cat_name: str, value: float):
 
         """Sets the category volume
         """
 
-        self.__getAudioCat(cat_name).setCatVolume(self.volume, value)
+        self.__get_audio_cat(cat_name).set_cat_volume(self.volume, value)
 
 
     ## Returns the volume of the category
-    def getCatVolume(self, cat_name: str) -> int:
+    def get_cat_volume(self, cat_name: str) -> float:
         """Returns a categories volume
 
         Returns:
             int: volume
         """
 
-        return self.__getAudioCat(cat_name).getVolume()
+        return self.__get_audio_cat(cat_name).get_volume()
 
     ## Sets the audio in the audioCat
-    def setAudioVolume(self, cat_name: str, audio_name: str, value: float):
+    def set_audio_volume(self, cat_name: str, audio_name: str, value: float):
 
         """Sets an audio's volume
         """
 
-        self.__getAudioCat(cat_name).setAudioVolume(audio_name, self.volume, value)
+        self.__get_audio_cat(cat_name).set_audio_volume(audio_name, self.volume, value)
 
     ## Returns the volume of the category
-    def getAudioVolume(self, cat_name: str, audio_name: str) -> int:
+    def get_audio_volume(self, cat_name: str, audio_name: str) -> int:
         """Returns an audios volume
 
         Returns:
             int: volume
         """
 
-        return self.__getAudioCat(cat_name).getAudioVolume(audio_name)
+        return self.__get_audio_cat(cat_name).get_audio_volume(audio_name)
 
     ## Plays an audio
     def play(self, cat_name: str, audio_name: str, loops: int = 0):
@@ -406,8 +408,8 @@ class AudioUI:
         """Plays an audio
         """
 
-        if self.__getAudioCat(cat_name).isAudio(audio_name):
-            self.__getAudioCat(cat_name).playAudio(audio_name, self.max_channels, loops)
+        if self.__get_audio_cat(cat_name).is_audio(audio_name):
+            self.__get_audio_cat(cat_name).play_audio(audio_name, self.max_channels, loops)
             #Logger.log_info(f"Playing '{audio_name}' from '{cat_name}' with {loops} loops.")
 
     ## Pauses the audio
@@ -416,8 +418,8 @@ class AudioUI:
         """Pauses an audio
         """
 
-        if self.__getAudioCat(cat_name).isAudio(audio_name):
-            self.__getAudioCat(cat_name).pauseAudio(audio_name)
+        if self.__get_audio_cat(cat_name).is_audio(audio_name):
+            self.__get_audio_cat(cat_name).pause_audio(audio_name)
 
     ## Unpauses the audio
     def unpause(self, cat_name: str, audio_name: str):
@@ -425,8 +427,8 @@ class AudioUI:
         """Unpauses an audio
         """
 
-        if self.__getAudioCat(cat_name).isAudio(audio_name):
-            self.__getAudioCat(cat_name).unpauseAudio(audio_name)
+        if self.__get_audio_cat(cat_name).is_audio(audio_name):
+            self.__get_audio_cat(cat_name).unpause_audio(audio_name)
 
     ## Queue an audio
     def queue(self, cat_name: str, audio_name: str, audio_queue_name: str):
@@ -434,4 +436,4 @@ class AudioUI:
         """Queues an audio
         """
 
-        self.__getAudioCat(cat_name).queueAudio(audio_name, audio_queue_name)
+        self.__get_audio_cat(cat_name).queue_audio(audio_name, audio_queue_name)

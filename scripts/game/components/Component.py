@@ -1,3 +1,5 @@
+from pygame import Surface
+
 class Component:
 
     __DEFAULT_IDENT = "Component-{comp_num}"
@@ -6,13 +8,14 @@ class Component:
 
     def __init__(self,
                  ident: str = __DEFAULT_IDENT.format(comp_num = comp_num),
-                 coord: list[int] = [0, 0]):
+                 pos: list[int] = [0, 0],
+                 dim: tuple[int, int] = (0, 0)):
 
         self.ident = ident
-        self.coord = coord
+        self.pos = pos
+        self.dim = dim
 
-
-    def draw(self):
+    def draw(self) -> Surface | None:
         """
         Draws the component. By default, this method has no implementation.
         """

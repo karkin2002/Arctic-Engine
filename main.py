@@ -46,15 +46,15 @@ window = WindowUI(
     framerate=9999)
 
 ## Setting Audio
-glob.audio.addCat(Menu.AUDIO_MAIN_MENU)
-glob.audio.addAudio(Menu.AUDIO_MAIN_MENU, r"static/audio/music/music.wav")
+glob.audio.add_cat(Menu.AUDIO_MAIN_MENU)
+glob.audio.add_audio(Menu.AUDIO_MAIN_MENU, r"static/audio/music/music.wav")
 
 AUDIO_UI = "ui"
-glob.audio.addCat(AUDIO_UI)
-glob.audio.addAudio(AUDIO_UI, r"static/audio/sfx/ui/button_1.wav")
-glob.audio.addAudio(AUDIO_UI, r"static/audio/sfx/ui/button_2.wav")
-glob.audio.addAudio(AUDIO_UI, r"static/audio/sfx/ui/button_3.wav")
-glob.audio.addAudio(AUDIO_UI, r"static/audio/sfx/ui/button_4.wav")
+glob.audio.add_cat(AUDIO_UI)
+glob.audio.add_audio(AUDIO_UI, r"static/audio/sfx/ui/button_1.wav")
+glob.audio.add_audio(AUDIO_UI, r"static/audio/sfx/ui/button_2.wav")
+glob.audio.add_audio(AUDIO_UI, r"static/audio/sfx/ui/button_3.wav")
+glob.audio.add_audio(AUDIO_UI, r"static/audio/sfx/ui/button_4.wav")
 
 ## Setting Menus
 menu = Menu()
@@ -66,7 +66,7 @@ glob.get_tag("fps").display = False
 
 
 ### Main Loop -----------------------------
-glob.audio.setVolume(0)
+glob.audio.set_volume(0)
 
 run_first_time = True
 

@@ -10,26 +10,28 @@ look at the README.md file in the root directory, or visit the
 GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
+from scripts.game.components.Component import Component
 from pygame import Surface, SRCALPHA
-from scripts.game.components.MapLayer import MapLayer
+from scripts.game.components.map.MapLayer import MapLayer
 from scripts.utility.logger import Logger
 
-class Map:
+class Map (Component):
     
     __ADDED_NEW_MAP_LAYER_TEXT = "Added MapLayer to index '{index}' on '{map}'."
     __ERROR_REMOVING_MAP_LAYER_TEXT = "MapLayer does not exist at indexed value."
-    
     
     def __init__(self, 
                  map_dim: tuple[int, int], 
                  tile_dim: tuple[int,int] = (16, 16),
                  transparent = False):
 
+        super().__init__()
+
         self.__map_layer_list: list[MapLayer] = []
         self.map_dim: tuple[int, int] = map_dim
-        
-        self.tile_dim: int = tile_dim
-        self.map_surf_dim: tuple[int, int] = (
+
+        self.tile_dim: tuple[int,int] = tile_dim
+        self.dim: tuple[int, int] = (
             self.map_dim[0] * self.tile_dim[0], 
             self.map_dim[1] * self.tile_dim[1])
         
@@ -73,7 +75,7 @@ class Map:
             
             self.__map_layer_list[layer_index] = layer
             
-    def get_map_layer(self, layer_index: int) -> MapLayer:
+    def get_map_layer(self, layer_index: int) -> MapLayer | None:
         
         if not Logger.raise_index_error(self.__map_layer_list, 
                                         layer_index,
@@ -81,16 +83,16 @@ class Map:
                                         False):
             
             return self.__map_layer_list[layer_index]
-        
+
+
     def get_map_layer_list_len(self) -> int:
         return len(self.__map_layer_list)
-            
-            
+
     def set_map_surf(self):
         if self.transparent:
-            self.map_surf = Surface(self.map_surf_dim, SRCALPHA)
+            self.map_surf = Surface(self.dim, SRCALPHA)
         else:
-            self.map_surf = Surface(self.map_surf_dim)
+            self.map_surf = Surface(self.dim)
             
         self.draw_map_layers()
                 
@@ -100,9 +102,12 @@ class Map:
         for layer in self.__map_layer_list:
             for y in range(len(layer.map_array)):
                 for x in range(len(layer.map_array[y])):
-                    if layer.map_array[y][x] != None:
+                    if layer.map_array[y][x] is not None:
                         self.map_surf.blit(
                             layer.map_array[y][x].get_texture_surf(), 
                             (self.tile_dim[0] * x, self.tile_dim[1] * y))
+
+    def draw(self) -> Surface | None:
+        return self.map_surf
         
                 
