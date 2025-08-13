@@ -26,9 +26,3 @@ class Component:
         Updates the component every frame. By default, this method has no implementation.
         """
         pass
-
-    def fixed_update(self):
-        """
-        Updates the component by a fixed value. By default, this method has no implementation.
-        """
-        pass

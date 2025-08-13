@@ -42,10 +42,9 @@ def init():
     global scale
     scale = 1.0
     
-    global last_delta_time, delta_time, framerate
+    global last_delta_time, delta_time
     last_delta_time = time.time()
     delta_time = time.time() - last_delta_time
-    framerate = 60
     
 OVERWRITTEN = "{data_type} '{name}' overwritten from '{pre_data}' to '{post_data}'."
 ADDED_TO_DICT = "{data_type} '{name}' added as '{data}'."
@@ -302,9 +301,8 @@ def is_tag(tag_id: str) -> bool:
 ### Delta time ---------------------------
 
 def update_delta_time():
-    global last_delta_time, delta_time, framerate
-    delta_time = time.time() - last_delta_time
-    delta_time *= framerate
+    global last_delta_time, delta_time
+    delta_time = (time.time() - last_delta_time) / 1000
     last_delta_time = time.time()
 
 ### -------------------------------------

@@ -16,14 +16,14 @@ import numpy as np
 
 class MapLayer:
     
-    __GENERATE_NEW_MAP_TEXT = "Generated new map layer of size '{map_dim}' with tile proabilities '{tile_probability}'."
-    __GENERATE_NEW_MAP_MISMATCH_LEN_TEXT = "Mismatch length between tiles & proabilities."
+    __GENERATE_NEW_MAP_TEXT = "Generated new map layer of size '{map_dim}' with tile probabilities '{tile_probability}'."
+    __GENERATE_NEW_MAP_MISMATCH_LEN_TEXT = "Mismatch length between tiles & probabilities."
     
     
     def __init__(self, map_dim: tuple[int, int]):
         
         self.map_dim: tuple[int, int] = map_dim
-        self.map_array: list[list[StaticTile | DynamicTile]] = None
+        self.map_array: list[list[StaticTile | DynamicTile]] | None = None
         
     
     def generate_map_array(self, 
@@ -35,9 +35,11 @@ class MapLayer:
                 len(tiles), 
                 self.__GENERATE_NEW_MAP_MISMATCH_LEN_TEXT):
             
-            new_map_array = np.random.choice(a=tiles, 
-                                              p=probability, 
-                                              size=self.map_dim)
+            new_map_array = np.random.choice(
+                a=tiles,
+                p=probability,
+                size=self.map_dim
+            )
             
             self.map_array = [[None for _ in range(self.map_dim[1])] for _ in range(self.map_dim[0])]
             

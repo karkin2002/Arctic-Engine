@@ -10,7 +10,7 @@ look at the README.md file in the root directory, or visit the
 GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
-from scripts.game.components.Component import Component
+from scripts.game.components.component import Component
 from pygame import Surface, SRCALPHA
 from scripts.game.components.map.MapLayer import MapLayer
 from scripts.utility.logger import Logger
@@ -35,11 +35,12 @@ class Map (Component):
             self.map_dim[0] * self.tile_dim[0], 
             self.map_dim[1] * self.tile_dim[1])
         
-        self.map_surf: Surface = None
+        self.map_surf: Surface | None = None
         
         self.transparent = transparent
         
-    
+
+
     def add_map_layer(self):
         self.__map_layer_list.append(MapLayer(self.map_dim))
         
@@ -48,7 +49,8 @@ class Map (Component):
                 index = len(self.__map_layer_list) - 1,
                 map = self))
         
-        
+
+
     def remove_map_layer(self, layer_index: int):
         if not Logger.raise_index_error(self.__map_layer_list, 
                                         layer_index,
@@ -56,6 +58,7 @@ class Map (Component):
                                         False):
             
             del self.__map_layer_list[layer_index]
+
 
 
     def set_map_layer(self, layer_index: int, layer: MapLayer):
@@ -74,7 +77,8 @@ class Map (Component):
             )
             
             self.__map_layer_list[layer_index] = layer
-            
+
+
     def get_map_layer(self, layer_index: int) -> MapLayer | None:
         
         if not Logger.raise_index_error(self.__map_layer_list, 
@@ -88,6 +92,7 @@ class Map (Component):
     def get_map_layer_list_len(self) -> int:
         return len(self.__map_layer_list)
 
+
     def set_map_surf(self):
         if self.transparent:
             self.map_surf = Surface(self.dim, SRCALPHA)
@@ -96,7 +101,7 @@ class Map (Component):
             
         self.draw_map_layers()
                 
-                
+
     def draw_map_layers(self):
         
         for layer in self.__map_layer_list:
@@ -106,6 +111,8 @@ class Map (Component):
                         self.map_surf.blit(
                             layer.map_array[y][x].get_texture_surf(), 
                             (self.tile_dim[0] * x, self.tile_dim[1] * y))
+
+
 
     def draw(self) -> Surface | None:
         return self.map_surf

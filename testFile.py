@@ -34,7 +34,7 @@ def process_input(velocity):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
-            exit()
+
 
     # Process movement based on arrow key input
     keys = pygame.key.get_pressed()
