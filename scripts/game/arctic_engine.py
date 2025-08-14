@@ -10,14 +10,16 @@ look at the README.md file in the root directory, or visit the
 GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
+from pygame import event as pygame_event, display as pygame_display, VIDEORESIZE, QUIT, key as pygame_key, K_w, K_a, \
+    K_s, K_d, Vector2
 from scripts.utility.logger import Logger
-from scripts.game.components.component import Component
-from scripts.game.time import Time
+from scripts.game.components.window import Window
+from scripts.game.game_objects.game_object import GameObject
+from scripts.game.components.time import Time
 from scripts.services.service_locator import ServiceLocator
-from scripts.game.components.camera.camera import Camera
-import pygame, scripts.utility.glob as glob
+from scripts.game.game_objects.camera.camera import Camera
+import scripts.utility.glob as glob
 glob.init()
-
 
 class ArcticEngine:
 
@@ -30,30 +32,26 @@ class ArcticEngine:
 
     def __init__(self,
                  win_dim: tuple[int, int] = (1280, 720),
-                 framerate: int = 60,
-                 update_time_ms: int = 20,
+                 framerate: int = 0,
+                 update_time_ms: float = 20.0,
                  background: str | None = None):
 
         ## Logging
         Logger.log_info(self.__START_UP_INFO_TEXT)
 
         ## Window Essentials
-        self.win_dim = win_dim
-        self.win_center = (0, 0)
-        self.win: pygame.Surface | None = None
-        self.__set_win(win_dim)
-        self.background = background
+        self.window = Window(win_dim, background)
 
         ## Components
-        self.components: dict[str, Component] = {}
+        self.game_objects: dict[str, GameObject] = {}
 
         ## Clock / Framerate
         self.time = Time(framerate, update_time_ms)
         ServiceLocator.register(Time, self.time)
 
         ## Camera
-        # Setting camera to the identifier for a Camera object stored in the components dictionary, applies those
-        # camera's modifiers to the screen / components (e.g. move everything to the left, the center is the center
+        # Setting camera to the identifier for a Camera object stored in the game_objects dictionary, applies those
+        # camera's modifiers to the screen / game_objects (e.g. move everything to the left, the center is the center
         # of the window).
         self.__camera: str | None = None
 
@@ -72,12 +70,12 @@ class ArcticEngine:
 
         glob.update_delta_time()
 
-        for event in pygame.event.get():
+        for event in pygame_event.get():
 
-            if event.type == pygame.VIDEORESIZE:
-                self.__resize()
+            if event.type == VIDEORESIZE:
+                self.window.resize()
 
-            if event.type == pygame.QUIT:
+            if event.type == QUIT:
                 return False
 
         return True
@@ -85,66 +83,77 @@ class ArcticEngine:
 
     def update(self):
         """
-        Updates all components that have an implemented update function & updates the clock. This method runs every frame.
+        Updates all game_objects that have an implemented update function & updates the clock. This method runs every frame.
         """
 
+        ## Updates time
         self.time.tick()
 
+        ## Potentially runs multiple times if there is a large lag, i.e. game is rendering at lower ms than
+        ## update_time_ms.
         while self.time.is_update():
-            for comp_ident, comp in self.components.items():
+            for comp_ident, comp in self.game_objects.items():
                 comp.update()
+
+            keys = pygame_key.get_pressed()
+
+            velocity = 200
+
+            move_camera = Vector2(0, 0)
+
+            if keys[K_w]:
+                if self.__camera:
+                    move_camera.y += velocity
+
+            if keys[K_a]:
+                if self.__camera:
+                    move_camera.x += velocity
+
+            if keys[K_s]:
+                if self.__camera:
+                    move_camera.y -= velocity
+
+            if keys[K_d]:
+                if self.__camera:
+                    move_camera.x -= velocity
+
+            self.game_objects[self.__camera].move.move_pos(move_camera)
 
 
     def draw(self):
         """
-        Draws all components that have an implemented draw function.
+        Draws all game_objects that have an implemented draw function.
         """
 
-        ## Drawing background
-        if self.background is not None:
-            self.win.fill(glob.get_colour(self.background))
+        self.window.draw_background()
+
+        self.__draw_components()
+
+        pygame_display.flip()
 
 
-        ## Drawing Components
-        for comp_ident, comp in self.components.items():
+    def __draw_components(self):
 
-            comp_surf = comp.draw()
-
-            if comp_surf is not None:
-
-                ## Centering xy 00 to center of screen
-                comp_coord = (comp.pos[0] + self.win_center[0], comp.pos[1] + self.win_center[1])
-
-                ## Adding camera position
-                if self.__camera is not None:
-                    camera = self.components[self.__camera]
-                    comp_coord = (comp_coord[0] + camera.pos[0], comp_coord[1] + camera.pos[1])
-
-                ## Drawing the surface to the screen
-                self.win.blit(comp_surf, comp_coord)
-
-        ## Updating Display
-        pygame.display.flip()
+        camera_draw_pos = None
+        if self.__camera is not None:
+            camera: Camera = self.game_objects[self.__camera]
+            camera_draw_pos = camera.move.get_draw_pos()
 
 
+        for game_obj_ident, game_obj in self.game_objects.items():
 
+            comp_surf = game_obj.draw()
 
-    def __set_win(self, win_dim: tuple[int, int]):
-        """Creates a new window.
+            if comp_surf is not None and game_obj_ident != self.__camera:
 
-        Args:
-            win_dim (tuple[int, int]): Window (<width>, <height>).
-        """
-        self.win = pygame.display.set_mode(win_dim, pygame.RESIZABLE)
-        self.__resize()
+                ## Centering 00 to be center of screen
+                game_obj_coord = game_obj.move.get_draw_pos() + self.window.center
 
+                if camera_draw_pos is not None:
+                    game_obj_coord += camera_draw_pos
 
-    def __resize(self):
-        """
-        Handles the event upon which the window is resized.
-        """
-        self.win_dim = self.win.get_size()
-        self.win_center = (round(self.win_dim[0] / 2), round(self.win_dim[1] / 2))
+                self.window.surf.blit(comp_surf, (int(game_obj_coord.x), int(game_obj_coord.y)))
+
 
 
     def set_camera(self, camera_ident: str | None):
@@ -157,8 +166,8 @@ class ArcticEngine:
             Logger.log_warning(self.__CAMERA_SET_NONE_TEXT)
             return
 
-        elif camera_ident in self.components:
-            if isinstance(self.components[camera_ident], Camera):
+        elif camera_ident in self.game_objects:
+            if isinstance(self.game_objects[camera_ident], Camera):
                 self.__camera = camera_ident
                 Logger.log_info(self.__CAMERA_SET_TEXT.format(camera_ident=camera_ident))
                 return

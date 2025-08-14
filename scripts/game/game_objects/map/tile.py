@@ -10,7 +10,6 @@ look at the README.md file in the root directory, or visit the
 GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
-from pygame import Surface
 import scripts.utility.glob as glob
 glob.init()
 

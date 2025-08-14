@@ -27,6 +27,7 @@ class Time:
         self.__clock = pygame_time.Clock()
         self.framerate = framerate
         self.update_time_ms = update_time_ms
+        self.fixed_delta_time = update_time_ms / 1000.0
 
         self.__tick_method = None
         self.set_stable_framerate(stable_framerate)

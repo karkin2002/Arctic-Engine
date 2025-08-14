@@ -10,12 +10,12 @@ look at the README.md file in the root directory, or visit the
 GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
-from scripts.game.components.component import Component
+from scripts.game.game_objects.game_object import GameObject
 from pygame import Surface, SRCALPHA
-from scripts.game.components.map.MapLayer import MapLayer
+from scripts.game.game_objects.map.map_layer import MapLayer
 from scripts.utility.logger import Logger
 
-class Map (Component):
+class Map (GameObject):
     
     __ADDED_NEW_MAP_LAYER_TEXT = "Added MapLayer to index '{index}' on '{map}'."
     __ERROR_REMOVING_MAP_LAYER_TEXT = "MapLayer does not exist at indexed value."
