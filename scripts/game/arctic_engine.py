@@ -10,8 +10,7 @@ look at the README.md file in the root directory, or visit the
 GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
-from pygame import event as pygame_event, display as pygame_display, VIDEORESIZE, QUIT, key as pygame_key, K_w, K_a, \
-    K_s, K_d, Vector2
+from pygame import event as pygame_event, transform as pygame_transform, VIDEORESIZE, QUIT, key as pygame_key, K_w, K_a, K_EQUALS, K_MINUS, K_s, K_d, Vector2
 from scripts.utility.logger import Logger
 from scripts.game.components.window import Window
 from scripts.game.game_objects.game_object import GameObject
@@ -41,6 +40,7 @@ class ArcticEngine:
 
         ## Window Essentials
         self.window = Window(win_dim, background)
+        ServiceLocator.register(Window, self.window)
 
         ## Components
         self.game_objects: dict[str, GameObject] = {}
@@ -103,19 +103,19 @@ class ArcticEngine:
 
             if keys[K_w]:
                 if self.__camera:
-                    move_camera.y += velocity
+                    move_camera.y -= velocity
 
             if keys[K_a]:
                 if self.__camera:
-                    move_camera.x += velocity
+                    move_camera.x -= velocity
 
             if keys[K_s]:
                 if self.__camera:
-                    move_camera.y -= velocity
+                    move_camera.y += velocity
 
             if keys[K_d]:
                 if self.__camera:
-                    move_camera.x -= velocity
+                    move_camera.x += velocity
 
             self.game_objects[self.__camera].move.move_pos(move_camera)
 
@@ -129,16 +129,14 @@ class ArcticEngine:
 
         self.__draw_components()
 
-        pygame_display.flip()
+        self.window.draw()
 
 
     def __draw_components(self):
 
-        camera_draw_pos = None
-        if self.__camera is not None:
+        camera: Camera | None = None
+        if self.__camera:
             camera: Camera = self.game_objects[self.__camera]
-            camera_draw_pos = camera.move.get_draw_pos()
-
 
         for game_obj_ident, game_obj in self.game_objects.items():
 
@@ -146,13 +144,12 @@ class ArcticEngine:
 
             if comp_surf is not None and game_obj_ident != self.__camera:
 
-                ## Centering 00 to be center of screen
-                game_obj_coord = game_obj.move.get_draw_pos() + self.window.center
+                if camera:
+                    draw_pos = camera.world_to_screen(game_obj.move.get_draw_pos(), self.window.center)
+                else:
+                    draw_pos = game_obj.move.get_draw_pos() + self.window.center
 
-                if camera_draw_pos is not None:
-                    game_obj_coord += camera_draw_pos
-
-                self.window.surf.blit(comp_surf, (int(game_obj_coord.x), int(game_obj_coord.y)))
+                self.window.win.blit(comp_surf, (int(draw_pos.x), int(draw_pos.y)))
 
 
 
