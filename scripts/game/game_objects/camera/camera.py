@@ -10,10 +10,9 @@ look at the README.md file in the root directory, or visit the
 GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
-from pygame import Vector2, Surface, transform as pygame_transform
+from pygame import Vector2
 from scripts.services.service_locator import ServiceLocator
-from scripts.game.components.time import Time
-from scripts.game.components.window import Window
+from scripts.services.time_service import Time
 from scripts.game.game_objects.game_object import GameObject
 import scripts.utility.glob as glob
 glob.init()

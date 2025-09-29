@@ -10,11 +10,12 @@ look at the README.md file in the root directory, or visit the
 GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
-from pygame import event as pygame_event, transform as pygame_transform, VIDEORESIZE, QUIT, key as pygame_key, K_w, K_a, K_EQUALS, K_MINUS, K_s, K_d, Vector2
+from pygame import event as pygame_event, VIDEORESIZE, QUIT, key as pygame_key, K_w, K_a, K_s, K_d, Vector2
 from scripts.utility.logger import Logger
 from scripts.game.components.window import Window
 from scripts.game.game_objects.game_object import GameObject
-from scripts.game.components.time import Time
+from scripts.services.time_service import Time
+from scripts.services.image_service import ImageService
 from scripts.services.service_locator import ServiceLocator
 from scripts.game.game_objects.camera.camera import Camera
 import scripts.utility.glob as glob
@@ -41,6 +42,11 @@ class ArcticEngine:
         ## Window Essentials
         self.window = Window(win_dim, background)
         ServiceLocator.register(Window, self.window)
+
+        ## Setup Image Service
+        self.image = ImageService()
+        ServiceLocator.register(ImageService, self.image)
+        ServiceLocator.register(ImageService, self.image)
 
         ## Components
         self.game_objects: dict[str, GameObject] = {}
