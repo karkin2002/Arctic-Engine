@@ -46,7 +46,6 @@ class ArcticEngine:
         ## Setup Image Service
         self.image = ImageService()
         ServiceLocator.register(ImageService, self.image)
-        ServiceLocator.register(ImageService, self.image)
 
         ## Components
         self.game_objects: dict[str, GameObject] = {}
@@ -60,7 +59,6 @@ class ArcticEngine:
         # camera's modifiers to the screen / game_objects (e.g. move everything to the left, the center is the center
         # of the window).
         self.__camera: str | None = None
-
 
 
 
@@ -87,10 +85,13 @@ class ArcticEngine:
         return True
 
 
+
     def update(self):
         """
         Updates all game_objects that have an implemented update function & updates the clock. This method runs every frame.
         """
+
+        self.image.delete_first_temp_image_by_lifespan()
 
         ## Updates time
         self.time.tick()
@@ -126,6 +127,7 @@ class ArcticEngine:
             self.game_objects[self.__camera].move.move_pos(move_camera)
 
 
+
     def draw(self):
         """
         Draws all game_objects that have an implemented draw function.
@@ -136,6 +138,7 @@ class ArcticEngine:
         self.__draw_components()
 
         self.window.draw()
+
 
 
     def __draw_components(self):
@@ -176,6 +179,7 @@ class ArcticEngine:
                 return
 
         Logger.log_error(self.__INVALID_CAMERA_TEXT.format(camera_ident=camera_ident))
+
 
 
     def get_camera_ident(self) -> str | None:
