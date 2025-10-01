@@ -15,8 +15,8 @@ from scripts.utility.logger import Logger
 from scripts.game.components.window import Window
 from scripts.game.game_objects.game_object import GameObject
 from scripts.services.time_service import Time
-from scripts.services.image_service import ImageService
 from scripts.services.service_locator import ServiceLocator
+from scripts.services.image_service import ImageService
 from scripts.game.game_objects.camera.camera import Camera
 import scripts.utility.glob as glob
 glob.init()

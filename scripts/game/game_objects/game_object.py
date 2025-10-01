@@ -1,5 +1,6 @@
 from pygame import Surface, Vector2
 from scripts.game.components.movement import Movement
+from scripts.game.components.tag_handler import TagHandler
 
 class GameObject:
 
@@ -15,6 +16,7 @@ class GameObject:
         self.ident = ident
         self.move = Movement(pos)
         self.dim = dim
+        self.tag = TagHandler()
 
     def update(self):
         """

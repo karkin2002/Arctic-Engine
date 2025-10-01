@@ -21,7 +21,7 @@ glob.init()
 ## UI Element Class
 class UIElement:
     
-    __TAGS_TEXT = "UI Element '{object}' has the following tags: {tags}."
+    __TAGS_TEXT = "UI Element '{object}' has the following __tag_dict: {__tag_dict}."
     __INVALID_TAGS = "Invalid tag."
     
     ## Alignment Static Variables.
