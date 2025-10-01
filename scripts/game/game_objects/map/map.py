@@ -17,7 +17,7 @@ from pygame import Surface, SRCALPHA
 
 class Map (GameObject):
     
-    __ADDED_NEW_MAP_LAYER_TEXT = "Added MapLayer to index '{index}' on '{map}'."
+    __ADDED_NEW_MAP_LAYER_TEXT = "Added MapLayer to index {index} on {map}."
     __ERROR_REMOVING_MAP_LAYER_TEXT = "MapLayer does not exist at indexed value."
     
     def __init__(self, 

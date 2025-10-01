@@ -5,8 +5,9 @@ T = TypeVar("T")
 
 class ServiceLocator:
 
-    __NEW_SERVICE_LOCATOR_REGISTERED = "New Service Locator Registered. Class name: '{service_name}'."
-    __SERVICE_LOCATOR_ALREADY_EXISTS = "Service Locator '{service_name}' already registered."
+    __NEW_SERVICE_LOCATOR_REGISTERED = "New service locator registered with the class {service_name}."
+    __SERVICE_LOCATOR_ALREADY_EXISTS = "Service locator already registered with class {service_name}."
+    __SERVICE_NOT_REGISTERED = "Service not registered with class {service_name}."
 
     __services: dict[any, any] = {}
 
@@ -28,7 +29,7 @@ class ServiceLocator:
             return cls.__services[key]
         
         except KeyError:
-            raise RuntimeError(f"Service not registered: {key.__name__}")
+            Logger.raise_exception(ServiceLocator.__SERVICE_NOT_REGISTERED.format(service_name=key.__name__))
 
 
     @classmethod

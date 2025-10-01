@@ -1,13 +1,12 @@
-from pygame import display as pygame_display, RESIZABLE, SCALED, transform as pygame_transform, FULLSCREEN
+from pygame import display as pygame_display, SCALED, FULLSCREEN
 from pygame import Vector2, Surface
-import scripts.utility.glob as glob
-glob.init()
+from scripts.services.service_locator import  ServiceLocator
+from scripts.services.colour_service import ColourService
 
 
 class Window:
     def __init__(self,
                  dim: tuple[int, int],
-                 background: str | None = None,
                  flags = (FULLSCREEN | SCALED),
                  vsync: bool = True):
 
@@ -19,7 +18,9 @@ class Window:
         self.flags = flags
 
         self.set_win(self.dim)
-        self.background = background
+        self.background_colour = None
+
+        self.__colour_service = ServiceLocator().get(ColourService)
 
     def set_win(self, win_dim: Vector2):
         """Creates a new window.
@@ -31,7 +32,7 @@ class Window:
         self.win = pygame_display.set_mode(
             win_dim,
             self.flags,
-            vsync=1 if self.vsync else 0
+            vsync = 1 if self.vsync else 0
         )
 
         self.resize()
@@ -50,8 +51,8 @@ class Window:
         pygame_display.flip()
 
     def draw_background(self):
-        if self.background is not None:
-            self.win.fill(glob.get_colour(self.background))
+        if self.background_colour is not None:
+            self.win.fill(self.__colour_service.get_colour(self.background_colour))
 
     def set_flags(self, flags: int):
         self.flags = flags

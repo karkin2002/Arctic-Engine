@@ -18,6 +18,8 @@ class GameObject:
         self.dim = dim
         self.tag = TagHandler()
 
+        GameObject.comp_num += 1
+
     def update(self):
         """
         Updates the game object every frame. By default, this method has no implementation.

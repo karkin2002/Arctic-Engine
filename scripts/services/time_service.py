@@ -3,8 +3,8 @@ from pygame import time as pygame_time
 
 class Time:
 
-    INIT_MESSAGE = "Initialising Time. Framerate: {framerate}FPS, Update Time: {update_time_ms}ms."
-    __STABLE_FRAMERATE_SET_TEXT = "Stable framerate set to '{stable_framerate}'."
+    INIT_MESSAGE = "Initialising Time. Framerate: {framerate} FPS, Update Time: {update_time_ms} ms."
+    __STABLE_FRAMERATE_SET_TEXT = "Stable framerate set to {stable_framerate}."
 
     def __init__(self,
                  framerate: int = 60,

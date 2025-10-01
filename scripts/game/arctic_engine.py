@@ -17,6 +17,7 @@ from scripts.game.game_objects.game_object import GameObject
 from scripts.services.time_service import Time
 from scripts.services.service_locator import ServiceLocator
 from scripts.services.image_service import ImageService
+from scripts.services.colour_service import ColourService
 from scripts.game.game_objects.camera.camera import Camera
 import scripts.utility.glob as glob
 glob.init()
@@ -34,14 +35,17 @@ class ArcticEngine:
                  win_dim: tuple[int, int] = (1280, 720),
                  framerate: int = 0,
                  update_time_ms: float = 20.0,
-                 temp_image_lifespan: int = 600000,
-                 background: str | None = None):
+                 temp_image_lifespan: int = 600000):
 
         ## Logging
         Logger.log_info(self.__START_UP_INFO_TEXT)
 
+        ## Setup Colour Service
+        self.colour = ColourService()
+        ServiceLocator.register(ColourService, self.colour)
+
         ## Window Essentials
-        self.window = Window(win_dim, background)
+        self.window = Window(win_dim)
         ServiceLocator.register(Window, self.window)
 
         ## Setup Image Service

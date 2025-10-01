@@ -10,7 +10,7 @@ look at the README.md file in the root directory, or visit the
 GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
-import pygame, scripts.utility.glob as glob
+import pygame
 from scripts.utility.logger import Logger
 from scripts.game.arctic_engine import ArcticEngine
 from scripts.game.game_objects.map.map import Map
@@ -21,11 +21,9 @@ from scripts.game.components.tag_handler import TagHandler, Tag
 ## Loading Logger and initialising.
 Logger(r"logs/UI_Organisation")
 pygame.init()
-glob.init()
 
 ### Setup Game Engine -----------------------------
-glob.add_colour("red", (200,100,100))
-ae = ArcticEngine(background="red")
+ae = ArcticEngine()
 ae.time.set_stable_framerate(True)
 
 ## Map
