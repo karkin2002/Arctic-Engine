@@ -19,7 +19,9 @@ T = TypeVar('T')
 class Logger:
     """Class used for logging script info. Includes methods for raising 
     exceptions.
-    """    
+    """
+
+    print_log = True
     
     ## Log file output variables.
     __LOG_OUT_FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
@@ -80,12 +82,13 @@ class Logger:
             level (str): Level of the log.
             msg (str): Log message.
         """        
-        
-        log_time = datetime.now().strftime(Logger.__DATE_TIME_OUT_FORMAT)
-        
-        print(Logger.__LOG_PRINT_FORMAT.format(log_time = log_time, 
-                                               level = level,
-                                               msg = msg))
+
+        if Logger.print_log:
+            log_time = datetime.now().strftime(Logger.__DATE_TIME_OUT_FORMAT)
+
+            print(Logger.__LOG_PRINT_FORMAT.format(log_time = log_time,
+                                                   level = level,
+                                                   msg = msg))
         
     def log_info(msg: str):
         """Creates a log with the level INFO.

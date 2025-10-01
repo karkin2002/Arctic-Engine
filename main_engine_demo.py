@@ -18,17 +18,18 @@ from scripts.game.game_objects.camera.camera import Camera
 
 
 ## Loading Logger and initialising.
-Logger(r"logs/UI_Organisation")  
+Logger(r"logs/UI_Organisation")
 pygame.init()
 glob.init()
 
 ### Setup Game Engine -----------------------------
 glob.add_colour("red", (200,100,100))
 ae = ArcticEngine(background="red")
+ae.time.set_stable_framerate(True)
 
 ## Map
-glob.add_img_surf("test_texture_1", pygame.image.load("static/images/tile_texture_1.png"))
-glob.add_img_surf("test_texture_2", pygame.image.load("static/images/tile_texture_2.png"))
+ae.image.add_image("test_texture_1", pygame.image.load("static/images/tile_texture_1.png"))
+ae.image.add_image("test_texture_2", pygame.image.load("static/images/tile_texture_2.png"))
 test_map = Map((100, 100))
 test_map.add_map_layer()
 test_map.get_map_layer(0).generate_map_array(["test_texture_1", "test_texture_2"], [0.2, 0.8])
@@ -37,12 +38,10 @@ ae.game_objects["map"] = test_map
 
 ## Camera
 test_camera = Camera()
-ae.game_objects["camera"] = test_camera
-ae.set_camera("camera")
-
-ae.time.set_stable_framerate(True)
-
+ae.game_objects["default_camera"] = test_camera
+ae.set_camera("default_camera")
 test_camera.move.set_pos(pygame.Vector2(0, 0))
+
 
 ### Main Loop -----------------------------
 run = True

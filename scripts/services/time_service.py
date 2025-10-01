@@ -4,6 +4,7 @@ from pygame import time as pygame_time
 class Time:
 
     INIT_MESSAGE = "Initialising Time. Framerate: {framerate}FPS, Update Time: {update_time_ms}ms."
+    __STABLE_FRAMERATE_SET_TEXT = "Stable framerate set to '{stable_framerate}'."
 
     def __init__(self,
                  framerate: int = 60,
@@ -52,6 +53,8 @@ class Time:
             self.__tick_method = self.__clock.tick_busy_loop
         else:
             self.__tick_method = self.__clock.tick
+
+        Logger.log_info(self.__STABLE_FRAMERATE_SET_TEXT.format(stable_framerate=stable_framerate))
 
 
     def tick(self):

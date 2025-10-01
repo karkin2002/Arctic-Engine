@@ -34,6 +34,7 @@ class ArcticEngine:
                  win_dim: tuple[int, int] = (1280, 720),
                  framerate: int = 0,
                  update_time_ms: float = 20.0,
+                 temp_image_lifespan: int = 600000,
                  background: str | None = None):
 
         ## Logging
@@ -44,7 +45,7 @@ class ArcticEngine:
         ServiceLocator.register(Window, self.window)
 
         ## Setup Image Service
-        self.image = ImageService()
+        self.image = ImageService(temp_image_lifespan)
         ServiceLocator.register(ImageService, self.image)
 
         ## Components
@@ -91,10 +92,9 @@ class ArcticEngine:
         Updates all game_objects that have an implemented update function & updates the clock. This method runs every frame.
         """
 
-        self.image.delete_first_temp_image_by_lifespan()
-
         ## Updates time
         self.time.tick()
+
 
         ## Potentially runs multiple times if there is a large lag, i.e. game is rendering at lower ms than
         ## update_time_ms.
