@@ -10,12 +10,12 @@ class GameObject:
 
     def __init__(self,
                  ident: str = __DEFAULT_IDENT.format(comp_num = comp_num),
-                 pos: Vector2 = Vector2(0, 0),
-                 dim: Vector2 = Vector2(0, 0)):
+                 pos: Vector2 | None = None,
+                 dim: Vector2 | None = None):
 
         self.ident = ident
         self.move = Movement(pos)
-        self.dim = dim
+        self.dim = Vector2(dim) if dim is not None else Vector2(0, 0)
         self.tag = TagHandler()
 
         GameObject.comp_num += 1

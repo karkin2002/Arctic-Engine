@@ -5,9 +5,9 @@ from scripts.services.utility.time_service import Time
 class Movement:
 
     def __init__(self,
-                 pos: Vector2 = Vector2(0, 0)):
+                 pos: Vector2 | None = None):
 
-        self.pos = pos
+        self.pos = Vector2(pos) if pos is not None else Vector2(0, 0)
         self.previous_pos = Vector2(0, 0)
         self.previous_pos.update(self.pos)
 
@@ -23,7 +23,7 @@ class Movement:
         """
 
         if pos != self.pos:
-            self.pos.update(pos)
+            self.pos = Vector2(pos)
             return True
 
         return False
@@ -58,7 +58,7 @@ class Movement:
 
         if self.previous_pos != self.pos:
             drawn_pos = self.previous_pos + (self.pos - self.previous_pos) * interpolated_time
-            self.previous_pos.update(self.pos)
+            self.previous_pos = Vector2(self.pos)
 
             return drawn_pos
 

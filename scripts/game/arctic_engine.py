@@ -118,22 +118,18 @@ class ArcticEngine:
             move_camera = Vector2(0, 0)
 
             if keys[K_w]:
-                if self.__camera:
                     move_camera.y -= velocity
 
             if keys[K_a]:
-                if self.__camera:
                     move_camera.x -= velocity
 
             if keys[K_s]:
-                if self.__camera:
                     move_camera.y += velocity
 
             if keys[K_d]:
-                if self.__camera:
                     move_camera.x += velocity
 
-            self.game_objects[self.__camera].move.move_pos(move_camera)
+            self.game_objects["test_entity_1"].move.move_pos(move_camera)
 
 
 
