@@ -13,7 +13,8 @@ GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 from scripts.game.game_objects.game_object import GameObject
 from scripts.game.game_objects.map.map_layer import MapLayer
 from scripts.utility.logger import Logger
-from pygame import Surface, SRCALPHA
+from pygame import Surface, SRCALPHA, Vector2
+
 
 class Map (GameObject):
     
@@ -31,7 +32,7 @@ class Map (GameObject):
         self.map_dim: tuple[int, int] = map_dim
 
         self.tile_dim: tuple[int,int] = tile_dim
-        self.dim: tuple[int, int] = (
+        self.dim: Vector2 = Vector2(
             self.map_dim[0] * self.tile_dim[0], 
             self.map_dim[1] * self.tile_dim[1])
         

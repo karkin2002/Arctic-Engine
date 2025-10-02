@@ -119,6 +119,7 @@ class ArcticEngine:
                     move_camera.x += velocity
 
             self.game_objects.get(self.game_objects.get_camera_ident(), False).move.move_pos(move_camera)
+            # self.game_objects.get("test_entity_1", False).move.move_pos(move_camera)
 
 
 

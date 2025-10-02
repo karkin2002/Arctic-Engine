@@ -9,9 +9,9 @@ class Movement:
 
         self.pos = Vector2(pos) if pos is not None else Vector2(0, 0)
         self.previous_pos = Vector2(0, 0)
-        self.previous_pos.update(self.pos)
+        self.previous_pos = Vector2(self.pos)
 
-        self.time_service: TimeService = ServiceLocator.get(TimeService)
+        self.__time_service: TimeService = ServiceLocator.get(TimeService)
 
 
     def set_pos(self, pos: Vector2) -> bool:
@@ -40,7 +40,7 @@ class Movement:
         """
 
         if velocity.length_squared() > 0:
-            self.pos += velocity * self.time_service.fixed_delta_time
+            self.pos += velocity * self.__time_service.fixed_delta_time
             return True
 
         return False
@@ -54,7 +54,7 @@ class Movement:
         Returns:
             Vector2: The position to draw the object at.
         """
-        interpolated_time = max(0.0, min(1.0, self.time_service.interpolated_time))
+        interpolated_time = max(0.0, min(1.0, self.__time_service.interpolated_time))
 
         if self.previous_pos != self.pos:
             drawn_pos = self.previous_pos + (self.pos - self.previous_pos) * interpolated_time

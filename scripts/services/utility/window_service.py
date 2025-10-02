@@ -7,7 +7,7 @@ from scripts.services.visual.colour_service import ColourService
 class WindowService:
     def __init__(self,
                  dim: tuple[int, int],
-                 flags = (FULLSCREEN | SCALED),
+                 flags = (SCALED),
                  vsync: bool = True):
 
         self.dim = Vector2(dim)

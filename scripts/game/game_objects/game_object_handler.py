@@ -1,3 +1,5 @@
+from pygame import Vector2
+
 from scripts.game.game_objects import game_object
 from scripts.utility.logger import Logger
 from scripts.game.game_objects.camera.camera import Camera
@@ -107,25 +109,58 @@ class GameObjectHandler:
         return self.__camera
 
 
+    def get_camera(self) -> Camera | None:
+
+        if self.__camera:
+            return self.__game_objects[self.__camera]
+
+
+    def __get_draw_pos(self, game_object: GameObject) -> Vector2:
+
+        camera = self.get_camera()
+
+        if camera:
+            return camera.world_to_screen(game_object.move.get_draw_pos(), self.__window_service.center)
+        else:
+            return game_object.move.get_draw_pos() + self.__window_service.center
+
+
+    def is_visible(self, name: str, safety_check = True) -> bool:
+
+        game_obj = self.get(name, safety_check)
+
+        if game_obj is None or not game_obj.display:
+            return False
+
+        draw_pos = self.__get_draw_pos(game_obj)
+
+        obj_left = draw_pos.x
+        obj_top = draw_pos.y
+        obj_right = obj_left + game_obj.dim.x
+        obj_bottom = obj_top + game_obj.dim.y
+
+        win_left = 0
+        win_top = 0
+        win_right = self.__window_service.dim.x
+        win_bottom = self.__window_service.dim.y
+
+        return not (obj_right < win_left or
+                    obj_left > win_right or
+                    obj_bottom < win_top or
+                    obj_top > win_bottom)
+
 
     def draw_game_objects_to_window(self):
 
-        camera: Camera | None = None
-        if self.__camera:
-            camera: Camera = self.__game_objects[self.__camera]
-
         for game_obj_ident, game_obj in self.__game_objects.items():
 
-            if game_obj.display:
+            if game_obj.display and self.is_visible(game_obj_ident, False):
 
                 comp_surf = game_obj.draw()
 
                 if comp_surf is not None and game_obj_ident != self.__camera:
 
-                    if camera:
-                        draw_pos = camera.world_to_screen(game_obj.move.get_draw_pos(), self.__window_service.center)
-                    else:
-                        draw_pos = game_obj.move.get_draw_pos() + self.__window_service.center
+                    draw_pos = self.__get_draw_pos(game_obj)
 
                     self.__window_service.win.blit(comp_surf, (int(draw_pos.x), int(draw_pos.y)))
 
