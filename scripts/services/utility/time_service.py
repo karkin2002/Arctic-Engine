@@ -1,9 +1,9 @@
 from scripts.utility.logger import Logger
 from pygame import time as pygame_time
 
-class Time:
+class TimeService:
 
-    INIT_MESSAGE = "Initialising Time. Framerate: {framerate} FPS, Update Time: {update_time_ms} ms."
+    INIT_MESSAGE = "Initialising TimeService. Framerate: {framerate} FPS, Update TimeService: {update_time_ms} ms."
     __STABLE_FRAMERATE_SET_TEXT = "Stable framerate set to {stable_framerate}."
 
     def __init__(self,

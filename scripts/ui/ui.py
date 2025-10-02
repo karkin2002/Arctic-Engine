@@ -25,7 +25,7 @@ class WindowUI:
     """Class for handeling the window and its UI
     """    
     
-    __DEFUALT_CAPTION = "New Window"
+    __DEFUALT_CAPTION = "New WindowService"
     
     __INVALID_TEXT_UPDATE = "Couldn't update text for '{elem_name}'."
     __ADDED_UI_ELEM = "UI Element '{name}' added as '{data}'."
@@ -40,7 +40,7 @@ class WindowUI:
         """Constructor for UI class
 
         Args:
-            win_dim (tuple[int, int], optional): Window (<width>, <height>). Defaults to (700, 500).
+            win_dim (tuple[int, int], optional): WindowService (<width>, <height>). Defaults to (700, 500).
         """
 
         if platform.system() == WINDOWS_PLATFORM_NAME:
@@ -74,7 +74,7 @@ class WindowUI:
         """Creates a new window.
 
         Args:
-            win_dim (tuple[int, int]): Window (<width>, <height>).
+            win_dim (tuple[int, int]): WindowService (<width>, <height>).
         """        
 
         self.win_dim = win_dim
@@ -85,7 +85,7 @@ class WindowUI:
         """Sets the window caption.
 
         Args:
-            caption (str): Window caption.
+            caption (str): WindowService caption.
         """        
         
         if caption == None:

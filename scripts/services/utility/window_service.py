@@ -4,7 +4,7 @@ from scripts.services.service_locator import  ServiceLocator
 from scripts.services.visual.colour_service import ColourService
 
 
-class Window:
+class WindowService:
     def __init__(self,
                  dim: tuple[int, int],
                  flags = (FULLSCREEN | SCALED),
@@ -26,7 +26,7 @@ class Window:
         """Creates a new window.
 
         Args:
-            win_dim (tuple[int, int]): Window (<width>, <height>).
+            win_dim (tuple[int, int]): WindowService (<width>, <height>).
         """
 
         self.win = pygame_display.set_mode(

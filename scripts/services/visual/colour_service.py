@@ -8,7 +8,7 @@ class ColourService:
     __COLOUR_DOES_NOT_EXIST = "Colour '{colour_name}' does not exist."
     __COLOUR_REMOVED = "Colour '{colour_name}' has been removed."
 
-    __DEFAULT_COLOUR_VALUE = (255, 0, 220)
+    ERROR_COLOUR_VALUE = (255, 0, 220)
 
 
     def __init__(self):
@@ -61,7 +61,7 @@ class ColourService:
 
 
         else:
-            return self.__DEFAULT_COLOUR_VALUE
+            return self.ERROR_COLOUR_VALUE
 
 
 

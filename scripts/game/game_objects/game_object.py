@@ -1,6 +1,8 @@
 from pygame import Surface, Vector2
 from scripts.game.components.movement import Movement
 from scripts.game.components.tag_handler import TagHandler
+from scripts.services.visual.colour_service import ColourService
+
 
 class GameObject:
 
@@ -8,14 +10,19 @@ class GameObject:
 
     comp_num = 0
 
+    __default_surface = Surface((20, 20))
+    __default_surface.fill(ColourService.ERROR_COLOUR_VALUE)
+
     def __init__(self,
                  ident: str = __DEFAULT_IDENT.format(comp_num = comp_num),
                  pos: Vector2 | None = None,
-                 dim: Vector2 | None = None):
+                 dim: Vector2 | None = None,
+                 display: bool = True):
 
         self.ident = ident
         self.move = Movement(pos)
         self.dim = Vector2(dim) if dim is not None else Vector2(0, 0)
+        self.display = display
         self.tag = TagHandler()
 
         GameObject.comp_num += 1
@@ -30,4 +37,4 @@ class GameObject:
         """
         Draws the game object. By default, this method has no implementation.
         """
-        pass
+        return self.__default_surface

@@ -1,6 +1,6 @@
 from pygame import Vector2
 from scripts.services.service_locator import ServiceLocator
-from scripts.services.utility.time_service import Time
+from scripts.services.utility.time_service import TimeService
 
 class Movement:
 
@@ -11,7 +11,7 @@ class Movement:
         self.previous_pos = Vector2(0, 0)
         self.previous_pos.update(self.pos)
 
-        self.time_service: Time = ServiceLocator.get(Time)
+        self.time_service: TimeService = ServiceLocator.get(TimeService)
 
 
     def set_pos(self, pos: Vector2) -> bool:

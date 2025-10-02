@@ -12,7 +12,7 @@ GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 
 from pygame import Vector2
 from scripts.services.service_locator import ServiceLocator
-from scripts.services.utility.time_service import Time
+from scripts.services.utility.time_service import TimeService
 from scripts.game.game_objects.game_object import GameObject
 import scripts.utility.glob as glob
 glob.init()
@@ -26,7 +26,7 @@ class Camera(GameObject):
             pos: Vector2 = Vector2(0, 0),
             scale: float = 1):
 
-        super().__init__(pos = pos)
+        super().__init__(pos = pos, display=False)
 
         ## The implementation for scale is currently not implemented. The general structure for it is in place, but it's
         ## full implementation was never fleshed out.
@@ -39,7 +39,7 @@ class Camera(GameObject):
         ## This feature will be revisited at a later date, for now I will work on something else...
         self.scale = scale
 
-        self.time_service: Time = ServiceLocator.get(Time)
+        self.time_service: TimeService = ServiceLocator.get(TimeService)
 
     def world_to_screen(self, world_pos: Vector2, window_center: Vector2):
 

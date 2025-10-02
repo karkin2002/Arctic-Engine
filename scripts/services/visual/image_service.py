@@ -40,10 +40,10 @@ class ImageService:
 
 
 
-    def add_image(self,
-                  image_name: str,
-                  image_surface: surface,
-                  temp_image: bool = False):
+    def add(self,
+            image_name: str,
+            image_surface: surface,
+            temp_image: bool = False):
         """
         Adds a new image to the image dict.
 
@@ -66,7 +66,7 @@ class ImageService:
 
 
 
-    def delete_image(self, image_name: str):
+    def remove(self, image_name: str):
         """
         Deletes an image from the image dict.
 
@@ -87,7 +87,7 @@ class ImageService:
 
 
 
-    def get_image(self, image_name: str) -> Image | None:
+    def get(self, image_name: str) -> Image | None:
         """
         Gets an image from the image dict.
 
@@ -126,4 +126,4 @@ class ImageService:
 
                 Logger.log_info(self.__TEMP_IMAGE_DELETED.format(image_name=first_image_name))
 
-                self.delete_image(first_image_name)
+                self.remove(first_image_name)

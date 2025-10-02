@@ -39,8 +39,8 @@ class StaticTile(Tile):
         self.__time_service_locator = ServiceLocator().get(ImageService)
         
         super().__init__(
-            self.__time_service_locator.get_image(self.texture_img_name).dim
+            self.__time_service_locator.get(self.texture_img_name).dim
         )
         
     def get_texture_surf(self):
-        return self.__time_service_locator.get_image(self.texture_img_name).surface
+        return self.__time_service_locator.get(self.texture_img_name).surface
