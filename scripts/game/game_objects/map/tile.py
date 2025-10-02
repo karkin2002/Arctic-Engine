@@ -11,7 +11,7 @@ GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
 from scripts.services.service_locator import ServiceLocator
-from scripts.services.image_service import ImageService, Image
+from scripts.services.visual.image_service import ImageService
 
 
 class Tile:

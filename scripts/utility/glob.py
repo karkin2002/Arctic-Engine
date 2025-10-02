@@ -12,7 +12,6 @@ GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 
 import time
 from pygame import Surface, font as pyfont
-from scripts.audio.audio import AudioUI
 from scripts.utility.basic import is_only_type, get_first_item_of_incorrect_type
 from scripts.utility.logger import Logger
 from dataclasses import dataclass

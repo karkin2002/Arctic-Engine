@@ -13,7 +13,7 @@ GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 import ctypes, pygame, scripts.utility.glob as glob, platform
 from scripts.ui.ui_element import UIElement, Button, Text
 from scripts.utility.logger import Logger
-from scripts.audio.audio import AudioUI
+from scripts.services.audio.audio_service import AudioService
 from scripts.ui.key_input import KeyInput
 from scripts.ui.input_stream import InputStream
 glob.init()
@@ -65,7 +65,7 @@ class WindowUI:
         self.mouse_press: bool = False
         self.mouse_press_frames: int = 0
         
-        glob.audio = AudioUI(volume)
+        glob.audio = AudioService(volume)
         self.keyboard = KeyInput()
         self.input_stream = InputStream()
 

@@ -1,7 +1,7 @@
 from pygame import display as pygame_display, SCALED, FULLSCREEN
 from pygame import Vector2, Surface
 from scripts.services.service_locator import  ServiceLocator
-from scripts.services.colour_service import ColourService
+from scripts.services.visual.colour_service import ColourService
 
 
 class Window:
@@ -45,9 +45,6 @@ class Window:
         self.center.update(round(self.dim[0] / 2), round(self.dim[1] / 2))
 
     def draw(self):
-
-        self.win.blit(self.win, (0, 0))
-
         pygame_display.flip()
 
     def draw_background(self):

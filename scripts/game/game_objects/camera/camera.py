@@ -12,7 +12,7 @@ GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 
 from pygame import Vector2
 from scripts.services.service_locator import ServiceLocator
-from scripts.services.time_service import Time
+from scripts.services.utility.time_service import Time
 from scripts.game.game_objects.game_object import GameObject
 import scripts.utility.glob as glob
 glob.init()

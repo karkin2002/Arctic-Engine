@@ -15,8 +15,6 @@ from scripts.utility.logger import Logger
 from scripts.game.arctic_engine import ArcticEngine
 from scripts.game.game_objects.map.map import Map
 from scripts.game.game_objects.camera.camera import Camera
-from scripts.game.components.tag_handler import TagHandler, Tag
-
 
 ## Loading Logger and initialising.
 Logger(r"logs/UI_Organisation")
@@ -36,14 +34,10 @@ test_map.set_map_surf()
 ae.game_objects["map"] = test_map
 
 ## Camera
-TagHandler.add_tag(Tag("Camera", "This is a camera"))
-
 test_camera = Camera()
 ae.game_objects["default_camera"] = test_camera
 ae.set_camera("default_camera")
 test_camera.move.set_pos(pygame.Vector2(0, 0))
-
-test_camera.tag.assign_tag("Camera", test_camera)
 
 
 

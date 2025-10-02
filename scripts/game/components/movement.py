@@ -1,6 +1,6 @@
 from pygame import Vector2
 from scripts.services.service_locator import ServiceLocator
-from scripts.services.time_service import Time
+from scripts.services.utility.time_service import Time
 
 class Movement:
 

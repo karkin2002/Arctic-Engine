@@ -14,10 +14,11 @@ from pygame import event as pygame_event, VIDEORESIZE, QUIT, key as pygame_key, 
 from scripts.utility.logger import Logger
 from scripts.game.components.window import Window
 from scripts.game.game_objects.game_object import GameObject
-from scripts.services.time_service import Time
+from scripts.services.utility.time_service import Time
 from scripts.services.service_locator import ServiceLocator
-from scripts.services.image_service import ImageService
-from scripts.services.colour_service import ColourService
+from scripts.services.visual.image_service import ImageService
+from scripts.services.visual.colour_service import ColourService
+from scripts.services.audio.audio_service import AudioService
 from scripts.game.game_objects.camera.camera import Camera
 import scripts.utility.glob as glob
 glob.init()
@@ -47,6 +48,10 @@ class ArcticEngine:
         ## Window Essentials
         self.window = Window(win_dim)
         ServiceLocator.register(Window, self.window)
+
+        ## Audio Service
+        self.audio = AudioService(50)
+        ServiceLocator.register(AudioService, self.audio)
 
         ## Setup Image Service
         self.image = ImageService(temp_image_lifespan)
