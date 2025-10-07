@@ -1,3 +1,4 @@
 *.pyc
 *.log
 /Test Files/
+/test_scripts/

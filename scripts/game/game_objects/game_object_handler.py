@@ -1,6 +1,6 @@
 from pygame import Vector2
 
-from scripts.game.game_objects import game_object
+from collections import OrderedDict
 from scripts.utility.logger import Logger
 from scripts.game.game_objects.camera.camera import Camera
 from scripts.game.game_objects.game_object import GameObject
@@ -152,7 +152,9 @@ class GameObjectHandler:
 
     def draw_game_objects_to_window(self):
 
-        for game_obj_ident, game_obj in self.__game_objects.items():
+        sorted_game_objects = OrderedDict(sorted(self.__game_objects.items(), key=lambda item: item[1].move.pos.y))
+
+        for game_obj_ident, game_obj in sorted_game_objects.items():
 
             if game_obj.display and self.is_visible(game_obj_ident, False):
 

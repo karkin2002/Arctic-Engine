@@ -4,13 +4,15 @@ __license__ = "GPL"
 __email__ = "karkin2002@gmail.com"
 __status__ = "Development"
 
+from scripts.game.game_objects.entity.test_entity import TestEntity
+
 """
 This file is part of Arctic Engine Project by Kaya Arkin. For more information,
 look at the README.md file in the root directory, or visit the
 GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
-from pygame import event as pygame_event, VIDEORESIZE, QUIT, key as pygame_key, K_w, K_a, K_s, K_d, Vector2
+from pygame import event as pygame_event, VIDEORESIZE, QUIT, key as pygame_key, K_w, K_a, K_s, K_d, K_SPACE, Vector2
 from scripts.utility.logger import Logger
 from scripts.services.service_locator import ServiceLocator
 from scripts.services.utility.window_service import WindowService
@@ -118,8 +120,12 @@ class ArcticEngine:
             if keys[K_d]:
                     move_camera.x += velocity
 
+            if keys[K_SPACE]:
+                entity: TestEntity = self.game_objects.get("test_entity_1", False)
+                entity.animation.set_current_animation("animation_test")
+
             self.game_objects.get(self.game_objects.get_camera_ident(), False).move.move_pos(move_camera)
-            # self.game_objects.get("test_entity_1", False).move.move_pos(move_camera)
+            self.game_objects.get("test_entity_1", False).move.move_pos(move_camera)
 
 
 

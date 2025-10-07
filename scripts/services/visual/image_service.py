@@ -108,6 +108,10 @@ class ImageService:
             Logger.log_critical(self.__INVALID_IMAGE_NAME.format(image_name=image_name))
 
 
+    def is_image(self, image_name):
+        return image_name in self.__image_dict or image_name in self.__temp_image_dict
+
+
 
 
     def delete_first_temp_image_by_lifespan(self):

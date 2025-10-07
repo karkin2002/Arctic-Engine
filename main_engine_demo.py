@@ -36,19 +36,35 @@ test_map.get_map_layer(0).generate_map_array(["test_texture_1", "test_texture_2"
 test_map.set_map_surf()
 ae.game_objects.add("map", test_map)
 
+## Test entities
+ae.image.add("animation_test_1", pygame.image.load("custom/images/animation_test_1.png"))
+ae.image.add("animation_test_2", pygame.image.load("custom/images/animation_test_2.png"))
+ae.image.add("animation_test_3", pygame.image.load("custom/images/animation_test_3.png"))
+ae.image.add("animation_test_4", pygame.image.load("custom/images/animation_test_4.png"))
+ae.image.add("idle_1", pygame.image.load("custom/images/idle1.png"))
+ae.image.add("idle_2", pygame.image.load("custom/images/idle2.png"))
+ae.image.add("idle_3", pygame.image.load("custom/images/idle3.png"))
+ae.image.add("idle_4", pygame.image.load("custom/images/idle4.png"))
+
 test_entity_1 = TestEntity()
 ae.game_objects.add("test_entity_1", test_entity_1)
-test_entity_1.move.set_pos(pygame.Vector2(100, 100))
 
 test_entity_2 = TestEntity()
 ae.game_objects.add("test_entity_2", test_entity_2)
 test_entity_2.move.set_pos(pygame.Vector2(-100, -100))
+
 
 ## Camera
 test_camera = Camera()
 ae.game_objects.add("default_camera", test_camera)
 ae.game_objects.set_camera("default_camera")
 test_camera.move.set_pos(pygame.Vector2(0, 0))
+
+
+## Music
+# ae.audio.add_cat("music", 100)
+# ae.audio.add_audio("music", "custom/music.wav", volume=100)
+# ae.audio.play("music", "music")
 
 ### Main Loop -----------------------------
 run = True
