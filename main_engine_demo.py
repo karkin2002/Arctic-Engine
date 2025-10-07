@@ -37,14 +37,7 @@ test_map.set_map_surf()
 ae.game_objects.add("map", test_map)
 
 ## Test entities
-ae.image.add("animation_test_1", pygame.image.load("custom/images/animation_test_1.png"))
-ae.image.add("animation_test_2", pygame.image.load("custom/images/animation_test_2.png"))
-ae.image.add("animation_test_3", pygame.image.load("custom/images/animation_test_3.png"))
-ae.image.add("animation_test_4", pygame.image.load("custom/images/animation_test_4.png"))
-ae.image.add("idle_1", pygame.image.load("custom/images/idle1.png"))
-ae.image.add("idle_2", pygame.image.load("custom/images/idle2.png"))
-ae.image.add("idle_3", pygame.image.load("custom/images/idle3.png"))
-ae.image.add("idle_4", pygame.image.load("custom/images/idle4.png"))
+ae.image.add_folder("custom/images/")
 
 test_entity_1 = TestEntity()
 ae.game_objects.add("test_entity_1", test_entity_1)

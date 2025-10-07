@@ -1,5 +1,6 @@
 from scripts.utility.logger import Logger
-from pygame import surface as surface, time as py_time, Surface
+from pygame import surface as surface, time as py_time, Surface, image as py_image
+from os import path as os_path, listdir as os_listdir
 
 
 class Image:
@@ -22,11 +23,14 @@ class Image:
 
 class ImageService:
 
+    __IMAGE_FILETYPE = ".png"
+
     __IMAGE_SERVICE_START = "Image Service Started. Temp Image Lifespan: {temp_image_lifespan} ms."
     __IMAGE_ALREADY_EXISTS = "Image '{image_name}' already exists. Image not created."
     __INVALID_IMAGE_NAME = "Image '{image_name}' doesn't exist."
     __IMAGE_DELETED = "Image '{image_name}' deleted at timestamp: {timestamp} ms."
     __TEMP_IMAGE_DELETED = "Image '{image_name}' lifespan expired."
+    __FOLDER_PATH_DOES_NOT_EXIST = "Folder path '{folder_path}' doesn't exist."
 
     def __init__(self,
                  temp_image_lifespan_ms: float = 600000):
@@ -38,6 +42,12 @@ class ImageService:
 
         Logger.log_info(self.__IMAGE_SERVICE_START.format(temp_image_lifespan=temp_image_lifespan_ms))
 
+
+    @staticmethod
+    def __extract_filename(filepath: str) -> str:
+        base = os_path.basename(filepath)
+        name, _ = os_path.splitext(base)
+        return name
 
 
     def add(self,
@@ -64,6 +74,31 @@ class ImageService:
         else:
             Logger.log_warning(self.__IMAGE_ALREADY_EXISTS.format(image_name=image_name))
 
+
+    def add_from_file(self, filepath: str, name:str = None):
+        image_surf = py_image.load(filepath)
+
+        if name is None:
+            name = self.__extract_filename(filepath)
+        else:
+            name = name
+
+        self.add(name, image_surf)
+
+
+    def add_folder(self, folder_path: str):
+
+        if not os_path.isdir(folder_path):
+            Logger.log_warning(self.__FOLDER_PATH_DOES_NOT_EXIST.format(folder_path=folder_path))
+            return
+
+        for filename in os_listdir(folder_path):
+
+            if filename.lower().endswith(self.__IMAGE_FILETYPE):
+
+                filepath = os_path.join(folder_path, filename)
+
+                self.add_from_file(filepath)
 
 
     def remove(self, image_name: str):
