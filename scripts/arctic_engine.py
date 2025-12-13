@@ -67,8 +67,6 @@ class ArcticEngine:
         """
         This method handles the engines events, including update, fixed update, and drawing to the screen.
 
-        TO-DO: Other events such as handling the quit button.
-
         Returns:
             bool: True if the engine is still running, False otherwise.
         """
@@ -108,24 +106,32 @@ class ArcticEngine:
 
             move_camera = Vector2(0, 0)
 
+            entity: TestEntity = self.game_objects.get("test_entity_1", False)
+
             if keys[K_w]:
                     move_camera.y -= velocity
+                    entity.animation.set_current_animation("up")
 
             if keys[K_a]:
                     move_camera.x -= velocity
+                    entity.animation.set_current_animation("left")
 
             if keys[K_s]:
                     move_camera.y += velocity
+                    entity.animation.set_current_animation("down")
 
             if keys[K_d]:
                     move_camera.x += velocity
+                    entity.animation.set_current_animation("right")
+
+            if not keys[K_w] and not keys[K_a] and not keys[K_s] and not keys[K_d]:
+                entity.animation.set_current_animation("idle")
 
             if keys[K_SPACE]:
-                entity: TestEntity = self.game_objects.get("test_entity_1", False)
                 entity.animation.set_current_animation("animation_test")
 
             self.game_objects.get(self.game_objects.get_camera_ident(), False).move.move_pos(move_camera)
-            self.game_objects.get("test_entity_1", False).move.move_pos(move_camera)
+            entity.move.move_pos(move_camera)
 
 
 

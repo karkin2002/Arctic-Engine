@@ -27,18 +27,23 @@ ae.time.set_stable_framerate(True)
 ae.colour.add_colour("blue", (147, 202, 237))
 ae.window.background_colour = "blue"
 
+
+## Load images
+ae.image.add_folder("static/images/textures/test_entity/")
+ae.image.add_folder("static/images/textures/map/")
+
+
+
 ## Map
-ae.image.add("test_texture_1", pygame.image.load("static/images/tile_texture_1.png"))
-ae.image.add("test_texture_2", pygame.image.load("static/images/tile_texture_2.png"))
 test_map = Map((100, 100))
 test_map.add_map_layer()
-test_map.get_map_layer(0).generate_map_array(["test_texture_1", "test_texture_2"], [0.2, 0.8])
+test_map.get_map_layer(0).generate_map_array(["test_texture_1", "test_texture_2"], [0.1, 0.9])
 test_map.set_map_surf()
 ae.game_objects.add("map", test_map)
 
-## Test entities
-ae.image.add_folder("custom/images/")
 
+
+## Test entities
 test_entity_1 = TestEntity()
 ae.game_objects.add("test_entity_1", test_entity_1)
 
@@ -56,8 +61,9 @@ test_camera.move.set_pos(pygame.Vector2(0, 0))
 
 ## Music
 # ae.audio.add_cat("music", 100)
-# ae.audio.add_audio("music", "custom/music.wav", volume=100)
+# ae.audio.add_audio("music", "static/audio/music/music.wav", volume=100)
 # ae.audio.play("music", "music")
+
 
 ### Main Loop -----------------------------
 run = True

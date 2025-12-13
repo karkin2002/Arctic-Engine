@@ -14,7 +14,7 @@ class AnimationHandler:
     __ADDED_ANIMATION = "Animation '{animation_name}' added as {animation}."
     __REMOVED_ANIMATION = "Animation '{animation_name}' removed."
     __ANIMATION_COULD_NOT_BE_REMOVED = "Animation '{animation_name}' could not be removed as it does not exist."
-    __CURRENT_ANIMATION_IS_NONE = "Unable to get current animation, as it is set to None."
+    __CURRENT_ANIMATION_IS_NONE = "Current animation is set to None. Falling back to default Animation '{animation_name}'."
     __ANIMATION_DOES_NOT_EXIST = "Animation '{animation_name}' does not exist. Animation not set."
     __DEFAULT_ANIMATION_NOT_SET = "Default animation not set. Falling back to Animation '{animation_name}'."
 
@@ -58,11 +58,12 @@ class AnimationHandler:
             Logger.log_warning(self.__ANIMATION_COULD_NOT_BE_REMOVED.format(animation_name=name))
 
 
-    def set_current_animation(self, name: str):
+    def set_current_animation(self, name: str, animation_reset: bool = False):
 
         if not Logger.raise_key_error(self.__animations, name, self.__ANIMATION_DOES_NOT_EXIST.format(animation_name=name), False):
-            self.__current_animation = name
-            self.__animations[self.__current_animation].reset()
+            if animation_reset or self.__current_animation != name:
+                self.__current_animation = name
+                self.__animations[self.__current_animation].reset()
 
 
     def get_current_animation_name(self) -> str:
@@ -81,7 +82,8 @@ class AnimationHandler:
     def get_frame(self) -> Surface:
 
         if self.__current_animation is None:
-            Logger.log_error(self.__CURRENT_ANIMATION_IS_NONE)
+            Logger.log_error(self.__CURRENT_ANIMATION_IS_NONE.format(animation_name=self.__default_animation))
+            self.set_current_animation(self.__default_animation)
             return self.__default_surface
 
 
