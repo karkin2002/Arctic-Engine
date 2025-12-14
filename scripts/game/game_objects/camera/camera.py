@@ -43,7 +43,7 @@ class Camera(GameObject):
 
     def world_to_screen(self, world_pos: Vector2, window_center: Vector2):
 
-        relative = (world_pos - self.move.pos) * self.scale
+        relative = (world_pos - self.move.get_pos()) * self.scale
 
         return window_center + relative
 

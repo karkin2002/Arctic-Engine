@@ -33,13 +33,9 @@ class Map (GameObject):
 
         self.tile_dim: tuple[int,int] = tile_dim
 
-        self.move.dim = Vector2(
+        self.move.set_dim(Vector2(
             self.map_dim[0] * self.tile_dim[0], 
-            self.map_dim[1] * self.tile_dim[1])
-
-        self.move.set_point_of_origin_alignment(**{
-            self.move.ALIGN_TOP_KW: True,
-            self.move.ALIGN_LEFT_KW: True})
+            self.map_dim[1] * self.tile_dim[1]))
         
         self.map_surf: Surface | None = None
         
@@ -101,9 +97,9 @@ class Map (GameObject):
 
     def set_map_surf(self):
         if self.transparent:
-            self.map_surf = Surface(self.move.dim, SRCALPHA)
+            self.map_surf = Surface(self.move.get_dim(), SRCALPHA)
         else:
-            self.map_surf = Surface(self.move.dim)
+            self.map_surf = Surface(self.move.get_dim())
             
         self.draw_map_layers()
                 
