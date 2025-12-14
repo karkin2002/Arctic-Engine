@@ -23,8 +23,8 @@ class Movement:
     def __init__(self,
                  pos: Vector2 | None = None,
                  dim: Vector2 | None = None,
-                 point_of_origin_adjustment: Vector2 | None = None,
-                 **point_of_origin_alignments: bool):
+                 point_of_origin_pixel_adjustment: Vector2 | None = None,
+                 **point_of_origin_alignment_kwargs: bool):
 
         self.pos = Vector2(pos) if pos is not None else Vector2(0, 0)
         self.previous_pos = Vector2(0, 0)
@@ -32,20 +32,28 @@ class Movement:
 
         self.dim = Vector2(dim) if dim is not None else Vector2(0, 0)
 
-        self.point_of_origin_adjustment = point_of_origin_adjustment
-        self.point_of_origin_alignments = self.DEFAULT_ALIGN_DICT.copy()
-        self.__set_point_of_origin_alignments(**point_of_origin_alignments)
+        self.__point_of_origin_adjustment = point_of_origin_pixel_adjustment
+        self.__point_of_origin_alignment = self.DEFAULT_ALIGN_DICT.copy()
+        self.__pos_with_point_of_origin_adjustment = Vector2(self.pos)
+        self.set_point_of_origin_alignment(**point_of_origin_alignment_kwargs)
 
         self.__time_service: TimeService = ServiceLocator.get(TimeService)
 
 
-    def __set_point_of_origin_alignments(self, **align_args: bool):
-        for align_name in align_args:
-            if not Logger.raise_incorrect_type(align_args[align_name], bool):
-                if align_name in self.point_of_origin_alignments:
-                    self.point_of_origin_alignments[align_name] = align_args[align_name]
+    def set_point_of_origin_alignment(self,
+                                      pixel_adjustment: Vector2 | None = None,
+                                      **alignment_kwargs: dict[str, bool]):
+        if pixel_adjustment:
+            self.__point_of_origin_adjustment = pixel_adjustment
+
+        for align_name in alignment_kwargs:
+            if not Logger.raise_incorrect_type(alignment_kwargs[align_name], bool):
+                if align_name in self.__point_of_origin_alignment:
+                    self.__point_of_origin_alignment[align_name] = alignment_kwargs[align_name]
                 else:
                     Logger.log_warning(self.__ALIGNMENT_KW_DOES_NOT_EXIST.format(align_kw=align_name))
+
+        self.__pos_with_point_of_origin_adjustment = self.__get_pos_with_point_of_origin_adjustment(self.pos)
 
 
     def set_pos(self, pos: Vector2) -> bool:
@@ -80,24 +88,24 @@ class Movement:
         return False
 
 
-    def __get_point_of_origin(self, pos: Vector2) -> Vector2:
+    def __get_pos_with_point_of_origin_adjustment(self, pos: Vector2) -> Vector2:
 
         new_pos = Vector2(pos) - Vector2(self.dim.x / 2, self.dim.y / 2)
 
-        if self.point_of_origin_alignments[self.ALIGN_TOP_KW]:
+        if self.__point_of_origin_alignment[self.ALIGN_TOP_KW]:
             new_pos += Vector2(0, self.dim.y / 2)
 
-        if self.point_of_origin_alignments[self.ALIGN_BOTTOM_KW]:
+        if self.__point_of_origin_alignment[self.ALIGN_BOTTOM_KW]:
             new_pos -= Vector2(0, self.dim.y / 2)
 
-        if self.point_of_origin_alignments[self.ALIGN_RIGHT_KW]:
+        if self.__point_of_origin_alignment[self.ALIGN_RIGHT_KW]:
             new_pos -= Vector2(self.dim.x / 2, 0)
 
-        if self.point_of_origin_alignments[self.ALIGN_LEFT_KW]:
+        if self.__point_of_origin_alignment[self.ALIGN_LEFT_KW]:
             new_pos += Vector2(self.dim.x / 2, 0)
 
-        if self.point_of_origin_adjustment:
-            new_pos += self.point_of_origin_adjustment
+        if self.__point_of_origin_adjustment:
+            new_pos += self.__point_of_origin_adjustment
 
         return new_pos
 
@@ -116,10 +124,12 @@ class Movement:
             drawn_pos = self.previous_pos + (self.pos - self.previous_pos) * interpolated_time
             self.previous_pos = Vector2(self.pos)
 
-            return self.__get_point_of_origin(drawn_pos)
+            self.__pos_with_point_of_origin_adjustment = self.__get_pos_with_point_of_origin_adjustment(self.pos)
+
+            return self.__get_pos_with_point_of_origin_adjustment(drawn_pos)
 
         else:
-            return self.__get_point_of_origin(self.pos)
+            return self.__pos_with_point_of_origin_adjustment
 
 
 

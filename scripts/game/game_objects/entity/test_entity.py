@@ -1,4 +1,3 @@
-import random
 from pygame import Surface, Vector2
 from scripts.game.game_objects.game_object import GameObject
 from scripts.game.components.animation import Animation
@@ -11,8 +10,8 @@ class TestEntity(GameObject):
 
         super().__init__()
 
-        self.move.point_of_origin_alignments[self.move.ALIGN_BOTTOM_KW] = True
         self.move.dim = Vector2(32, 32)
+        self.move.set_point_of_origin_alignment(align_bottom = True)
 
         self.animation = AnimationHandler()
         self.animation.add("idle", Animation(["idle_1", "idle_2", "idle_3", "idle_4", "idle_5", "idle_6", "idle_7", "idle_8", "idle_9", "idle_10", "idle_11", "idle_12"]))
