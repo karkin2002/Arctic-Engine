@@ -32,9 +32,14 @@ class Map (GameObject):
         self.map_dim: tuple[int, int] = map_dim
 
         self.tile_dim: tuple[int,int] = tile_dim
-        self.dim: Vector2 = Vector2(
+
+        self.move.dim = Vector2(
             self.map_dim[0] * self.tile_dim[0], 
             self.map_dim[1] * self.tile_dim[1])
+
+        self.move.set_point_of_origin_alignment(**{
+            self.move.ALIGN_TOP_KW: True,
+            self.move.ALIGN_LEFT_KW: True})
         
         self.map_surf: Surface | None = None
         
@@ -69,7 +74,7 @@ class Map (GameObject):
                                 False):
             
             Logger.log_warning(
-                Logger.__OVERWRITTEN.format(
+                Logger.OVERWRITTEN.format(
                     data_type = MapLayer,
                     name = layer_index,
                     pre_data = self.__map_layer_list[layer_index],
@@ -96,9 +101,9 @@ class Map (GameObject):
 
     def set_map_surf(self):
         if self.transparent:
-            self.map_surf = Surface(self.dim, SRCALPHA)
+            self.map_surf = Surface(self.move.dim, SRCALPHA)
         else:
-            self.map_surf = Surface(self.dim)
+            self.map_surf = Surface(self.move.dim)
             
         self.draw_map_layers()
                 

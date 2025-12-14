@@ -1,17 +1,59 @@
 from pygame import Vector2
 from scripts.services.service_locator import ServiceLocator
 from scripts.services.utility.time_service import TimeService
+from scripts.utility.logger import Logger
+
 
 class Movement:
 
+    ## Alignment Static Variables.
+    ALIGN_TOP_KW = "align_top"
+    ALIGN_RIGHT_KW = "align_right"
+    ALIGN_BOTTOM_KW = "align_bottom"
+    ALIGN_LEFT_KW = "align_left"
+
+    DEFAULT_ALIGN_DICT = {
+        ALIGN_TOP_KW: False,
+        ALIGN_RIGHT_KW: False,
+        ALIGN_BOTTOM_KW: False,
+        ALIGN_LEFT_KW: False}
+
+    __ALIGNMENT_KW_DOES_NOT_EXIST = "Alignment '{align_kw}' does not exist."
+
     def __init__(self,
-                 pos: Vector2 | None = None):
+                 pos: Vector2 | None = None,
+                 dim: Vector2 | None = None,
+                 point_of_origin_pixel_adjustment: Vector2 | None = None,
+                 **point_of_origin_alignment_kwargs: bool):
 
         self.pos = Vector2(pos) if pos is not None else Vector2(0, 0)
         self.previous_pos = Vector2(0, 0)
         self.previous_pos = Vector2(self.pos)
 
+        self.dim = Vector2(dim) if dim is not None else Vector2(0, 0)
+
+        self.__point_of_origin_adjustment = point_of_origin_pixel_adjustment
+        self.__point_of_origin_alignment = self.DEFAULT_ALIGN_DICT.copy()
+        self.__pos_with_point_of_origin_adjustment = Vector2(self.pos)
+        self.set_point_of_origin_alignment(**point_of_origin_alignment_kwargs)
+
         self.__time_service: TimeService = ServiceLocator.get(TimeService)
+
+
+    def set_point_of_origin_alignment(self,
+                                      pixel_adjustment: Vector2 | None = None,
+                                      **alignment_kwargs: dict[str, bool]):
+        if pixel_adjustment:
+            self.__point_of_origin_adjustment = pixel_adjustment
+
+        for align_name in alignment_kwargs:
+            if not Logger.raise_incorrect_type(alignment_kwargs[align_name], bool):
+                if align_name in self.__point_of_origin_alignment:
+                    self.__point_of_origin_alignment[align_name] = alignment_kwargs[align_name]
+                else:
+                    Logger.log_warning(self.__ALIGNMENT_KW_DOES_NOT_EXIST.format(align_kw=align_name))
+
+        self.__pos_with_point_of_origin_adjustment = self.__get_pos_with_point_of_origin_adjustment(self.pos)
 
 
     def set_pos(self, pos: Vector2) -> bool:
@@ -46,6 +88,28 @@ class Movement:
         return False
 
 
+    def __get_pos_with_point_of_origin_adjustment(self, pos: Vector2) -> Vector2:
+
+        new_pos = Vector2(pos) - Vector2(self.dim.x / 2, self.dim.y / 2)
+
+        if self.__point_of_origin_alignment[self.ALIGN_TOP_KW]:
+            new_pos += Vector2(0, self.dim.y / 2)
+
+        if self.__point_of_origin_alignment[self.ALIGN_BOTTOM_KW]:
+            new_pos -= Vector2(0, self.dim.y / 2)
+
+        if self.__point_of_origin_alignment[self.ALIGN_RIGHT_KW]:
+            new_pos -= Vector2(self.dim.x / 2, 0)
+
+        if self.__point_of_origin_alignment[self.ALIGN_LEFT_KW]:
+            new_pos += Vector2(self.dim.x / 2, 0)
+
+        if self.__point_of_origin_adjustment:
+            new_pos += self.__point_of_origin_adjustment
+
+        return new_pos
+
+
     def get_draw_pos(self) -> Vector2:
         """
         Returns the position to draw the object at. Takes into account interpolated time. ONLY RUN THIS METHOD ONCE PER
@@ -60,10 +124,12 @@ class Movement:
             drawn_pos = self.previous_pos + (self.pos - self.previous_pos) * interpolated_time
             self.previous_pos = Vector2(self.pos)
 
-            return drawn_pos
+            self.__pos_with_point_of_origin_adjustment = self.__get_pos_with_point_of_origin_adjustment(self.pos)
+
+            return self.__get_pos_with_point_of_origin_adjustment(drawn_pos)
 
         else:
-            return self.pos
+            return self.__pos_with_point_of_origin_adjustment
 
 
 

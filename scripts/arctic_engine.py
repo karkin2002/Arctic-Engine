@@ -110,22 +110,15 @@ class ArcticEngine:
 
             if keys[K_w]:
                     move_camera.y -= velocity
-                    entity.animation.set_current_animation("up")
 
             if keys[K_a]:
                     move_camera.x -= velocity
-                    entity.animation.set_current_animation("left")
 
             if keys[K_s]:
                     move_camera.y += velocity
-                    entity.animation.set_current_animation("down")
 
             if keys[K_d]:
                     move_camera.x += velocity
-                    entity.animation.set_current_animation("right")
-
-            if not keys[K_w] and not keys[K_a] and not keys[K_s] and not keys[K_d]:
-                entity.animation.set_current_animation("idle")
 
             if keys[K_SPACE]:
                 entity.animation.set_current_animation("animation_test")
