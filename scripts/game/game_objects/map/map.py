@@ -32,9 +32,13 @@ class Map (GameObject):
         self.map_dim: tuple[int, int] = map_dim
 
         self.tile_dim: tuple[int,int] = tile_dim
+
         self.move.dim = Vector2(
             self.map_dim[0] * self.tile_dim[0], 
             self.map_dim[1] * self.tile_dim[1])
+
+        self.move.point_of_origin_alignments[self.move.ALIGN_TOP_KW] = True
+        self.move.point_of_origin_alignments[self.move.ALIGN_LEFT_KW] = True
         
         self.map_surf: Surface | None = None
         

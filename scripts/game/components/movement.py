@@ -2,21 +2,28 @@ from enum import Enum
 from pygame import Vector2
 from scripts.services.service_locator import ServiceLocator
 from scripts.services.utility.time_service import TimeService
+from scripts.utility.logger import Logger
 
-class PointOfOrigin(Enum):
-    CENTER = "CENTER"
-    LEFT = "LEFT"
-    RIGHT = "RIGHT"
-    TOP = "TOP"
-    BOTTOM = "BOTTOM"
 
 class Movement:
+
+    ## Alignment Static Variables.
+    ALIGN_TOP_KW = "align_top"
+    ALIGN_RIGHT_KW = "align_right"
+    ALIGN_BOTTOM_KW = "align_bottom"
+    ALIGN_LEFT_KW = "align_left"
+
+    DEFAULT_ALIGN_DICT = {
+        ALIGN_TOP_KW: False,
+        ALIGN_RIGHT_KW: False,
+        ALIGN_BOTTOM_KW: False,
+        ALIGN_LEFT_KW: False}
 
     def __init__(self,
                  pos: Vector2 | None = None,
                  dim: Vector2 | None = None,
-                 point_of_origin_alignment: PointOfOrigin | None = None,
-                 point_of_origin_adjustment: Vector2 | None = None):
+                 point_of_origin_adjustment: Vector2 | None = None,
+                 **point_of_origin_alignments: dict[str, bool]):
 
         self.pos = Vector2(pos) if pos is not None else Vector2(0, 0)
         self.previous_pos = Vector2(0, 0)
@@ -24,10 +31,18 @@ class Movement:
 
         self.dim = Vector2(dim) if dim is not None else Vector2(0, 0)
 
-        self.point_of_origin_alignment = point_of_origin_alignment
         self.point_of_origin_adjustment = point_of_origin_adjustment
+        self.point_of_origin_alignments = self.DEFAULT_ALIGN_DICT.copy()
+        self.__set_point_of_origin_alignments(**point_of_origin_alignments)
 
         self.__time_service: TimeService = ServiceLocator.get(TimeService)
+
+
+    def __set_point_of_origin_alignments(self, **align_args: dict[str, bool]):
+        for align_name in align_args:
+            if not Logger.raise_incorrect_type(align_args[align_name], bool):
+                if align_name in self.point_of_origin_alignments:
+                    self.point_of_origin_alignments[align_name] = align_args[align_name]
 
 
     def set_pos(self, pos: Vector2) -> bool:
@@ -64,10 +79,24 @@ class Movement:
 
     def __get_point_of_origin(self, pos: Vector2) -> Vector2:
 
-        if self.point_of_origin_alignment == PointOfOrigin.CENTER:
-            return pos - Vector2(self.dim.x / 2, self.dim.y / 2)
+        new_pos = Vector2(pos) - Vector2(self.dim.x / 2, self.dim.y / 2)
 
-        return pos
+        if self.point_of_origin_alignments[self.ALIGN_TOP_KW]:
+            new_pos += Vector2(0, self.dim.y / 2)
+
+        if self.point_of_origin_alignments[self.ALIGN_BOTTOM_KW]:
+            new_pos -= Vector2(0, self.dim.y / 2)
+
+        if self.point_of_origin_alignments[self.ALIGN_RIGHT_KW]:
+            new_pos -= Vector2(self.dim.x / 2, 0)
+
+        if self.point_of_origin_alignments[self.ALIGN_LEFT_KW]:
+            new_pos += Vector2(self.dim.x / 2, 0)
+
+        if self.point_of_origin_adjustment:
+            new_pos += self.point_of_origin_adjustment
+
+        return new_pos
 
 
     def get_draw_pos(self) -> Vector2:
