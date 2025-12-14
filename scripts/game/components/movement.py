@@ -1,4 +1,3 @@
-from enum import Enum
 from pygame import Vector2
 from scripts.services.service_locator import ServiceLocator
 from scripts.services.utility.time_service import TimeService
@@ -19,11 +18,13 @@ class Movement:
         ALIGN_BOTTOM_KW: False,
         ALIGN_LEFT_KW: False}
 
+    __ALIGNMENT_KW_DOES_NOT_EXIST = "Alignment '{align_kw}' does not exist."
+
     def __init__(self,
                  pos: Vector2 | None = None,
                  dim: Vector2 | None = None,
                  point_of_origin_adjustment: Vector2 | None = None,
-                 **point_of_origin_alignments: dict[str, bool]):
+                 **point_of_origin_alignments: bool):
 
         self.pos = Vector2(pos) if pos is not None else Vector2(0, 0)
         self.previous_pos = Vector2(0, 0)
@@ -38,11 +39,13 @@ class Movement:
         self.__time_service: TimeService = ServiceLocator.get(TimeService)
 
 
-    def __set_point_of_origin_alignments(self, **align_args: dict[str, bool]):
+    def __set_point_of_origin_alignments(self, **align_args: bool):
         for align_name in align_args:
             if not Logger.raise_incorrect_type(align_args[align_name], bool):
                 if align_name in self.point_of_origin_alignments:
                     self.point_of_origin_alignments[align_name] = align_args[align_name]
+                else:
+                    Logger.log_warning(self.__ALIGNMENT_KW_DOES_NOT_EXIST.format(align_kw=align_name))
 
 
     def set_pos(self, pos: Vector2) -> bool:
