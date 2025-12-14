@@ -49,7 +49,7 @@ ae.game_objects.add("test_entity_1", test_entity_1)
 
 test_entity_2 = TestEntity()
 ae.game_objects.add("test_entity_2", test_entity_2)
-test_entity_2.move.set_pos(pygame.Vector2(-100, -100))
+test_entity_2.move.set_pos(pygame.Vector2(0, 0))
 
 
 ## Camera
