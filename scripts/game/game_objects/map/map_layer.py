@@ -19,7 +19,6 @@ class MapLayer:
     __GENERATE_NEW_MAP_TEXT = "Generated new map layer of size {map_dim} with tile probabilities {tile_probability}."
     __GENERATE_NEW_MAP_MISMATCH_LEN_TEXT = "Mismatch length between tiles & probabilities."
     
-    
     def __init__(self, map_dim: tuple[int, int]):
         
         self.map_dim: tuple[int, int] = map_dim

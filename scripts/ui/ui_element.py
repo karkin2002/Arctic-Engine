@@ -228,13 +228,13 @@ class UIElement:
         
         
     def intersects(self, pos: tuple[int, int]) -> bool:
-        """Returns whether pos is within the ui element.
+        """Returns whether __pos is within the ui element.
 
         Args:
             pos (tuple[int, int]): The position to check.
 
         Returns:
-            bool: True if pos is within the object's dimensions, False 
+            bool: True if __pos is within the object's dimensions, False
             otherwise.
         """
         

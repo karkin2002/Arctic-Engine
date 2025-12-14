@@ -10,8 +10,7 @@ class TestEntity(GameObject):
 
         super().__init__()
 
-        self.move.dim = Vector2(32, 32)
-        self.move.set_point_of_origin_alignment(align_bottom = True)
+        self.move.set_dim(Vector2(32, 32))
 
         self.animation = AnimationHandler()
         self.animation.add("idle", Animation(["idle_1", "idle_2", "idle_3", "idle_4", "idle_5", "idle_6", "idle_7", "idle_8", "idle_9", "idle_10", "idle_11", "idle_12"]))

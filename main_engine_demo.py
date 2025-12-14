@@ -34,14 +34,16 @@ ae.image.add_folder("static/images/textures/map/")
 
 
 ## Map
-test_map = Map((10, 10))
+test_map = Map((100, 100))
 test_map.add_map_layer()
 test_map.get_map_layer(0).generate_map_array(["test_texture_1", "test_texture_2"], [0.1, 0.9])
 test_map.set_map_surf()
+test_map.draw_order = 0
 ae.game_objects.add("map", test_map)
 
 ## Test entities
 test_entity_1 = TestEntity()
+test_entity_1.draw_order = 1
 ae.game_objects.add("test_entity_1", test_entity_1)
 
 ## Camera

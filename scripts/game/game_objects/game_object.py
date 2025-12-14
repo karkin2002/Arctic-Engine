@@ -22,6 +22,7 @@ class GameObject:
         self.ident = ident
         self.move = Movement(pos, dim)
         self.display = display
+        self.draw_order = 0
         self.tag = TagHandler()
 
         GameObject.comp_num += 1
