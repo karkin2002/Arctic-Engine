@@ -1,0 +1,1 @@
+This readme is to allow logs folder to be present during git pull.
