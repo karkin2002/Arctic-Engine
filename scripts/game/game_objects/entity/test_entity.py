@@ -1,10 +1,7 @@
 import random
-
 from pygame import Surface, Vector2
-
+from scripts.game.components.movement import PointOfOrigin
 from scripts.game.game_objects.game_object import GameObject
-
-
 from scripts.game.components.animation import Animation
 from scripts.game.components.animation_handler import AnimationHandler
 
@@ -15,7 +12,8 @@ class TestEntity(GameObject):
 
         super().__init__()
 
-        self.dim = Vector2(32, 32)
+        self.move.point_of_origin_alignment = PointOfOrigin.CENTER
+        self.move.dim = Vector2(32, 32)
 
         self.animation = AnimationHandler()
         self.animation.add("idle", Animation(["idle_1", "idle_2", "idle_3", "idle_4", "idle_5", "idle_6", "idle_7", "idle_8", "idle_9", "idle_10", "idle_11", "idle_12"]))

@@ -41,7 +41,7 @@ class Logger:
     INDEX_ERROR = 3
     
     ##Exception Error Msgs
-    __OVERWRITTEN = "{data_type} '{name}' overwritten from '{pre_data}' to '{post_data}'."
+    OVERWRITTEN = "{data_type} '{name}' overwritten from '{pre_data}' to '{post_data}'."
     __INCORRECT_TYPE = "'{value}' is of type {value_type}, expected {expected_type}."
     __INCORRECT_LEN = "'{data}' is of length {data_length}, expected {expected_length}."
     __INCORRECT_KEY = "'{key}' was not found in dictonary."
@@ -147,7 +147,7 @@ class Logger:
             post_data (any): The new data that overwrote the original data.
         """
         
-        Logger.log_warning(Logger.__OVERWRITTEN.format(
+        Logger.log_warning(Logger.OVERWRITTEN.format(
             data_type = type(pre_data),
             name = name,
             pre_data = pre_data,

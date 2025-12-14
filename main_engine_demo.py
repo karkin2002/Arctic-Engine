@@ -47,11 +47,6 @@ ae.game_objects.add("map", test_map)
 test_entity_1 = TestEntity()
 ae.game_objects.add("test_entity_1", test_entity_1)
 
-test_entity_2 = TestEntity()
-ae.game_objects.add("test_entity_2", test_entity_2)
-test_entity_2.move.set_pos(pygame.Vector2(0, 0))
-
-
 ## Camera
 test_camera = Camera()
 ae.game_objects.add("default_camera", test_camera)

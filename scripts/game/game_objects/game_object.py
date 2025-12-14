@@ -20,8 +20,7 @@ class GameObject:
                  display: bool = True):
 
         self.ident = ident
-        self.move = Movement(pos)
-        self.dim = Vector2(dim) if dim is not None else Vector2(0, 0)
+        self.move = Movement(pos, dim)
         self.display = display
         self.tag = TagHandler()
 

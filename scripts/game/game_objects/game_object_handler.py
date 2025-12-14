@@ -136,8 +136,8 @@ class GameObjectHandler:
 
         obj_left = draw_pos.x
         obj_top = draw_pos.y
-        obj_right = obj_left + game_obj.dim.x
-        obj_bottom = obj_top + game_obj.dim.y
+        obj_right = obj_left + game_obj.move.dim.x
+        obj_bottom = obj_top + game_obj.move.dim.y
 
         win_left = 0
         win_top = 0
