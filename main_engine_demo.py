@@ -16,6 +16,7 @@ from scripts.arctic_engine import ArcticEngine
 from scripts.game.game_objects.map.map import Map
 from scripts.game.game_objects.camera.camera import Camera
 from scripts.game.game_objects.entity.test_entity import TestEntity
+from scripts.game.game_objects.trigger.trigger import Trigger
 
 ## Loading Logger and initialising.
 Logger(r"logs/UI_Organisation")
@@ -51,6 +52,10 @@ test_camera = Camera()
 ae.game_objects.add("default_camera", test_camera)
 ae.game_objects.set_camera("default_camera")
 test_camera.move.set_pos(pygame.Vector2(0, 0))
+
+## Trigger
+test_trigger = Trigger(display=True)
+ae.game_objects.add("test_trigger", test_trigger)
 
 
 ## Music

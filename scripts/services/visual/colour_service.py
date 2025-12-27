@@ -9,6 +9,7 @@ class ColourService:
     __COLOUR_REMOVED = "Colour '{colour_name}' has been removed."
 
     ERROR_COLOUR_VALUE = (255, 0, 220)
+    OUTLINE_COLOUR_VALUE = (255, 0, 0)
 
 
     def __init__(self):
