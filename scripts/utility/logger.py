@@ -289,7 +289,10 @@ class Logger:
                     additional_text)
             
             else:
-                Logger.log_error(additional_text + " " + error_msg)
+                if additional_text:
+                    Logger.log_error(additional_text + " " + error_msg)
+                else:
+                    Logger.log_error(error_msg)
                 
         return True
     

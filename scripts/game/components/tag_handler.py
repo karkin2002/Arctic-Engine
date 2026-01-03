@@ -16,7 +16,6 @@ class Tag:
         description: Optional[str] = None
 
 
-
 class TagHandler:
 
     __NEW_TAG_ADDED = "New Tag '{tag_name}' added to global tags dict."
@@ -61,6 +60,8 @@ class TagHandler:
 
         if not Logger.raise_key_error(TagHandler.__global_tags, name, TagHandler.__TAG_DOES_NOT_EXIST.format(tag_name=name)):
             return TagHandler.__global_tags[name]
+
+        return None
 
     @staticmethod
     def remove_tag(name: str) -> bool:
