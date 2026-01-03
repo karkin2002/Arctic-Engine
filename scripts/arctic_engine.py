@@ -20,6 +20,7 @@ from scripts.services.utility.time_service import TimeService
 from scripts.services.visual.image_service import ImageService
 from scripts.services.visual.colour_service import ColourService
 from scripts.services.audio.audio_service import AudioService
+from scripts.services.utility.persistent_storage_service import PersistentDataService
 from scripts.game.game_objects.game_object_handler import GameObjectHandler
 import scripts.utility.glob as glob
 glob.init()
@@ -61,7 +62,9 @@ class ArcticEngine:
         self.time = TimeService(framerate, update_time_ms)
         ServiceLocator.register(TimeService, self.time)
 
-
+        ## Save Data
+        self.persistent_data = PersistentDataService()
+        ServiceLocator.register(PersistentDataService, self.persistent_data)
 
     def handle_events(self) -> bool:
         """
