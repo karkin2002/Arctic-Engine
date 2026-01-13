@@ -55,7 +55,6 @@ class GameObjectHandler:
         if not safety_check:
             return self.__game_objects[name]
 
-
         elif not Logger.raise_key_error(
                 self.__game_objects,
                 name,

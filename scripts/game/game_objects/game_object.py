@@ -3,7 +3,6 @@ from scripts.game.components.movement import Movement
 from scripts.game.components.tag_handler import TagHandler
 from scripts.services.visual.colour_service import ColourService
 
-
 class GameObject:
 
     __DEFAULT_IDENT = "GameObject-{comp_num}"
