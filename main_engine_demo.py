@@ -4,8 +4,6 @@ __license__ = "GPL"
 __email__ = "karkin2002@gmail.com"
 __status__ = "Development"
 
-from scripts.game.components.tag_handler import TagHandler
-
 """
 This file is part of Arctic Engine Project by Kaya Arkin. For more information,
 look at the README.md file in the root directory, or visit the
@@ -18,6 +16,9 @@ from scripts.arctic_engine import ArcticEngine
 from scripts.game.game_objects.map.map import Map
 from scripts.game.game_objects.camera.camera import Camera
 from scripts.game.game_objects.entity.test_entity import TestEntity
+from scripts.game.game_objects.particle.particle import Particle
+from scripts.game.components.animation import Animation
+from scripts.game.components.animation_handler import AnimationHandler
 
 ## Loading Logger and initialising.
 Logger(r"logs/UI_Organisation")
@@ -33,7 +34,7 @@ ae.window.background_colour = "blue"
 ## Load images
 ae.image.add_folder("static/images/textures/test_entity/")
 ae.image.add_folder("static/images/textures/map/")
-
+ae.image.add_folder("static/images/textures/particle/")
 
 ## Map
 test_map = Map((100, 100))
@@ -58,6 +59,11 @@ test_camera.move.set_pos(pygame.Vector2(0, 0))
 # ae.audio.add_cat("music", 100)
 # ae.audio.add_audio("music", "static/audio/music/music.wav", volume=100)
 # ae.audio.play("music", "music")
+
+## Particle
+animation = Animation(["explosion1", "explosion2", "explosion3", "explosion4", "explosion5", "explosion6", "explosion7", "explosion8", "explosion9", "explosion10"], 2000, False)
+test_particle = Particle(animation)
+ae.game_objects.add("test_particle", test_particle)
 
 
 ### Main Loop -----------------------------

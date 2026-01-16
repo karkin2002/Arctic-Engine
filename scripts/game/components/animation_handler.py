@@ -99,4 +99,3 @@ class AnimationHandler:
 
         else:
             return self.__image_service.get(self.__animations[self.__current_animation]).surface
-

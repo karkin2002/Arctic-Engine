@@ -1,4 +1,4 @@
-from pygame import time as py_time
+from pygame import time as py_time, Vector2
 from scripts.utility.logger import Logger
 from scripts.services.service_locator import ServiceLocator
 from scripts.services.visual.image_service import ImageService
@@ -20,25 +20,37 @@ class Animation:
         self.__start_time: int = py_time.get_ticks()
         self.finished = False
 
-        self.set_frames(frames)
+        self.__dim = Vector2(0, 0)
 
+        self.set_frames(frames)
 
 
     def set_frames(self, frames: list[str]) -> bool:
 
+        max_width = 0
+        max_height = 0
+
         for image_name in frames:
 
-            if not self.__image_service.is_image(image_name):
+            image = self.__image_service.get(image_name)
+
+            if image is None:
 
                 Logger.log_error(self.__IMAGE_DOES_NOT_EXIST.format(image_name=image_name))
 
                 return False
 
+            width, height = image.dim
+            if width > max_width:
+                max_width = width
+            if height > max_height:
+                max_height = height
+
         self.__frames = frames
+        self.__dim.update(max_width, max_height)
         Logger.log_info(self.__NEW_FRAMES_SET.format(frames=self.__frames))
 
         return True
-
 
 
     def get_current_frame(self) -> str | None:
@@ -58,6 +70,10 @@ class Animation:
 
         return self.__frames[frame_index]
 
+
+    def get_dim(self) -> Vector2:
+
+        return self.__dim
 
 
     def reset(self):
