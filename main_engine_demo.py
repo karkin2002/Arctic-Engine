@@ -70,6 +70,8 @@ ae.game_objects.add("test_particle", test_particle)
 run = True
 while run:
 
+    print(ae.game_objects.get_game_obj_count())
+
     run = ae.handle_events()
 
     ae.update()

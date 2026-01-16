@@ -23,6 +23,7 @@ class GameObject:
         self.display = display
         self.draw_order = 0
         self.tag = TagHandler()
+        self.delete: bool = False
 
         GameObject.comp_num += 1
 

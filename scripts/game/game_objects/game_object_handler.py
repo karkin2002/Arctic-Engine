@@ -34,6 +34,10 @@ class GameObjectHandler:
         self.__camera = None
 
 
+    def get_game_obj_count(self):
+        return len(self.__game_objects)
+
+
     def add(self, name: str, new_game_object: GameObject, safety_check: bool = True):
 
         if safety_check:
@@ -47,7 +51,6 @@ class GameObjectHandler:
                 Logger.log_info(self.__GAME_OBJECT_ADDED.format(game_object_name = name, game_object = new_game_object))
 
         self.__game_objects[name] = new_game_object
-
 
 
     def get(self, name: str, safety_check: bool = True) -> GameObject | None:
@@ -169,7 +172,14 @@ class GameObjectHandler:
 
 
     def update(self):
-        for comp_ident, comp in self.__game_objects.items():
+
+        game_objects_to_delete: list[str] = []
+
+        for ident, comp in self.__game_objects.items():
             comp.update()
 
+            if comp.delete:
+                game_objects_to_delete.append(ident)
 
+        for ident in game_objects_to_delete:
+            self.remove(ident, False)

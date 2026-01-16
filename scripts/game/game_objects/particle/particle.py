@@ -20,6 +20,9 @@ class Particle(GameObject):
         self.__animation_handler.set_current_animation(Particle.PARTICLE_ANIMATION_NAME)
         self.move.set_dim(animation.get_dim())
 
-    def draw(self) -> Surface | None:
+    def update(self):
+        if self.__animation_handler.is_current_animation_finished():
+            self.delete = True
 
+    def draw(self) -> Surface | None:
         return self.__animation_handler.get_frame()
