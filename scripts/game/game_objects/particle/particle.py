@@ -1,5 +1,4 @@
 from pygame import Surface
-
 from scripts.game.game_objects.game_object import GameObject
 from scripts.game.components.animation import Animation
 from scripts.game.components.animation_handler import AnimationHandler

@@ -1,16 +1,32 @@
 from dataclasses import dataclass
+from typing import Any
 from scripts.game.components.tag_handler import TagHandler
-from os import path as os_path
+from os import path as os_path, makedirs
 from json import dump as json_dump, load as json_load
 from scripts.utility.logger import Logger
 from scripts.utility.basic import get_filename
 
-@dataclass
+
 class PersistentData:
-    name: str
-    filepath: str
-    data: dict
-    tags: TagHandler
+    __ITEM_DOES_NOT_EXIST = "Item '{item_name}' does not exist in Persistent Data '{name}'. Adding new entry '{item_name}': {{'{value_name}': {default_value}}}"
+    __VALUE_DOES_NOT_EXIST = "Value '{value_name}' in Item '{item_name}' does not exist in Persistent Data '{name}'. Adding new entry '{value_name}': {default_value}"
+
+    def __init__(self, name: str, filepath: str, data: dict, tags: TagHandler):
+        self.name = name
+        self.filepath = filepath
+        self.data = data
+        self.tags = tags
+
+    def get_data(self, item_name: str, value_name: str, default_value: Any = None):
+        if not Logger.raise_key_error(self.data, item_name, PersistentData.__ITEM_DOES_NOT_EXIST.format(item_name=item_name, name=self.name, value_name=value_name, default_value=default_value), raise_exception=False):
+            if not Logger.raise_key_error(self.data[item_name], value_name, PersistentData.__VALUE_DOES_NOT_EXIST.format(value_name=value_name, item_name=item_name, name=self.name, default_value=default_value), raise_exception=False):
+                return self.data[item_name][value_name]
+
+            self.data[item_name][value_name] = default_value
+            return default_value
+
+        self.data[item_name] = {value_name: default_value}
+        return default_value
 
 
 class PersistentDataService:
@@ -22,8 +38,9 @@ class PersistentDataService:
     __DATA_ADDED = "Data {data} added to persistent data."
     __SAVING_DATA = "Saving all data. Tags required: {tags}"
 
-    def __init__(self):
+    CONFIG_DIR = "configs"
 
+    def __init__(self):
         self.__data: dict[str, PersistentData] = {}
 
     @staticmethod
@@ -41,6 +58,9 @@ class PersistentDataService:
             else:
                 file_data = default_data
 
+            if os_path.dirname(filepath):
+                makedirs(os_path.dirname(filepath), exist_ok=True)
+
             with open(filepath, "w") as f:
                 json_dump(file_data, f)
 
@@ -51,6 +71,9 @@ class PersistentDataService:
 
     @staticmethod
     def __save_data(filepath: str, data: dict) -> bool:
+
+        if os_path.dirname(filepath):
+            makedirs(os_path.dirname(filepath), exist_ok=True)
 
         with open(filepath, "w") as f:
             json_dump(data, f)
@@ -157,7 +180,7 @@ class PersistentDataService:
 
             if self.__is_data_tagged(i, *tags):
                 loaded_data = self.load(i)
-                if loaded_data.data is None:
+                if loaded_data is None or loaded_data.data is None:
                     successful = False
 
         return successful

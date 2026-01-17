@@ -1,5 +1,4 @@
 from pygame import Vector2
-
 from collections import OrderedDict
 from scripts.utility.logger import Logger
 from scripts.game.game_objects.camera.camera import Camera
