@@ -5,6 +5,7 @@ __email__ = "karkin2002@gmail.com"
 __status__ = "Development"
 
 from scripts.game.game_objects.entity.test_entity import TestEntity
+from scripts.game.game_objects.game_object import GameObject
 
 """
 This file is part of Arctic Engine Project by Kaya Arkin. For more information,
@@ -22,13 +23,13 @@ from scripts.services.visual.colour_service import ColourService
 from scripts.services.audio.audio_service import AudioService
 from scripts.services.utility.persistent_storage_service import PersistentDataService
 from scripts.game.game_objects.game_object_handler import GameObjectHandler
+from scripts.services.visual.particle_service import ParticleService
 import scripts.utility.glob as glob
 glob.init()
 
 class ArcticEngine:
 
     __START_UP_INFO_TEXT = "Initialising Arctic Engine."
-
 
     def __init__(self,
                  win_dim: tuple[int, int] = (1280, 720),
@@ -39,6 +40,10 @@ class ArcticEngine:
         ## Logging
         Logger.log_info(self.__START_UP_INFO_TEXT)
 
+        ## Save Data
+        self.persistent_data = PersistentDataService()
+        ServiceLocator.register(PersistentDataService, self.persistent_data)
+
         ## Setup Colour Service
         self.colour = ColourService()
         ServiceLocator.register(ColourService, self.colour)
@@ -46,6 +51,10 @@ class ArcticEngine:
         ## WindowService Essentials
         self.window = WindowService(win_dim)
         ServiceLocator.register(WindowService, self.window)
+
+        ## Clock / Framerate
+        self.time = TimeService(framerate, update_time_ms)
+        ServiceLocator.register(TimeService, self.time)
 
         ## Audio Service
         self.audio = AudioService(80)
@@ -55,16 +64,14 @@ class ArcticEngine:
         self.image = ImageService(temp_image_lifespan)
         ServiceLocator.register(ImageService, self.image)
 
+        ## Particle Service
+        self.particle = ParticleService()
+        ServiceLocator.register(ParticleService, self.particle)
+
         ## Game Objects
         self.game_objects = GameObjectHandler()
 
-        ## Clock / Framerate
-        self.time = TimeService(framerate, update_time_ms)
-        ServiceLocator.register(TimeService, self.time)
 
-        ## Save Data
-        self.persistent_data = PersistentDataService()
-        ServiceLocator.register(PersistentDataService, self.persistent_data)
 
     def handle_events(self) -> bool:
         """
@@ -97,7 +104,6 @@ class ArcticEngine:
         ## Updates time
         self.time.tick()
 
-
         ## Potentially runs multiple times if there is a large lag, i.e. game is rendering at lower ms than
         ## update_time_ms.
         while self.time.is_update():
@@ -124,7 +130,10 @@ class ArcticEngine:
                     move_camera.x += velocity
 
             if keys[K_SPACE]:
-                entity.animation.set_current_animation("animation_test")
+                new_particle = self.particle.create_particle("explosion", entity.move.get_pos())
+                new_particle.draw_order = 1
+                self.game_objects.add(f"particle_{GameObject.comp_num}", new_particle)
+                # entity.animation.set_current_animation("animation_test")
 
             self.game_objects.get(self.game_objects.get_camera_ident(), False).move.move_pos(move_camera)
             entity.move.move_pos(move_camera)

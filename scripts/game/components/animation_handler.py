@@ -100,3 +100,6 @@ class AnimationHandler:
         else:
             return self.__image_service.get(self.__animations[self.__current_animation]).surface
 
+
+    def is_current_animation_finished(self) -> bool:
+        return self.__animations[self.__current_animation].finished

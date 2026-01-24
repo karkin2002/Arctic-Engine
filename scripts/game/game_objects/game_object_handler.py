@@ -1,5 +1,4 @@
 from pygame import Vector2
-
 from collections import OrderedDict
 from scripts.utility.logger import Logger
 from scripts.game.game_objects.camera.camera import Camera
@@ -34,6 +33,10 @@ class GameObjectHandler:
         self.__camera = None
 
 
+    def get_game_obj_count(self):
+        return len(self.__game_objects)
+
+
     def add(self, name: str, new_game_object: GameObject, safety_check: bool = True):
 
         if safety_check:
@@ -49,12 +52,10 @@ class GameObjectHandler:
         self.__game_objects[name] = new_game_object
 
 
-
     def get(self, name: str, safety_check: bool = True) -> GameObject | None:
 
         if not safety_check:
             return self.__game_objects[name]
-
 
         elif not Logger.raise_key_error(
                 self.__game_objects,
@@ -170,7 +171,14 @@ class GameObjectHandler:
 
 
     def update(self):
-        for comp_ident, comp in self.__game_objects.items():
+
+        game_objects_to_delete: list[str] = []
+
+        for ident, comp in self.__game_objects.items():
             comp.update()
 
+            if comp.delete:
+                game_objects_to_delete.append(ident)
 
+        for ident in game_objects_to_delete:
+            self.remove(ident, False)
