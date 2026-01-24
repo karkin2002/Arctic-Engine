@@ -4,8 +4,6 @@ __license__ = "GPL"
 __email__ = "karkin2002@gmail.com"
 __status__ = "Development"
 
-import pygame
-
 from scripts.game.game_objects.entity.test_entity import TestEntity
 from scripts.game.game_objects.game_object import GameObject
 

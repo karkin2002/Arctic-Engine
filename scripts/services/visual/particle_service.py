@@ -1,5 +1,3 @@
-import copy
-
 from pygame import Vector2
 from scripts.utility.logger import Logger
 from scripts.game.components.animation import Animation

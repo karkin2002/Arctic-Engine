@@ -30,7 +30,7 @@ class ImageService:
     __INVALID_IMAGE_NAME = "Image '{image_name}' doesn't exist."
     __IMAGE_DELETED = "Image '{image_name}' deleted at timestamp: {timestamp} ms."
     __TEMP_IMAGE_DELETED = "Image '{image_name}' lifespan expired."
-    __FOLDER_PATH_DOES_NOT_EXIST = "Failed to load images in foldr '{folder_path}' as it doesn't exist."
+    __FOLDER_PATH_DOES_NOT_EXIST = "Failed to load images in folder '{folder_path}' as it doesn't exist."
 
     def __init__(self,
                  temp_image_lifespan_ms: float = 600000):

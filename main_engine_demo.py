@@ -4,8 +4,6 @@ __license__ = "GPL"
 __email__ = "karkin2002@gmail.com"
 __status__ = "Development"
 
-from scripts.game.game_objects.game_object import GameObject
-
 """
 This file is part of Arctic Engine Project by Kaya Arkin. For more information,
 look at the README.md file in the root directory, or visit the
