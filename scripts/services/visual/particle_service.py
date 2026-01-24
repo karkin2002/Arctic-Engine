@@ -1,3 +1,5 @@
+import copy
+
 from pygame import Vector2
 from scripts.utility.logger import Logger
 from scripts.game.components.animation import Animation
@@ -23,7 +25,7 @@ class ParticleService:
     __FAILED_TO_PARSE_CONFIG = "Failed to parse config '{config_path}' for particle '{particle_name}'."
 
     def __init__(self):
-        self.__particles: dict[str, Animation] = {}
+        self.__particles: dict[str, list] = {}
 
         self.__persistent_data = ServiceLocator.get(PersistentDataService)
         self.__persistent_data.add(ParticleService.__CONFIG_PATH)
@@ -43,7 +45,7 @@ class ParticleService:
             for i in range(frames):
                 texture_list.append(ParticleService.__TEXTURE_NAME_FORMAT.format(particle_name=name, frame_num=i+1))
 
-            self.__particles[name] = Animation(texture_list, duration, False)
+            self.__particles[name] = [texture_list, duration, False]
 
         else:
             Logger.log_error(ParticleService.__FAILED_TO_PARSE_CONFIG.format(config_path=ParticleService.__CONFIG_PATH, particle_name=name))
@@ -60,7 +62,7 @@ class ParticleService:
     def create_particle(self, name: str, pos: Vector2 = Vector2(0, 0)) -> Particle | None:
 
         if name in self.__particles:
-            new_particle = Particle(self.__particles[name])
+            new_particle = Particle(Animation(*self.__particles[name]))
             new_particle.move.set_pos(pos)
             return new_particle
 

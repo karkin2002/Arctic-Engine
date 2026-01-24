@@ -72,7 +72,6 @@ class Animation:
 
 
     def get_dim(self) -> Vector2:
-
         return self.__dim
 
 

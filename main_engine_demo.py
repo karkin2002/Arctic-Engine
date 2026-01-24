@@ -18,11 +18,10 @@ from scripts.arctic_engine import ArcticEngine
 from scripts.game.game_objects.map.map import Map
 from scripts.game.game_objects.camera.camera import Camera
 from scripts.game.game_objects.entity.test_entity import TestEntity
-from scripts.game.game_objects.particle.particle import Particle
-from scripts.game.components.animation import Animation
 
 ## Loading Logger and initialising.
 Logger(r"logs/UI_Organisation")
+Logger.print_log = False
 pygame.init()
 
 ### Setup Game Engine -----------------------------
@@ -45,7 +44,7 @@ ae.game_objects.add("map", test_map)
 
 ## Test entities
 test_entity_1 = TestEntity()
-test_entity_1.draw_order = 1
+test_entity_1.draw_order = 2
 ae.game_objects.add("test_entity_1", test_entity_1)
 
 ## Camera

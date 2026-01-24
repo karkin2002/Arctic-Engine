@@ -132,7 +132,10 @@ class ArcticEngine:
                     move_camera.x += velocity
 
             if keys[K_SPACE]:
-                entity.animation.set_current_animation("animation_test")
+                new_particle = self.particle.create_particle("explosion", entity.move.get_pos())
+                new_particle.draw_order = 1
+                self.game_objects.add(f"particle_{GameObject.comp_num}", new_particle)
+                # entity.animation.set_current_animation("animation_test")
 
             self.game_objects.get(self.game_objects.get_camera_ident(), False).move.move_pos(move_camera)
             entity.move.move_pos(move_camera)
