@@ -8,9 +8,7 @@ This code is NOT COMPLETE. This is a rebuild of a first attempt I made at creati
 
 - Trigger Component
 - Collision Component
-- Particles 
 - Image Rotation
-- Persistent Config Info 
 
 ## Making Use of this code
 
