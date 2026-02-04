@@ -15,7 +15,8 @@ from scripts.utility.logger import Logger
 from scripts.arctic_engine import ArcticEngine
 from scripts.game.game_objects.map.map import Map
 from scripts.game.game_objects.camera.camera import Camera
-from scripts.game.game_objects.entity.test_entity import TestEntity
+from scripts.game.game_objects.entity.square import Square
+
 
 ## Loading Logger and initialising.
 Logger(r"logs/UI_Organisation")
@@ -23,27 +24,27 @@ Logger.print_log = False
 pygame.init()
 
 ### Setup Game Engine -----------------------------
-ae = ArcticEngine()
+ae = ArcticEngine(win_dim = (640, 360))
 ae.time.set_stable_framerate(True)
-ae.colour.add_colour("blue", (147, 202, 237))
-ae.window.background_colour = "blue"
+ae.colour.add_colour("rich_black", (1, 11, 19))
+ae.window.background_colour = "rich_black"
 
 ## Load images
-ae.image.add_folder("static/images/textures/test_entity/")
+ae.image.add_folder("static/images/textures/entity/square/")
 ae.image.add_folder("static/images/textures/map/")
 
 ## Map
-test_map = Map((100, 100))
+test_map = Map((10, 10))
 test_map.add_map_layer()
-test_map.get_map_layer(0).generate_map_array(["test_texture_1", "test_texture_2"], [0.1, 0.9])
+test_map.get_map_layer(0).generate_map_array(["simple_tile"], [1])
 test_map.set_map_surf()
 test_map.draw_order = 0
 ae.game_objects.add("map", test_map)
 
-## Test entities
-test_entity_1 = TestEntity()
-test_entity_1.draw_order = 2
-ae.game_objects.add("test_entity_1", test_entity_1)
+## Entities
+square1 = Square()
+square1.draw_order = 2
+ae.game_objects.add("square1", square1)
 
 ## Camera
 test_camera = Camera()
