@@ -4,7 +4,7 @@ __license__ = "GPL"
 __email__ = "karkin2002@gmail.com"
 __status__ = "Development"
 
-from scripts.game.game_objects.entity.test_entity import TestEntity
+from scripts.game.game_objects.entity.man import Man
 from scripts.game.game_objects.game_object import GameObject
 
 """
@@ -13,7 +13,7 @@ look at the README.md file in the root directory, or visit the
 GitHub Repo: https://github.com/karkin2002/Arctic-Engine.
 """
 
-from pygame import event as pygame_event, VIDEORESIZE, QUIT, key as pygame_key, K_w, K_a, K_s, K_d, K_SPACE, Vector2
+from pygame import event as pygame_event, VIDEORESIZE, QUIT, key as pygame_key, K_w, K_a, K_s, K_d, Vector2, SCALED, FULLSCREEN
 from scripts.utility.logger import Logger
 from scripts.services.service_locator import ServiceLocator
 from scripts.services.utility.window_service import WindowService
@@ -32,7 +32,9 @@ class ArcticEngine:
     __START_UP_INFO_TEXT = "Initialising Arctic Engine."
 
     def __init__(self,
-                 win_dim: tuple[int, int] = (1280, 720),
+                 win_dim: tuple[int, int] = (256, 144),
+                 flags: int = (SCALED | FULLSCREEN),
+                 vsync: bool = True,
                  framerate: int = 0,
                  update_time_ms: float = 20.0,
                  temp_image_lifespan: int = 600000):
@@ -49,7 +51,7 @@ class ArcticEngine:
         ServiceLocator.register(ColourService, self.colour)
 
         ## WindowService Essentials
-        self.window = WindowService(win_dim)
+        self.window = WindowService(win_dim, flags, vsync)
         ServiceLocator.register(WindowService, self.window)
 
         ## Clock / Framerate
@@ -111,11 +113,11 @@ class ArcticEngine:
 
             keys = pygame_key.get_pressed()
 
-            velocity = 200
+            velocity = 100
 
             move_camera = Vector2(0, 0)
 
-            entity: TestEntity = self.game_objects.get("test_entity_1", False)
+            entity: Man = self.game_objects.get("square1", False)
 
             if keys[K_w]:
                     move_camera.y -= velocity
@@ -128,12 +130,6 @@ class ArcticEngine:
 
             if keys[K_d]:
                     move_camera.x += velocity
-
-            if keys[K_SPACE]:
-                new_particle = self.particle.create_particle("explosion", entity.move.get_pos())
-                new_particle.draw_order = 1
-                self.game_objects.add(f"particle_{GameObject.comp_num}", new_particle)
-                # entity.animation.set_current_animation("animation_test")
 
             self.game_objects.get(self.game_objects.get_camera_ident(), False).move.move_pos(move_camera)
             entity.move.move_pos(move_camera)
