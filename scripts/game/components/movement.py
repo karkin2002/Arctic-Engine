@@ -3,7 +3,6 @@ from scripts.services.service_locator import ServiceLocator
 from scripts.services.utility.time_service import TimeService
 from scripts.utility.logger import Logger
 
-
 class Movement:
 
     ## Alignment Static Variables.

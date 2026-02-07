@@ -17,14 +17,13 @@ from scripts.game.game_objects.map.map import Map
 from scripts.game.game_objects.camera.camera import Camera
 from scripts.game.game_objects.entity.square import Square
 
-
 ## Loading Logger and initialising.
 Logger(r"logs/UI_Organisation")
 Logger.print_log = False
 pygame.init()
 
 ### Setup Game Engine -----------------------------
-ae = ArcticEngine(win_dim = (640, 360))
+ae = ArcticEngine(win_dim = (1024, 576))
 ae.time.set_stable_framerate(True)
 ae.colour.add_colour("rich_black", (1, 11, 19))
 ae.window.background_colour = "rich_black"

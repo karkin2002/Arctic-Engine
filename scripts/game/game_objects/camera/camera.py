@@ -14,13 +14,14 @@ from pygame import Vector2
 from scripts.services.service_locator import ServiceLocator
 from scripts.services.utility.time_service import TimeService
 from scripts.game.game_objects.game_object import GameObject
-import scripts.utility.glob as glob
-glob.init()
+from scripts.utility.math.LowPassFilter import LowPassFilter
 
 class Camera(GameObject):
 
     """Class for camera used for game
     """
+
+    __LOW_PASS_FILTER_ALPHA = 0.1
 
     def __init__(self,
             pos: Vector2 = Vector2(0, 0),
@@ -32,7 +33,7 @@ class Camera(GameObject):
         ## full implementation was never fleshed out.
         ##
         ## Idea: Camera obj stores a scale value. gameObjects scale based on the camera's scale value. When the scale
-        ## changes or new object come into view, we can cache their scaled up surface (caching could be preformed on a
+        ## changes or new object comes into view, we can cache their scaled up surface (caching could be preformed on a
         ## separate thread to reduce workload). This would additionally require chunking the map, so that only visible
         ## segments would be loaded / visible.
         ##
