@@ -4,6 +4,8 @@ __license__ = "GPL"
 __email__ = "karkin2002@gmail.com"
 __status__ = "Development"
 
+from scripts.game.components.filters.low_pass_filter import LowPassFilter
+
 """
 This file is part of Arctic Engine Project by Kaya Arkin. For more information,
 look at the README.md file in the root directory, or visit the
@@ -23,7 +25,7 @@ Logger.print_log = False
 pygame.init()
 
 ### Setup Game Engine -----------------------------
-ae = ArcticEngine(win_dim = (1024, 576))
+ae = ArcticEngine(win_dim = (1024, 576), flags=(pygame.SCALED | pygame.FULLSCREEN))
 ae.time.set_stable_framerate(True)
 ae.colour.add_colour("rich_black", (1, 11, 19))
 ae.window.background_colour = "rich_black"
@@ -50,6 +52,7 @@ test_camera = Camera()
 ae.game_objects.add("default_camera", test_camera)
 ae.game_objects.set_camera("default_camera")
 test_camera.move.set_pos(pygame.Vector2(0, 0))
+test_camera.move.movement_filter = LowPassFilter(0.02, test_camera.move.get_pos())
 
 ### Main Loop -----------------------------
 run = True

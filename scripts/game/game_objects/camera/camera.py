@@ -14,7 +14,7 @@ from pygame import Vector2
 from scripts.services.service_locator import ServiceLocator
 from scripts.services.utility.time_service import TimeService
 from scripts.game.game_objects.game_object import GameObject
-from scripts.utility.math.LowPassFilter import LowPassFilter
+
 
 class Camera(GameObject):
 
@@ -43,8 +43,9 @@ class Camera(GameObject):
         self.time_service: TimeService = ServiceLocator.get(TimeService)
 
     def world_to_screen(self, world_pos: Vector2, window_center: Vector2):
+        filtered_pos = self.move.apply_movement_filter(self.move.get_pos())
 
-        relative = (world_pos - self.move.get_pos()) * self.scale
+        relative = (world_pos - filtered_pos) * self.scale
 
         return window_center + relative
 

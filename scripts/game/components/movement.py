@@ -1,4 +1,6 @@
 from pygame import Vector2
+
+from scripts.game.components.filters.filter import Filter
 from scripts.services.service_locator import ServiceLocator
 from scripts.services.utility.time_service import TimeService
 from scripts.utility.logger import Logger
@@ -37,6 +39,8 @@ class Movement:
         self.set_point_of_origin_alignment(**point_of_origin_alignment_kwargs)
 
         self.__time_service: TimeService = ServiceLocator.get(TimeService)
+
+        self.movement_filter: Filter | None = None
 
 
     def set_point_of_origin_alignment(self,
@@ -123,6 +127,14 @@ class Movement:
 
         return new_pos
 
+    def apply_movement_filter(self, draw_pos: Vector2):
+        """Apply filter to self.__pos every frame to smooth towards target."""
+        new_pos = Vector2(draw_pos.x, draw_pos.y)
+
+        if self.movement_filter:
+            new_pos = self.movement_filter.apply(draw_pos)
+
+        return new_pos
 
     def get_draw_pos(self) -> Vector2:
         """
@@ -140,10 +152,10 @@ class Movement:
 
             self.__pos_with_point_of_origin_adjustment = self.__get_pos_with_point_of_origin_adjustment(self.__pos)
 
-            return self.__get_pos_with_point_of_origin_adjustment(drawn_pos)
+            return self.apply_movement_filter(self.__get_pos_with_point_of_origin_adjustment(drawn_pos))
 
         else:
-            return self.__pos_with_point_of_origin_adjustment
+            return self.apply_movement_filter(self.__pos_with_point_of_origin_adjustment)
 
 
 
